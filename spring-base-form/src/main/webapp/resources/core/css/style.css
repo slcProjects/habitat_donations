@@ -1,3 +1,4 @@
+
 /*
 Theme Name: Fortuna
 Description: A business, portfolio and blog theme.
@@ -9106,7 +9107,7 @@ ul.theme_color_ul {
 	list-style: none; 
 }
 ul.theme_color_ul li:before { 
-	content: "â€¢ "; 
+	content: "• "; 
 	color: #08ada7; 
 	margin-right: 12px;
 	font-size: 13px;	
