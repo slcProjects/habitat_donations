@@ -4,7 +4,7 @@
 <spring:url value="/" var="urlHome" />
 <spring:url value="/users/add" var="urlAddUser" />
 
-<!--****************** changes made by satya Change_1 **************************-->
+<!--****************** changes made by Alex Change_2 **************************-->
 <head>
 
 <!-- Basic Page Needs
@@ -42,7 +42,8 @@ img.wp-smiley, img.emoji {
 	padding: 0 !important;
 }
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" id="contact-form-7-css"
 	href="https://habitatkingston.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=4.9"
 	type="text/css" media="all">
@@ -265,7 +266,7 @@ body, .body_font, .body_font h1, .body_font h2, .body_font h3,
 }
 
 a:hover, a:focus, .post_content a:not (.button ), .post_content a:not (.button
-	):visited, .post_content .wpb_widgetised_column a:not (.button ):hover
+	 ):visited, .post_content .wpb_widgetised_column a:not (.button ):hover
 	{
 	color: #c4d600;
 }
@@ -1536,7 +1537,11 @@ keyframes rotateSpinner { 0%{
 
 100%{
 transform
+
+
 :rotate(360deg)
+
+
 }
 }
 .fb_iframe_widget {
@@ -1626,25 +1631,20 @@ transform
 </head>
 <header id="header"
 	class="has_subheader            sticky_header     hide_subheader_on_scroll">
-
-
 	<!-- SubHeader -->
 	<div class="full_header">
 		<div id="subheader" class="container">
 			<div class="section">
-
-
 				<div class="header_contacts right">
 					<div class="header_contact_item">
 						<span class="fa fa-envelope"></span> office@habitatkingston.com
 					</div>
 
 					<div class="header_contact_item">
-						<span class="fa fa-mobile"></span> Office: 613-548-8763 |
-						ReStore: 613-547-4111
+						<span class="fa fa-mobile"></span> Office: 613-548-8763 | ReStore:
+						613-547-4111
 					</div>
 				</div>
-
 				<a target="_blank" href="https://www.facebook.com/habitatkingston/"
 					class="header_soc_icon" style="float: left;" title="Facebook">
 					<span class="fa fa-facebook-f"></span>
@@ -1657,20 +1657,12 @@ transform
 					href="https://www.youtube.com/channel/UCSWSDzuIcq_oRTIuTBHCO5Q"
 					class="header_soc_icon" style="float: left;" title="YouTube"> <span
 					class="fa fa-youtube"></span></a>
-
-
 			</div>
 		</div>
 	</div>
-
-
 	<div class="rel_pos">
-
 		<div class="container">
-
 			<div class="section rel_pos ">
-
-
 				<div id="logo">
 					<div class="logo_img " initital_width="213">
 						<a href="https://habitatkingston.com/"
@@ -1679,9 +1671,7 @@ transform
 							alt="Habitat for Humanity">
 						</a>
 					</div>
-
 				</div>
-
 				<div id="mobile_menu_toggler">
 					<div id="m_nav_menu" class="m_nav">
 						<div class="m_nav_ham button_closed" id="m_ham_1"></div>
@@ -1689,8 +1679,6 @@ transform
 						<div class="m_nav_ham button_closed" id="m_ham_3"></div>
 					</div>
 				</div>
-
-
 				<div class="custom_menu_3 main_menu_underline_effect">
 					<div id="menu" class="menu-main-container sub_fade_in arrow_effect">
 						<ul>
@@ -1766,14 +1754,9 @@ transform
 						</ul>
 					</div>
 				</div>
-
 			</div>
-
 		</div>
 	</div>
-
-
-
 	<div id="mobile_menu" style="display: none;">
 		<ul>
 			<li
@@ -1841,5 +1824,4 @@ transform
 				href="https://habitatkingston.com/donate/">donate</a></li>
 		</ul>
 	</div>
-
 </header>
