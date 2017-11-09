@@ -16,7 +16,7 @@
 <nav class="navbar navbar-inverse ">
 	<div class="container">
 		<div class="navbar-header">
-			<a class="navbar-brand" href="${urlHome}">Test Header Change</a>
+			<a class="navbar-brand" href="${urlHome}">Spring MVC Form</a>
 		</div>
 		<div id="navbar">
 			<ul class="nav navbar-nav navbar-right">
