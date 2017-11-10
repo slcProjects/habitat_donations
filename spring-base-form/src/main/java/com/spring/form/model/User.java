@@ -2,7 +2,8 @@ package com.spring.form.model;
 
 import java.util.List;
 
-public class User {
+public class User 
+{
 	// form:hidden - hidden value
 	Integer id;
 
