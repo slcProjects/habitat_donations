@@ -1,10 +1,6 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-
-<spring:url value="/" var="urlHome" />
-<spring:url value="/users/add" var="urlAddUser" />
-
-<!--****************** changes made by Alex Change_2 **************************-->
+<!--****************** changes made by Alex Change_3 **************************-->
 <head>
 
 <!-- Basic Page Needs
@@ -1629,6 +1625,7 @@ transform
 }
 </style>
 </head>
+<body>
 <header id="header"
 	class="has_subheader            sticky_header     hide_subheader_on_scroll">
 	<!-- SubHeader -->
@@ -1710,7 +1707,7 @@ transform
 								</div></li>
 							<li id="menu-item-507"
 								class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-507"><a
-								href="/get-involved/" class="no_border">get involved<span></span></a>
+								href="https://habitatkingston.com/get-involved/" class="no_border">get involved<span></span></a>
 								<div>
 									<ul class="sub-menu">
 										<li id="menu-item-1077"
@@ -1785,7 +1782,7 @@ transform
 				</ul></li>
 			<li
 				class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-507"><a
-				href="/get-involved/">get involved<span
+				href="https://habitatkingston.com/get-involved/">get involved<span
 					class="icon icon-chevron-down"></span></a>
 				<ul class="sub-menu">
 					<li

@@ -7,14 +7,13 @@
 <html lang="en">
 
 <jsp:include page="../fragments/header.jsp" />
-
-<body>
-
+<div class="content_body" style="margin-top: 156px">
 	<div class="container">
 
 		<c:if test="${not empty msg}">
 			<div class="alert alert-${css} alert-dismissible" role="alert">
-				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<button type="button" class="close" data-dismiss="alert"
+					aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
 				<strong>${msg}</strong>
@@ -23,43 +22,46 @@
 
 		<h1>All Users</h1>
 
-		<table class="table table-striped">
+		<table style='border: 2px solid black'>
 			<thead>
-				<tr>
-					<th>#ID</th>
-					<th>Name</th>
-					<th>Email</th>
-					<th>framework</th>
-					<th>Action</th>
+				<tr style='border: 2px solid black'>
+					<th style='border: 2px solid black'>#ID</th>
+					<th style='border: 2px solid black'>LoginName</th>
+					<th style='border: 2px solid black'>Email</th>
+					<th style='border: 2px solid black'>Role</th>
+					<th style='border: 2px solid black'>Actions</th>
 				</tr>
 			</thead>
 
 			<c:forEach var="user" items="${users}">
-				<tr>
-					<td>
-						${user.id}
-					</td>
-					<td>${user.name}</td>
-					<td>${user.email}</td>
-					<td><c:forEach var="framework" items="${user.framework}" varStatus="loop">
-						${framework}
-    					<c:if test="${not loop.last}">,</c:if>
-						</c:forEach></td>
-					<td>
-						<spring:url value="/users/${user.id}" var="userUrl" />
-						<spring:url value="/users/${user.id}/delete" var="deleteUrl" /> 
-						<spring:url value="/users/${user.id}/update" var="updateUrl" />
+				<tr style='border: 2px solid black'>
+					<td style='border: 2px solid black'>${user.id}</td>
+					<td style='border: 2px solid black'>${user.loginName}</td>
+					<td style='border: 2px solid black'>${user.email}</td>
+					<td style='border: 2px solid black'>${user.role}</td>
+					<td style='border: 2px solid black'><spring:url
+							value="/users/${user.id}" var="userUrl" /> <spring:url
+							value="/users/${user.id}/delete" var="deleteUrl" /> <spring:url
+							value="/users/${user.id}/update" var="updateUrl" />
 
 						<button class="btn btn-info" onclick="location.href='${userUrl}'">Query</button>
-						<button class="btn btn-primary" onclick="location.href='${updateUrl}'">Update</button>
-						<button class="btn btn-danger" onclick="this.disabled=true;post('${deleteUrl}')">Delete</button></td>
+						<button class="btn btn-primary"
+							onclick="location.href='${updateUrl}'">Update</button>
+						<button class="btn btn-danger"
+							onclick="this.disabled=true;post('${deleteUrl}')">Delete</button>
+					</td>
 				</tr>
 			</c:forEach>
 		</table>
 
-	</div>
+		<spring:url value="/users/add" var="urlAddUser" />
+		<button class="btn btn-info" onclick="location.href='${urlAddUser}'">Add
+			New User</button>
 
-	<jsp:include page="../fragments/footer.jsp" />
+	</div>
+</div>
+
+<jsp:include page="../fragments/footer.jsp" />
 
 </body>
 </html>
