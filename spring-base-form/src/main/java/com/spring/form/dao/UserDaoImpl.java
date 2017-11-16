@@ -2,8 +2,8 @@ package com.spring.form.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
+//import java.util.ArrayList;
+//import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +18,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
+//import org.springframework.util.StringUtils;
 
 import com.spring.form.model.User;
 
@@ -38,7 +38,7 @@ public class UserDaoImpl implements UserDao {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", id);
 
-		String sql = "SELECT * FROM users WHERE id=:id";
+		String sql = "SELECT * FROM User WHERE UserID=:id";
 
 		User result = null;
 		try {
@@ -59,7 +59,7 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public List<User> findAll() {
 
-		String sql = "SELECT * FROM users";
+		String sql = "SELECT * FROM User";
 		List<User> result = namedParameterJdbcTemplate.query(sql, new UserMapper());
 
 		return result;
@@ -71,8 +71,8 @@ public class UserDaoImpl implements UserDao {
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		
-		String sql = "INSERT INTO USERS(NAME, EMAIL, ADDRESS, PASSWORD, NEWSLETTER, FRAMEWORK, SEX, NUMBER, COUNTRY, SKILL) "
-				+ "VALUES ( :name, :email, :address, :password, :newsletter, :framework, :sex, :number, :country, :skill)";
+		String sql = "INSERT INTO User(LoginName, Password, FirstName, LastName, Gender, Email, Phone, Address, City, Province, PostalCode, Role, Notify) "
+				+ "VALUES (:loginName, :password, :firstName, :lastName, :gender, :email, :phone, :address, :city, :province, :postalCode, :role, :notify)";
 
 		namedParameterJdbcTemplate.update(sql, getSqlParameterByModel(user), keyHolder);
 		user.setId(keyHolder.getKey().intValue());
@@ -82,8 +82,9 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public void update(User user) {
 
-		String sql = "UPDATE USERS SET NAME=:name, EMAIL=:email, ADDRESS=:address, " + "PASSWORD=:password, NEWSLETTER=:newsletter, FRAMEWORK=:framework, "
-				+ "SEX=:sex, NUMBER=:number, COUNTRY=:country, SKILL=:skill WHERE id=:id";
+		String sql = "UPDATE User SET LoginName=:loginName, Password=:password, FirstName=:firstName, "
+				+ "LastName=:lastName, Gender=:gender, Email=:email, Phone=:phone, "
+				+ "Address=:address, City=:city, Province=:province, PostalCode=:postalCode, Role=:role, Notify=:notify WHERE UserID= :id";
 
 		namedParameterJdbcTemplate.update(sql, getSqlParameterByModel(user));
 
@@ -92,7 +93,7 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public void delete(Integer id) {
 
-		String sql = "DELETE FROM USERS WHERE id= :id";
+		String sql = "DELETE FROM User WHERE UserID= :id";
 		namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource("id", id));
 
 	}
@@ -103,20 +104,21 @@ public class UserDaoImpl implements UserDao {
 		// BeanPropertySqlParameterSource
 
 		MapSqlParameterSource paramSource = new MapSqlParameterSource();
-		paramSource.addValue("id", user.getId());
-		paramSource.addValue("name", user.getName());
-		paramSource.addValue("email", user.getEmail());
-		paramSource.addValue("address", user.getAddress());
+		paramSource.addValue("UserID", user.getId());
+		paramSource.addValue("loginName", user.getLoginName());
 		paramSource.addValue("password", user.getPassword());
-		paramSource.addValue("newsletter", user.isNewsletter());
-
-		// join String
-		paramSource.addValue("framework", convertListToDelimitedString(user.getFramework()));
-		paramSource.addValue("sex", user.getSex());
-		paramSource.addValue("number", user.getNumber());
-		paramSource.addValue("country", user.getCountry());
-		paramSource.addValue("skill", convertListToDelimitedString(user.getSkill()));
-
+		paramSource.addValue("firstName", user.getFirstName());
+		paramSource.addValue("lastName", user.getLastName());
+		paramSource.addValue("gender", user.getGender());
+		paramSource.addValue("email", user.getEmail());
+		paramSource.addValue("phone", user.getPhone());
+		paramSource.addValue("address", user.getAddress());
+		paramSource.addValue("city", user.getCity());
+		paramSource.addValue("province", user.getProvince());
+		paramSource.addValue("postalCode", user.getPostalCode());
+		paramSource.addValue("role", user.getRole());
+		paramSource.addValue("notify", user.isNotify());
+		
 		return paramSource;
 	}
 
@@ -124,22 +126,26 @@ public class UserDaoImpl implements UserDao {
 
 		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
 			User user = new User();
-			user.setId(rs.getInt("id"));
-			user.setName(rs.getString("name"));
-			user.setEmail(rs.getString("email"));
-			user.setFramework(convertDelimitedStringToList(rs.getString("framework")));
-			user.setAddress(rs.getString("address"));
-			user.setCountry(rs.getString("country"));
-			user.setNewsletter(rs.getBoolean("newsletter"));
-			user.setNumber(rs.getInt("number"));
-			user.setPassword(rs.getString("password"));
-			user.setSex(rs.getString("sex"));
-			user.setSkill(convertDelimitedStringToList(rs.getString("skill")));
+			user.setId(rs.getInt("UserID"));
+			user.setLoginName(rs.getString("LoginName"));
+			user.setPassword(rs.getString("Password"));
+			user.setFirstName(rs.getString("FirstName"));
+			user.setLastName(rs.getString("LastName"));
+			user.setGender(rs.getString("Gender"));
+			user.setEmail(rs.getString("Email"));
+			user.setPhone(rs.getString("Phone"));
+			user.setAddress(rs.getString("Address"));
+			user.setCity(rs.getString("City"));
+			user.setProvince(rs.getString("Province"));
+			user.setPostalCode(rs.getString("PostalCode"));
+			user.setRole(rs.getString("Role"));
+			user.setNotify(rs.getBoolean("Notify"));
+			
 			return user;
 		}
 	}
 
-	private static List<String> convertDelimitedStringToList(String delimitedString) {
+	/*private static List<String> convertDelimitedStringToList(String delimitedString) {
 
 		List<String> result = new ArrayList<String>();
 
@@ -158,6 +164,6 @@ public class UserDaoImpl implements UserDao {
 		}
 		return result;
 
-	}
+	}*/
 
 }

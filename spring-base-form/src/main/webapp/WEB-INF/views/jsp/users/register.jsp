@@ -6,6 +6,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
+<jsp:include page="../fragments/header.jsp" />
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Sign Up</title>
@@ -20,47 +21,49 @@
 	<div class="signUpBox">
 			    <div class="row">
 					<label class="col-sm-2">First Name</label>
-					<div class="col-sm-10">${user.}</div>
+					<div class="col-sm-10">${user.firstName}</div>
 				</div>
 			
 				<div class="row">
 					<label class="col-sm-2">Last Name</label>
-					<div class="col-sm-10">${user.name}</div>
+					<div class="col-sm-10">${user.lastName}</div>
 				</div>
 				 <div class="row">
 					<label class="col-sm-2">Email Id</label>
-					<div class="col-sm-10">${user.id}</div>
+					<div class="col-sm-10">${user.email}</div>
 				</div>
 			
 				<div class="row">
 					<label class="col-sm-2">Cell</label>
-					<div class="col-sm-10">${user.name}</div>
+					<div class="col-sm-10">${user.phone}</div>
 				</div>
 				<div class="row">
 					<label class="col-sm-2">Address</label>
-					<div class="col-sm-10">${user.id}</div>
+					<div class="col-sm-10">${user.address}</div>
 				</div>
 			
 				<div class="row">
 					<label class="col-sm-2">Province</label>
-					<div class="col-sm-10">${user.name}</div>
+					<div class="col-sm-10">${user.province}</div>
 				</div>
 				 <div class="row">
 					<label class="col-sm-2">City</label>
-					<div class="col-sm-10">${user.id}</div>
+					<div class="col-sm-10">${user.city}</div>
 				</div>
 			
 				<div class="row">
 					<label class="col-sm-2">Postal Code</label>
-					<div class="col-sm-10">${user.name}</div>
+					<div class="col-sm-10">${user.postalCode}</div>
 				</div>
 				
 				<div class="row">
-					<label class="col-sm-2">Would like to recieve Store Notification</label>
-					<div class="col-sm-10">${user.name}</div>
+					<label class="col-sm-2">Would you like to recieve Restore Notification?</label>
+					<div class="col-sm-10">${user.notify}</div>
 				</div>
 	</div>	
 	
 </div>
+
+<jsp:include page="../fragments/footer.jsp" />
 </body>
 </html>

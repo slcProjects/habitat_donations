@@ -1,20 +1,17 @@
 package com.spring.form.model;
 
+
 import java.util.List;
+
 
 public class User 
 {
+
 	// form:hidden - hidden value
 	Integer id;
 
 	// form:input - textbox
-	String name;
-
-	// form:input - textbox
-	String email;
-
-	// form:textarea - textarea
-	String address;
+	String loginName;
 
 	// form:input - password
 	String password;
@@ -22,23 +19,38 @@ public class User
 	// form:input - password
 	String confirmPassword;
 
-	// form:checkbox - single checkbox
-	boolean newsletter;
+	// form:input - textbox
+	String firstName;
 
-	// form:checkboxes - multiple checkboxes
-	List<String> framework;
+	// form:input - textbox
+	String lastName;
 
 	// form:radiobutton - radio button
-	String sex;
+	String gender;
 
-	// form:radiobuttons - radio button
-	Integer number;
+	// form:input - textbox
+	String email;
+
+	// form:input - textbox
+	String phone;
+
+	// form:input - textbox
+	String address;
+
+	// form:input - textbox
+	String city;
 
 	// form:select - form:option - dropdown - single select
-	String country;
+	String province;
 
-	// form:select - multiple=true - dropdown - multiple select
-	List<String> skill;
+	// form:input - textbox
+	String postalCode;
+
+	// form:input - textbox
+	String role;
+
+	// form:checkbox - single checkbox
+	boolean notify;
 
 	public boolean isNew() {
 		return (this.id == null);
@@ -52,30 +64,14 @@ public class User
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getLoginName() {
+		return loginName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setLoginName(String name) {
+		this.loginName = name;
 	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
+	
 	public String getPassword() {
 		return password;
 	}
@@ -92,60 +88,101 @@ public class User
 		this.confirmPassword = confirmPassword;
 	}
 
-	public boolean isNewsletter() {
-		return newsletter;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setNewsletter(boolean newsletter) {
-		this.newsletter = newsletter;
+	public void setFirstName(String name) {
+		this.firstName = name;
 	}
 
-	public List<String> getFramework() {
-		return framework;
+	public String getLastName() {
+		return lastName;
 	}
 
-	public void setFramework(List<String> framework) {
-		this.framework = framework;
+	public void setLastName(String name) {
+		this.lastName = name;
+	}
+	
+	public String getGender() {
+		return gender;
 	}
 
-	public String getSex() {
-		return sex;
+	public void setGender(String gender) {
+		this.gender = gender;
 	}
 
-	public void setSex(String sex) {
-		this.sex = sex;
+	public String getEmail() {
+		return email;
 	}
 
-	public Integer getNumber() {
-		return number;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
-	public void setNumber(Integer number) {
-		this.number = number;
+	public String getPhone() {
+		return phone;
 	}
 
-	public String getCountry() {
-		return country;
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 
-	public void setCountry(String country) {
-		this.country = country;
+	public String getAddress() {
+		return address;
 	}
 
-	public List<String> getSkill() {
-		return skill;
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	
+	public String getCity() {
+		return city;
 	}
 
-	public void setSkill(List<String> skill) {
-		this.skill = skill;
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getProvince() {
+		return province;
+	}
+
+	public void setProvince(String province) {
+		this.province = province;
+	}
+
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	public boolean isNotify() {
+		return notify;
+	}
+
+	public void setNotify(boolean notify) {
+		this.notify = notify;
 	}
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", name=" + name + ", email=" + email + ", address=" + address
-				+ ", password=" + password + ", confirmPassword=" + confirmPassword
-				+ ", newsletter=" + newsletter + ", framework=" + framework + ", sex=" + sex
-				+ ", number=" + number + ", country=" + country + ", skill=" + skill + "]" + isNew();
+		return "User [id=" + id + ", loginName=" + loginName + ", password=" + password + ", confirmPassword=" + confirmPassword 
+				+ ", firstName=" + firstName + " " + lastName + ", gender=" + gender + ", email=" + email + ", phone=" + phone 
+				+ ", address=" + address + ", city=" + city + ", province=" + province + ", postalCode=" + postalCode 
+				+ ", role=" + role + ", notify=" + notify + "]"
+				+ isNew();
 	}
 
 }

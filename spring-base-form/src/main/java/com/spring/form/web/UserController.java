@@ -1,9 +1,9 @@
 package com.spring.form.web;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+//import java.util.ArrayList;
+//import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.List;
+//import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -110,17 +110,19 @@ public class UserController {
 		User user = new User();
 
 		// set default value
-		user.setName("colin");
-		user.setEmail("test@gmail.com");
-		user.setAddress("abc 88");
+		user.setLoginName("login_name");
 		//user.setPassword("123");
 		//user.setConfirmPassword("123");
-		user.setNewsletter(true);
-		user.setSex("M");
-		user.setFramework(new ArrayList<String>(Arrays.asList("Spring MVC", "GWT")));
-		user.setSkill(new ArrayList<String>(Arrays.asList("Spring", "Grails", "Groovy")));
-		user.setCountry("SG");
-		user.setNumber(2);
+		user.setFirstName("First");
+		user.setLastName("Last");
+		user.setGender("M");
+		user.setEmail("test@gmail.com");
+		user.setPhone("012-345-6789");
+		user.setAddress("abc 88");
+		user.setCity("Kingston");
+		user.setProvince("ON");
+		user.setPostalCode("A1A1A1");
+		user.setNotify(true);
 
 		model.addAttribute("userForm", user);
 
@@ -176,40 +178,36 @@ public class UserController {
 		return "users/show";
 
 	}
+   // ************************************* Coding for new page (Register Page) ********************
+	
+	@RequestMapping(value = "", method = RequestMethod.GET)
+	
+	public String Register(@PathVariable("id") int id, Model model) 
+	{
 
+		return "users/Register";
+
+	}
+	
+	
+	
 	private void populateDefaultModel(Model model) {
 
-		List<String> frameworksList = new ArrayList<String>();
-		frameworksList.add("Spring MVC");
-		frameworksList.add("Struts 2");
-		frameworksList.add("JSF 2");
-		frameworksList.add("GWT");
-		frameworksList.add("Play");
-		frameworksList.add("Apache Wicket");
-		model.addAttribute("frameworkList", frameworksList);
-
-		Map<String, String> skill = new LinkedHashMap<String, String>();
-		skill.put("Hibernate", "Hibernate");
-		skill.put("Spring", "Spring");
-		skill.put("Struts", "Struts");
-		skill.put("Groovy", "Groovy");
-		skill.put("Grails", "Grails");
-		model.addAttribute("javaSkillList", skill);
-
-		List<Integer> numbers = new ArrayList<Integer>();
-		numbers.add(1);
-		numbers.add(2);
-		numbers.add(3);
-		numbers.add(4);
-		numbers.add(5);
-		model.addAttribute("numberList", numbers);
-
-		Map<String, String> country = new LinkedHashMap<String, String>();
-		country.put("US", "United Stated");
-		country.put("CN", "China");
-		country.put("SG", "Singapore");
-		country.put("MY", "Malaysia");
-		model.addAttribute("countryList", country);
+		Map<String, String> province = new LinkedHashMap<String, String>();
+		province.put("AB", "Alberta");
+		province.put("BC", "British Columbia");
+		province.put("MB", "Manitoba");
+		province.put("NB", "New Brunswick");
+		province.put("NL", "Newfoundland & Labrador");
+		province.put("NS", "Nova Scotia");
+		province.put("ON", "Ontario");
+		province.put("PI", "Prince Edward Island");
+		province.put("QE", "Quebec");
+		province.put("SA", "Saskatchewan");
+		province.put("NT", "Northwest Territories");
+		province.put("NU", "Nunavut");
+		province.put("YU", "Yukon");
+		model.addAttribute("provinceList", province);
 
 	}
 
