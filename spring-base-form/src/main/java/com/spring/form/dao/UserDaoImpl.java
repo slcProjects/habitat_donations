@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -21,9 +23,11 @@ import org.springframework.stereotype.Repository;
 //import org.springframework.util.StringUtils;
 
 import com.spring.form.model.User;
+import com.spring.form.web.UserController;
 
 @Repository
 public class UserDaoImpl implements UserDao {
+	private final Logger logger = LoggerFactory.getLogger(UserDaoImpl.class);
 
 	NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -73,7 +77,7 @@ public class UserDaoImpl implements UserDao {
 		
 		String sql = "INSERT INTO User(LoginName, Password, FirstName, LastName, Gender, Email, Phone, Address, City, Province, PostalCode, Role, Notify) "
 				+ "VALUES (:loginName, :password, :firstName, :lastName, :gender, :email, :phone, :address, :city, :province, :postalCode, :role, :notify)";
-
+		logger.debug("save(User user) : {}", sql);
 		namedParameterJdbcTemplate.update(sql, getSqlParameterByModel(user), keyHolder);
 		user.setId(keyHolder.getKey().intValue());
 		
@@ -84,8 +88,8 @@ public class UserDaoImpl implements UserDao {
 
 		String sql = "UPDATE User SET LoginName=:loginName, Password=:password, FirstName=:firstName, "
 				+ "LastName=:lastName, Gender=:gender, Email=:email, Phone=:phone, "
-				+ "Address=:address, City=:city, Province=:province, PostalCode=:postalCode, Role=:role, Notify=:notify WHERE UserID= :id";
-
+				+ "Address=:address, City=:city, Province=:province, PostalCode=:postalCode, Role=:role, Notify=:notify WHERE UserID= :userID";
+		logger.debug("update(User user) : {}", sql);
 		namedParameterJdbcTemplate.update(sql, getSqlParameterByModel(user));
 
 	}
@@ -104,7 +108,7 @@ public class UserDaoImpl implements UserDao {
 		// BeanPropertySqlParameterSource
 
 		MapSqlParameterSource paramSource = new MapSqlParameterSource();
-		paramSource.addValue("UserID", user.getId());
+		paramSource.addValue("userID", user.getId());
 		paramSource.addValue("loginName", user.getLoginName());
 		paramSource.addValue("password", user.getPassword());
 		paramSource.addValue("firstName", user.getFirstName());

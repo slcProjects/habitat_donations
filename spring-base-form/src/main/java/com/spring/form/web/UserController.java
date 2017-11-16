@@ -122,6 +122,7 @@ public class UserController {
 		user.setCity("Kingston");
 		user.setProvince("ON");
 		user.setPostalCode("A1A1A1");
+		user.setRole("Donor");
 		user.setNotify(true);
 
 		model.addAttribute("userForm", user);
