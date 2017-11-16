@@ -44,11 +44,9 @@
 							value="/users/${user.id}/delete" var="deleteUrl" /> <spring:url
 							value="/users/${user.id}/update" var="updateUrl" />
 
-						<button class="btn btn-info" onclick="location.href='${userUrl}'">Query</button>
-						<button class="btn btn-primary"
-							onclick="location.href='${updateUrl}'">Update</button>
-						<button class="btn btn-danger"
-							onclick="this.disabled=true;post('${deleteUrl}')">Delete</button>
+						<button onclick="location.href='${userUrl}'">Query</button>
+						<button onclick="location.href='${updateUrl}'">Update</button>
+						<button onclick="location.href='${deleteUrl}'">Delete</button>
 					</td>
 				</tr>
 			</c:forEach>
