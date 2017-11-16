@@ -36,7 +36,7 @@
 
 		<div class="row">
 			<label class="col-sm-2">Full Name</label>
-			<div class="col-sm-10">${user.firstName}${user.lastName}</div>
+			<div class="col-sm-10">${user.firstName} ${user.lastName}</div>
 		</div>
 
 		<div class="row">
@@ -56,8 +56,7 @@
 
 		<div class="row">
 			<label class="col-sm-2">Address</label>
-			<div class="col-sm-10">${user.address}${user.city},
-				${user.province}, ${user.postalCode}</div>
+			<div class="col-sm-10">${user.address} ${user.city}, ${user.province}, ${user.postalCode}</div>
 		</div>
 
 		<div class="row">

@@ -173,7 +173,7 @@ public class User {
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", loginName=" + loginName + ", password=" + password + ", confirmPassword=" + confirmPassword 
-				+ ", firstName=" + firstName + " " + lastName + ", gender=" + gender + ", email=" + email + ", phone=" + phone 
+				+ ", firstName=" + firstName + ", lastName=" + lastName + ", gender=" + gender + ", email=" + email + ", phone=" + phone 
 				+ ", address=" + address + ", city=" + city + ", province=" + province + ", postalCode=" + postalCode 
 				+ ", role=" + role + ", notify=" + notify + "]"
 				+ isNew();

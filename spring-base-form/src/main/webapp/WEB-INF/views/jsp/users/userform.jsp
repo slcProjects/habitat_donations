@@ -165,6 +165,17 @@
 					</div>
 				</div>
 			</spring:bind>
+			
+			<spring:bind path="role">
+				<div class="form-group ${status.error ? 'has-error' : ''}">
+					<label class="col-sm-2 control-label">Role</label>
+					<div class="col-sm-10">
+						<form:input path="role" class="form-control" id="role"
+							placeholder="Donor" />
+						<form:errors path="role" class="control-label" />
+					</div>
+				</div>
+			</spring:bind>
 
 			<spring:bind path="notify">
 				<div class="form-group ${status.error ? 'has-error' : ''}">
@@ -194,6 +205,15 @@
 			</div>
 		</div>
  		-->
+
+			<c:choose>
+				<c:when test="${userForm['new']}">
+					<button type="submit">Add</button>
+				</c:when>
+				<c:otherwise>
+					<button type="submit">Update</button>
+				</c:otherwise>
+			</c:choose>
 
 		</form:form>
 		<spring:url value="/users" var="userList" />
