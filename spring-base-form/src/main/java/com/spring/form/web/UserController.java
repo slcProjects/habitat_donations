@@ -179,17 +179,6 @@ public class UserController {
 		return "users/show";
 
 	}
-   // ************************************* Coding for new page (Register Page) ********************
-	
-	@RequestMapping(value = "", method = RequestMethod.GET)
-	
-	public String Register(@PathVariable("id") int id, Model model) 
-	{
-
-		return "users/Register";
-
-	}
-	
 	
 	
 	private void populateDefaultModel(Model model) {

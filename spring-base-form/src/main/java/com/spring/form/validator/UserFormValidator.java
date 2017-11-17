@@ -22,7 +22,8 @@ public class UserFormValidator implements Validator {
 	UserService userService;
 	
 	@Override
-	public boolean supports(Class<?> clazz) {
+	public boolean supports(Class<?> clazz) 
+	{
 		return User.class.equals(clazz);
 	}
 
