@@ -13,7 +13,7 @@
 
 		<c:choose>
 			<c:when test="${userForm['new']}">
-				<h1>Add User</h1>
+				<h1>Register User</h1>
 			</c:when>
 			<c:otherwise>
 				<h1>Update User</h1>
@@ -217,7 +217,7 @@
 
 		</form:form>
 		<spring:url value="/users" var="userList" />
-		<button class="btn btn-info" onclick="location.href='${userList}'">Back</button>
+		<button class="btn btn-info" onclick="location.href='${userList}'">Users</button>
 	</div>
 </div>
 

@@ -70,7 +70,7 @@
 		</div>
 		
 		<spring:url value="/users" var="userList" />
-		<button class="btn btn-info" onclick="location.href='${userList}'">Back</button>
+		<button class="btn btn-info" onclick="location.href='${userList}'">Users</button>
 
 	</div>
 </div>

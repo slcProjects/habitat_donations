@@ -70,7 +70,7 @@ public class UserController {
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(Model model) {
 		logger.debug("index()");
-		return "redirect:/users";
+		return "redirect:/users/add";
 	}
 
 	// list page
@@ -193,10 +193,6 @@ public class UserController {
 		return "users/show";
 
 	}
-<<<<<<< HEAD
-	
-	
-=======
 
 	// donation list page
 	@RequestMapping(value = "/donations", method = RequestMethod.GET)
@@ -208,7 +204,6 @@ public class UserController {
 
 	}
 
->>>>>>> branch 'master' of https://github.com/slcProjects/habitat_donations
 	private void populateDefaultModel(Model model) {
 
 		Map<String, String> province = new LinkedHashMap<String, String>();

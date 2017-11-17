@@ -55,7 +55,7 @@
 		</table>
 
 		<spring:url value="/users" var="urlUser" />
-		<button class="btn btn-info" onclick="location.href='${urlUser}'">Back</button>
+		<button class="btn btn-info" onclick="location.href='${urlUser}'">Users</button>
 
 	</div>
 </div>
