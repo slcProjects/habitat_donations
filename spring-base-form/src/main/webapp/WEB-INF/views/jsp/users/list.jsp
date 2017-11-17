@@ -39,22 +39,29 @@
 					<td style='border: 2px solid black'>${user.loginName}</td>
 					<td style='border: 2px solid black'>${user.email}</td>
 					<td style='border: 2px solid black'>${user.role}</td>
-					<td style='border: 2px solid black'><spring:url
-							value="/users/${user.id}" var="userUrl" /> <spring:url
-							value="/users/${user.id}/delete" var="deleteUrl" /> <spring:url
-							value="/users/${user.id}/update" var="updateUrl" />
+					<td style='border: 2px solid black'>
+						<spring:url value="/users/${user.id}" var="userUrl" /> 
+						<spring:url value="/users/${user.id}/delete" var="deleteUrl" /> 
+						<spring:url value="/users/${user.id}/update" var="updateUrl" />
+						<spring:url value="/users/${user.id}/donate" var="donateUrl" />
 
 						<button onclick="location.href='${userUrl}'">Query</button>
 						<button onclick="location.href='${updateUrl}'">Update</button>
-						<button onclick="location.href='${deleteUrl}'">Delete</button>
+<%-- 						<button onclick="location.href='${deleteUrl}'">Delete</button> --%>
+						<button>Delete</button>
+						<c:if test="${user.role=='Donor'}">
+<%-- 							<button onclick="location.href='${donateUrl}'">Donate</button> --%>
+							<button>Donate</button>
+						</c:if>
 					</td>
 				</tr>
 			</c:forEach>
 		</table>
 
 		<spring:url value="/users/add" var="urlAddUser" />
-		<button class="btn btn-info" onclick="location.href='${urlAddUser}'">Add
-			New User</button>
+		<button class="btn btn-info" onclick="location.href='${urlAddUser}'">Add New User</button>
+		<spring:url value="/donations" var="donationUrl" />
+		<button class="btn btn-info" onclick="location.href='${donationUrl}'">View Donations</button>
 
 	</div>
 </div>

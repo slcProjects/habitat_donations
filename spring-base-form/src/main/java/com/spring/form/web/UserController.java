@@ -1,9 +1,6 @@
 package com.spring.form.web;
 
-//import java.util.ArrayList;
-//import java.util.Arrays;
 import java.util.LinkedHashMap;
-//import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +25,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 //import javax.validation.Valid;
 import com.spring.form.model.User;
+import com.spring.form.service.DonationService;
 import com.spring.form.service.UserService;
+import com.spring.form.validator.DonationFormValidator;
 import com.spring.form.validator.UserFormValidator;
 
 //http://www.tikalk.com/redirectattributes-new-feature-spring-mvc-31/
@@ -41,17 +40,31 @@ public class UserController {
 
 	@Autowired
 	UserFormValidator userFormValidator;
+	
+	@Autowired
+	DonationFormValidator donationFormValidator;
 
-	@InitBinder
-	protected void initBinder(WebDataBinder binder) {
+	@InitBinder("user")
+	protected void initUserBinder(WebDataBinder binder) {
 		binder.setValidator(userFormValidator);
+	}
+	
+	@InitBinder("donation")
+	protected void initDonationBinder(WebDataBinder binder) {
+		binder.setValidator(donationFormValidator);
 	}
 
 	private UserService userService;
+	private DonationService donationService;
 
 	@Autowired
 	public void setUserService(UserService userService) {
 		this.userService = userService;
+	}
+
+	@Autowired
+	public void setDonationService(DonationService donationService) {
+		this.donationService = donationService;
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
@@ -153,7 +166,7 @@ public class UserController {
 	public String deleteUser(@PathVariable("id") int id, final RedirectAttributes redirectAttributes) {
 
 		logger.debug("deleteUser() : {}", id);
-
+		
 		userService.delete(id);
 
 		redirectAttributes.addFlashAttribute("css", "success");
@@ -177,6 +190,16 @@ public class UserController {
 		model.addAttribute("user", user);
 
 		return "users/show";
+
+	}
+
+	// donation list page
+	@RequestMapping(value = "/donations", method = RequestMethod.GET)
+	public String showAllDonations(Model model) {
+
+		logger.debug("showAllDonations()");
+		model.addAttribute("donations", donationService.findAll());
+		return "donations/list";
 
 	}
 
