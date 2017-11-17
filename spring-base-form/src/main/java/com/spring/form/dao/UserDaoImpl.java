@@ -2,8 +2,6 @@ package com.spring.form.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-//import java.util.ArrayList;
-//import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +16,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-//import org.springframework.util.StringUtils;
 
 import com.spring.form.model.User;
 import com.spring.form.web.UserController;
@@ -75,7 +72,7 @@ public class UserDaoImpl implements UserDao {
 		String sql = "INSERT INTO User(LoginName, Password, FirstName, LastName, Gender, Email, Phone, Address, City, Province, PostalCode, Role, Notify) "
 				+ "VALUES (:loginName, :password, :firstName, :lastName, :gender, :email, :phone, :address, :city, :province, :postalCode, :role, :notify)";
 		
-		namedParameterJdbcTemplate.update(sql, getSqlParameterByModel(user), keyHolder);
+		namedParameterJdbcTemplate.update(sql, getUserSqlParameterByModel(user), keyHolder);
 		user.setId(keyHolder.getKey().intValue());
 		
 	}
@@ -87,7 +84,7 @@ public class UserDaoImpl implements UserDao {
 				+ "LastName=:lastName, Gender=:gender, Email=:email, Phone=:phone, "
 				+ "Address=:address, City=:city, Province=:province, PostalCode=:postalCode, Role=:role, Notify=:notify WHERE UserID= :userID";
 		
-		namedParameterJdbcTemplate.update(sql, getSqlParameterByModel(user));
+		namedParameterJdbcTemplate.update(sql, getUserSqlParameterByModel(user));
 
 	}
 
@@ -99,7 +96,7 @@ public class UserDaoImpl implements UserDao {
 
 	}
 
-	private SqlParameterSource getSqlParameterByModel(User user) {
+	private SqlParameterSource getUserSqlParameterByModel(User user) {
 
 		// Unable to handle List<String> or Array
 		// BeanPropertySqlParameterSource

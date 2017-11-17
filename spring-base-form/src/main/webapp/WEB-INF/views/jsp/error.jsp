@@ -7,9 +7,7 @@
 
 <jsp:include page="fragments/header.jsp" />
 
-<body>
-
-	<div class="container">
+	<div class="container" style="margin-top: 156px">
 
 		<h1>Error Page!!!!!!</h1>
 
@@ -19,6 +17,12 @@
 				${stackTrace} 
 			</c:forEach>
 	  	-->
+	  	
+	  	<spring:url value="/users" var="userUrl" /> 
+		<spring:url value="/donations" var="donationUrl" />
+						
+	  	<button class="btn btn-info" onclick="location.href='${userUrl}'">Users</button>
+	  	<button class="btn btn-info" onclick="location.href='${donationUrl}'">Donations</button>
 
 	</div>
 

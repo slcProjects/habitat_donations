@@ -54,13 +54,31 @@
 					<td style='border: 2px solid black'>${user.loginName}</td>
 					<td style='border: 2px solid black'>${user.email}</td>
 					<td style='border: 2px solid black'>${user.role}</td>
+<<<<<<< HEAD
 					<td style='border: 2px solid black'><spring:url
 							value="/users/${user.id}" var="userUrl" /> <spring:url
 							value="/users/${user.id}/delete" var="deleteUrl" /> <spring:url
 							value="/users/${user.id}/update" var="updateUrl" />
+=======
+					<td style='border: 2px solid black'>
+						<spring:url value="/users/${user.id}" var="userUrl" /> 
+						<spring:url value="/users/${user.id}/delete" var="deleteUrl" /> 
+						<spring:url value="/users/${user.id}/update" var="updateUrl" />
+						<spring:url value="/users/${user.id}/donate" var="donateUrl" />
+
+>>>>>>> branch 'master' of https://github.com/slcProjects/habitat_donations
 						<button onclick="location.href='${userUrl}'">Query</button>
 						<button onclick="location.href='${updateUrl}'">Update</button>
+<<<<<<< HEAD
 						<button onclick="location.href='${deleteUrl}'">Delete</button>
+=======
+<%-- 						<button onclick="location.href='${deleteUrl}'">Delete</button> --%>
+						<button>Delete</button>
+						<c:if test="${user.role=='Donor'}">
+<%-- 							<button onclick="location.href='${donateUrl}'">Donate</button> --%>
+							<button>Donate</button>
+						</c:if>
+>>>>>>> branch 'master' of https://github.com/slcProjects/habitat_donations
 					</td>
 				</tr>
 			</c:forEach>
@@ -68,9 +86,15 @@
 		
 		<spring:url value="/users/add" var="urlAddUser" />
 		<button class="btn btn-info" onclick="location.href='${urlAddUser}'">Add New User</button>
+<<<<<<< HEAD
 		
 		<spring:url value="/users/donation.jsp" var="urlDonation" />
 		<button class="btn btn-info" onclick="location.href='${urlDonation}'">Donation Page</button>		
+=======
+		<spring:url value="/donations" var="donationUrl" />
+		<button class="btn btn-info" onclick="location.href='${donationUrl}'">View Donations</button>
+
+>>>>>>> branch 'master' of https://github.com/slcProjects/habitat_donations
 	</div>
 </div>
 

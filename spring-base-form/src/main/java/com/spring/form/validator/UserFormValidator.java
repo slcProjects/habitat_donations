@@ -19,6 +19,10 @@ public class UserFormValidator implements Validator {
 	EmailValidator emailValidator;
 	
 	@Autowired
+	@Qualifier("phoneValidator")
+	PhoneValidator phoneValidator;
+	
+	@Autowired
 	UserService userService;
 	
 	@Override
@@ -48,6 +52,10 @@ public class UserFormValidator implements Validator {
 
 		if(!emailValidator.valid(user.getEmail())){
 			errors.rejectValue("email", "Pattern.userForm.email");
+		}
+		
+		if(!phoneValidator.valid(user.getPhone())){
+			errors.rejectValue("phone", "Pattern.userForm.phone");
 		}
 		
 		if(user.getProvince().equalsIgnoreCase("none")){
