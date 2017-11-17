@@ -5,12 +5,11 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
 <jsp:include page="../fragments/header.jsp" />
 <div class="content_body" style="margin-top: 156px">
 	<div class="container">
 
-		<c:if test="${not empty msg}">
+ 		<c:if test="${not empty msg}">
 			<div class="alert alert-${css} alert-dismissible" role="alert">
 				<button type="button" class="close" data-dismiss="alert"
 					aria-label="Close">
@@ -22,7 +21,7 @@
 
 		<h1>All Users </h1>
 
-		<table style='border: 2px solid black'>
+ 		<table style='border: 2px solid black'>
 			<thead>
 				<tr style='border: 2px solid black'>
 					<th style='border: 2px solid black'>#ID</th>
@@ -32,9 +31,9 @@
 					<th style='border: 2px solid black'>Actions</th>
 				</tr>
 			</thead>
-
+ 
 			<c:forEach var="user" items="${users}">
-				<tr>
+				<%-- <tr>
 					<td>
 						${user.id}
 					</td>
@@ -49,7 +48,7 @@
 						<spring:url value="/users/${user.id}/delete" var="deleteUrl" /> 
 						<spring:url value="/users/${user.id}/update" var="updateUrl" />
 						
-
+  --%>
 				<tr style='border: 2px solid black'>
 					<td style='border: 2px solid black'>${user.id}</td>
 					<td style='border: 2px solid black'>${user.loginName}</td>
@@ -59,22 +58,19 @@
 							value="/users/${user.id}" var="userUrl" /> <spring:url
 							value="/users/${user.id}/delete" var="deleteUrl" /> <spring:url
 							value="/users/${user.id}/update" var="updateUrl" />
-
-
-						<button class="btn btn-info" onclick="location.href='${userUrl}'">Query</button>
-						<button class="btn btn-primary"
-							onclick="location.href='${updateUrl}'">Update</button>
-						<button class="btn btn-danger"
-							onclick="this.disabled=true;post('${deleteUrl}')">Delete</button>
+						<button onclick="location.href='${userUrl}'">Query</button>
+						<button onclick="location.href='${updateUrl}'">Update</button>
+						<button onclick="location.href='${deleteUrl}'">Delete</button>
 					</td>
 				</tr>
 			</c:forEach>
-		</table>
-
+		    </table>
+		
 		<spring:url value="/users/add" var="urlAddUser" />
-		<button class="btn btn-info" onclick="location.href='${urlAddUser}'">Add
-			New User</button>
-
+		<button class="btn btn-info" onclick="location.href='${urlAddUser}'">Add New User</button>
+		
+		<spring:url value="/users/donation.jsp" var="urlDonation" />
+		<button class="btn btn-info" onclick="location.href='${urlDonation}'">Donation Page</button>		
 	</div>
 </div>
 

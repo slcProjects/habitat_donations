@@ -41,7 +41,7 @@ public class UserController {
 
 	@Autowired
 	UserFormValidator userFormValidator;
-	
+
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
 		binder.setValidator(userFormValidator);
@@ -62,18 +62,19 @@ public class UserController {
 
 	// list page
 	@RequestMapping(value = "/users", method = RequestMethod.GET)
-	public String showAllUsers(Model model) {
+	public String showAllUsers(Model model) 
+	{
 
 		logger.debug("showAllUsers()");
 		model.addAttribute("users", userService.findAll());
 		return "users/list";
 
 	}
-
+	
 	// save or update user
 	@RequestMapping(value = "/users", method = RequestMethod.POST)
-	public String saveOrUpdateUser(@ModelAttribute("userForm") @Validated User user,
-			BindingResult result, Model model, final RedirectAttributes redirectAttributes) {
+	public String saveOrUpdateUser(@ModelAttribute("userForm") @Validated User user, BindingResult result, Model model,
+			final RedirectAttributes redirectAttributes) {
 
 		logger.debug("saveOrUpdateUser() : {}", user);
 
@@ -83,14 +84,14 @@ public class UserController {
 		} else {
 
 			redirectAttributes.addFlashAttribute("css", "success");
-			if(user.isNew()){
+			if (user.isNew()) {
 				redirectAttributes.addFlashAttribute("msg", "User added successfully!");
-			}else{
+			} else {
 				redirectAttributes.addFlashAttribute("msg", "User updated successfully!");
 			}
-			
+
 			userService.saveOrUpdate(user);
-			
+
 			// POST/REDIRECT/GET
 			return "redirect:/users/" + user.getId();
 
@@ -111,8 +112,8 @@ public class UserController {
 
 		// set default value
 		user.setLoginName("login_name");
-		//user.setPassword("123");
-		//user.setConfirmPassword("123");
+		// user.setPassword("123");
+		// user.setConfirmPassword("123");
 		user.setFirstName("First");
 		user.setLastName("Last");
 		user.setGender("M");
@@ -141,24 +142,24 @@ public class UserController {
 
 		User user = userService.findById(id);
 		model.addAttribute("userForm", user);
-		
+
 		populateDefaultModel(model);
-		
+
 		return "users/userform";
 
 	}
 
 	// delete user
-	@RequestMapping(value = "/users/{id}/delete", method = RequestMethod.POST)
+	@RequestMapping(value = "/users/{id}/delete", method = RequestMethod.GET)
 	public String deleteUser(@PathVariable("id") int id, final RedirectAttributes redirectAttributes) {
 
 		logger.debug("deleteUser() : {}", id);
 
 		userService.delete(id);
-		
+
 		redirectAttributes.addFlashAttribute("css", "success");
 		redirectAttributes.addFlashAttribute("msg", "User is deleted!");
-		
+
 		return "redirect:/users";
 
 	}
@@ -198,6 +199,18 @@ public class UserController {
 		province.put("NU", "Nunavut");
 		province.put("YU", "Yukon");
 		model.addAttribute("provinceList", province);
+
+	}
+	
+	@SuppressWarnings("unused")
+	private void populateDefaultModel1(Model model1) 
+	{
+
+		Map<String, String> categoryList = new LinkedHashMap<String, String>();
+		categoryList.put("c1", "category1");
+		categoryList.put("c2", "category2");
+		categoryList.put("c3", "category3");
+		model1.addAttribute("categoryList", categoryList);
 
 	}
 
