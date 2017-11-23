@@ -2,7 +2,6 @@
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	
-<!--****************** changes made by Alex Change_2 **************************-->
 <!-- <div class="container">
 	<hr>
 	<footer> -->

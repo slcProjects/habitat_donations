@@ -42,11 +42,10 @@
 						<spring:url value="/donations/${donation.id}/delete" var="deleteUrl" /> 
 						<spring:url value="/donations/${donation.id}/update" var="updateUrl" />
 
-						<%-- <button onclick="location.href='${donationUrl}'">Query</button>
-						<button onclick="location.href='${updateUrl}'">Update</button>
+						<button onclick="location.href='${donationUrl}'">Query</button>
+						<%-- <button onclick="location.href='${updateUrl}'">Update</button>
 						<button onclick="location.href='${deleteUrl}'">Delete</button> --%>
 						
-						<button>Query</button>
 						<button>Update</button>
 						<button>Delete</button>
 					</td>

@@ -1,6 +1,5 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<!--****************** changes made by Alex Change_3 **************************-->
 <head>
 
 <!-- Basic Page Needs

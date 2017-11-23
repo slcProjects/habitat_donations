@@ -1,5 +1,6 @@
 package com.spring.form.web;
 
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.spring.form.model.Donation;
 //import javax.validation.Valid;
 import com.spring.form.model.User;
 import com.spring.form.service.DonationService;
@@ -92,7 +94,7 @@ public class UserController {
 		logger.debug("saveOrUpdateUser() : {}", user);
 
 		if (result.hasErrors()) {
-			populateDefaultModel(model);
+			populateDefaultUserModel(model);
 			return "users/userform";
 		} else {
 
@@ -106,7 +108,7 @@ public class UserController {
 			userService.saveOrUpdate(user);
 
 			// POST/REDIRECT/GET
-			return "redirect:/users/" + user.getId();
+			return "redirect:/donations/" + user.getId() + "/add";
 
 			// POST/FORWARD/GET
 			// return "user/list";
@@ -141,7 +143,7 @@ public class UserController {
 
 		model.addAttribute("userForm", user);
 
-		populateDefaultModel(model);
+		populateDefaultUserModel(model);
 
 		return "users/userform";
 
@@ -156,7 +158,7 @@ public class UserController {
 		User user = userService.findById(id);
 		model.addAttribute("userForm", user);
 
-		populateDefaultModel(model);
+		populateDefaultUserModel(model);
 
 		return "users/userform";
 
@@ -203,8 +205,107 @@ public class UserController {
 		return "donations/list";
 
 	}
+	
+	// save or update user
+		@RequestMapping(value = "/donations", method = RequestMethod.POST)
+		public String saveOrUpdateDonation(@ModelAttribute("donationForm") @Validated Donation donation, BindingResult result, Model model,
+				final RedirectAttributes redirectAttributes) {
 
-	private void populateDefaultModel(Model model) {
+			logger.debug("saveOrUpdateDonation() : {}", donation);
+
+			if (result.hasErrors()) {
+				return "users/donation";
+			} else {
+
+				redirectAttributes.addFlashAttribute("css", "success");
+				if (donation.isNew()) {
+					redirectAttributes.addFlashAttribute("msg", "Donation added successfully!");
+				} else {
+					redirectAttributes.addFlashAttribute("msg", "Donation updated successfully!");
+				}
+
+				donationService.saveOrUpdate(donation);
+
+				// POST/REDIRECT/GET
+				return "redirect:/donations/" + donation.getId();
+
+				// POST/FORWARD/GET
+				// return "donation/list";
+
+			}
+
+		}
+
+		// show add user form
+		@RequestMapping(value = "/donations/{id}/add", method = RequestMethod.GET)
+		public String showAddDonationForm(Model model, @PathVariable("id") int id) {
+
+			logger.debug("showAddDonationForm()");
+
+			Donation donation = new Donation();
+
+			// set default value
+			donation.setDonor(id);
+			donation.setDescription("description");
+			donation.setValue(123.0);
+			donation.setScheduledDate(new Date());
+			donation.setCompletedDate(null);
+			donation.setDropFee(0.0);
+			donation.setReceiver(null);
+			donation.setTacking(null);
+
+			model.addAttribute("donationForm", donation);
+
+			return "users/donation";
+
+		}
+
+		// show update form
+		@RequestMapping(value = "/donations/{id}/update", method = RequestMethod.GET)
+		public String showUpdateDonationForm(@PathVariable("id") int id, Model model) {
+
+			logger.debug("showUpdateDonationForm() : {}", id);
+
+			Donation donation = donationService.findById(id);
+			model.addAttribute("donationForm", donation);
+
+			return "users/donation";
+
+		}
+
+		// delete user
+		@RequestMapping(value = "/donations/{id}/delete", method = RequestMethod.GET)
+		public String deleteDonation(@PathVariable("id") int id, final RedirectAttributes redirectAttributes) {
+
+			logger.debug("deleteDonation() : {}", id);
+			
+			donationService.delete(id);
+
+			redirectAttributes.addFlashAttribute("css", "success");
+			redirectAttributes.addFlashAttribute("msg", "User is deleted!");
+
+			return "redirect:/donations";
+
+		}
+
+		// show user
+		@RequestMapping(value = "/donations/{id}", method = RequestMethod.GET)
+		public String showDonation(@PathVariable("id") int id, Model model) {
+
+			logger.debug("showDonation() id: {}", id);
+
+			Donation donation = donationService.findById(id);
+			if (donation == null) {
+				model.addAttribute("css", "danger");
+				model.addAttribute("msg", "User not found");
+			}
+			model.addAttribute("donation", donation);
+
+			return "donations/show";
+
+		}
+
+	private void populateDefaultUserModel(Model model) {
 
 		Map<String, String> province = new LinkedHashMap<String, String>();
 		province.put("AB", "Alberta");
@@ -235,7 +336,7 @@ public class UserController {
 		model1.addAttribute("categoryList", categoryList);
 
 	}
-
+	
 	@ExceptionHandler(EmptyResultDataAccessException.class)
 	public ModelAndView handleEmptyData(HttpServletRequest req, Exception ex) {
 

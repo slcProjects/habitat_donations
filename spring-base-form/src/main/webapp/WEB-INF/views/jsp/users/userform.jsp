@@ -179,7 +179,7 @@
 
 			<spring:bind path="notify">
 				<div class="form-group ${status.error ? 'has-error' : ''}">
-					<label class="col-sm-2 control-label">Send Notifications?</label>
+					<label class="col-sm-2 control-label">Would you like to receive ReStore Notifications?</label>
 					<div class="col-sm-10">
 						<div class="checkbox">
 							<label> <form:checkbox path="notify" id="notify" />
