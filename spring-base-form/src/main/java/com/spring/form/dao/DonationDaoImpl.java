@@ -69,8 +69,8 @@ public class DonationDaoImpl implements DonationDao {
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		
-		String sql = "INSERT INTO User(DonorID, Description, Value, ScheduledDate, CompletedDate, DropFee, ReceiverID, Tacking) "
-				+ "VALUES (:donor, :description, :value, :scheduledDate, :completedDate, :dropFee, :receiver, :tacking)";
+		String sql = "INSERT INTO Donation(DonorID, Description, Value, ScheduledDate, CompletedDate, Address, City, Province, PostalCode, DropFee, ReceiverID, Tacking, Receipts) "
+				+ "VALUES (:donor, :description, :value, :scheduledDate, :completedDate, :address, :city, :province, :postalCode, :dropFee, :receiver, :tacking, :receipts)";
 		
 		namedParameterJdbcTemplate.update(sql, getSqlParameterByModel(donation), keyHolder);
 		donation.setId(keyHolder.getKey().intValue());
@@ -81,8 +81,9 @@ public class DonationDaoImpl implements DonationDao {
 	public void update(Donation donation) {
 		
 		String sql = "UPDATE Donation SET DonorID=:donor, Description=:description, Value=:value, "
-				+ "ScheduledDate=:scheduledDate, CompletedDate=:completedDate, DropFee=:dropFee, "
-				+ "Receiver=:receiver, Tacking=:tacking WHERE DonationID=:id";
+				+ "ScheduledDate=:scheduledDate, CompletedDate=:completedDate, Address=:address, City=:city, "
+				+ "Province=:province, PostalCode=:postalCode, DropFee=:dropFee, "
+				+ "Receiver=:receiver, Tacking=:tacking, Receipts=:receipts WHERE DonationID=:id";
 		
 		namedParameterJdbcTemplate.update(sql, getSqlParameterByModel(donation));
 		
@@ -108,9 +109,14 @@ public class DonationDaoImpl implements DonationDao {
 		paramSource.addValue("value", donation.getValue());
 		paramSource.addValue("scheduledDate", donation.getScheduledDate());
 		paramSource.addValue("completedDate", donation.getCompletedDate());
+		paramSource.addValue("address", donation.getAddress());
+		paramSource.addValue("city", donation.getCity());
+		paramSource.addValue("province", donation.getProvince());
+		paramSource.addValue("postalCode", donation.getPostalCode());
 		paramSource.addValue("dropFee", donation.getDropFee());
 		paramSource.addValue("receiver", donation.getReceiver());
 		paramSource.addValue("tacking", donation.getTacking());
+		paramSource.addValue("receipts", donation.isReceipts());
 		
 		return paramSource;
 	}
@@ -125,9 +131,14 @@ public class DonationDaoImpl implements DonationDao {
 			donation.setValue(rs.getDouble("Value"));
 			donation.setScheduledDate(rs.getDate("ScheduledDate"));
 			donation.setCompletedDate(rs.getDate("CompletedDate"));
+			donation.setAddress(rs.getString("Address"));
+			donation.setCity(rs.getString("City"));
+			donation.setProvince(rs.getString("Province"));
+			donation.setPostalCode(rs.getString("PostalCode"));
 			donation.setDropFee(rs.getDouble("DropFee"));
 			donation.setReceiver(rs.getInt("ReceiverID"));
 			donation.setTacking(rs.getDate("Tacking"));
+			donation.setReceipts(rs.getBoolean("Receipts"));
 			
 			return donation;
 		}

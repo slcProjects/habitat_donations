@@ -57,6 +57,11 @@
 				</c:choose>
 			</div>
 		</div>
+		
+		<div class="row">
+			<label class="col-sm-2">Address</label>
+			<div class="col-sm-10">${donation.address} ${donation.city}, ${donation.province}, ${donation.postalCode}</div>
+		</div>
 
 		<div class="row">
 			<label class="col-sm-2">Drop Fee</label>
@@ -75,6 +80,11 @@
 					</c:otherwise>
 				</c:choose>
 			</div>
+		</div>
+		
+		<div class="row">
+			<label class="col-sm-2">Tax Receipts?</label>
+			<div class="col-sm-10">${donation.receipts}</div>
 		</div>
 		
 		<spring:url value="/donations" var="donationList" />

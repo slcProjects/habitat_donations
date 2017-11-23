@@ -33,22 +33,6 @@
 			</thead>
  
 			<c:forEach var="user" items="${users}">
-				<%-- <tr>
-					<td>
-						${user.id}
-					</td>
-					<td>${user.name}</td>
-					<td>${user.email}</td>
-					<td><c:forEach var="framework" items="${user.framework}" varStatus="loop">
-						${framework}
-    					<c:if test="${not loop.last}">,</c:if>
-						</c:forEach></td>
-					<td>
-						<spring:url value="/users/${user.id}" var="userUrl" />
-						<spring:url value="/users/${user.id}/delete" var="deleteUrl" /> 
-						<spring:url value="/users/${user.id}/update" var="updateUrl" />
-						
-  --%>
 				<tr style='border: 2px solid black'>
 					<td style='border: 2px solid black'>${user.id}</td>
 					<td style='border: 2px solid black'>${user.loginName}</td>
@@ -61,11 +45,8 @@
 						<spring:url value="/donations/${user.id}/add" var="donateUrl" />
 						<button onclick="location.href='${userUrl}'">Query</button>
 						<button onclick="location.href='${updateUrl}'">Update</button>
-<%-- 						<button onclick="location.href='${deleteUrl}'">Delete</button> --%>
-						<button>Delete</button>
-						<c:if test="${user.role=='Donor'}">
- 							<button onclick="location.href='${donateUrl}'">Donate</button>
-						</c:if>
+ 						<button onclick="location.href='${deleteUrl}'">Delete</button>
+						<button onclick="location.href='${donateUrl}'">Donate</button>
 					</td>
 				</tr>
 			</c:forEach>
@@ -73,12 +54,12 @@
 		
 		<spring:url value="/users/add" var="urlAddUser" />
 		<button class="btn btn-info" onclick="location.href='${urlAddUser}'">Add New User</button>
-		<%-- <spring:url value="/users/donation.jsp" var="urlDonation" />
-		<button class="btn btn-info" onclick="location.href='${urlDonation}'">Donation Page</button> --%>
 		<spring:url value="/donations" var="donationUrl" />
 		<button class="btn btn-info" onclick="location.href='${donationUrl}'">View Donations</button>
 	</div>
 </div>
+
+<jsp:include page="../fragments/footer.jsp" />
 
 </body>
 </html>

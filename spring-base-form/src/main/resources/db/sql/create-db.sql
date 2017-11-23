@@ -26,7 +26,12 @@ CREATE TABLE Donation (
   Value DOUBLE,
   ScheduledDate TIMESTAMP,
   CompletedDate TIMESTAMP,
+  Address VARCHAR(255),
+  City VARCHAR(20),
+  Province VARCHAR(2),
+  PostalCode VARCHAR(6),
   DropFee DOUBLE,
   ReceiverID INTEGER FOREIGN KEY REFERENCES User(UserID),
-  Tacking TIMESTAMP
+  Tacking TIMESTAMP,
+  Receipts BOOLEAN
 );

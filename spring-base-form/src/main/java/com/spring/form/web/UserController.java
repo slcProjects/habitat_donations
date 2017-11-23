@@ -42,7 +42,7 @@ public class UserController {
 
 	@Autowired
 	UserFormValidator userFormValidator;
-	
+
 	@Autowired
 	DonationFormValidator donationFormValidator;
 
@@ -50,7 +50,7 @@ public class UserController {
 	protected void initUserBinder(WebDataBinder binder) {
 		binder.setValidator(userFormValidator);
 	}
-	
+
 	@InitBinder("donation")
 	protected void initDonationBinder(WebDataBinder binder) {
 		binder.setValidator(donationFormValidator);
@@ -77,15 +77,14 @@ public class UserController {
 
 	// list page
 	@RequestMapping(value = "/users", method = RequestMethod.GET)
-	public String showAllUsers(Model model) 
-	{
+	public String showAllUsers(Model model) {
 
 		logger.debug("showAllUsers()");
 		model.addAttribute("users", userService.findAll());
 		return "users/list";
 
 	}
-	
+
 	// save or update user
 	@RequestMapping(value = "/users", method = RequestMethod.POST)
 	public String saveOrUpdateUser(@ModelAttribute("userForm") @Validated User user, BindingResult result, Model model,
@@ -169,7 +168,7 @@ public class UserController {
 	public String deleteUser(@PathVariable("id") int id, final RedirectAttributes redirectAttributes) {
 
 		logger.debug("deleteUser() : {}", id);
-		
+
 		userService.delete(id);
 
 		redirectAttributes.addFlashAttribute("css", "success");
@@ -205,108 +204,131 @@ public class UserController {
 		return "donations/list";
 
 	}
-	
+
 	// save or update user
-		@RequestMapping(value = "/donations", method = RequestMethod.POST)
-		public String saveOrUpdateDonation(@ModelAttribute("donationForm") @Validated Donation donation, BindingResult result, Model model,
-				final RedirectAttributes redirectAttributes) {
+	@RequestMapping(value = "/donations", method = RequestMethod.POST)
+	public String saveOrUpdateDonation(@ModelAttribute("donationForm") @Validated Donation donation,
+			BindingResult result, Model model, final RedirectAttributes redirectAttributes) {
 
-			logger.debug("saveOrUpdateDonation() : {}", donation);
+		logger.debug("saveOrUpdateDonation() : {}", donation);
 
-			if (result.hasErrors()) {
-				return "users/donation";
-			} else {
-
-				redirectAttributes.addFlashAttribute("css", "success");
-				if (donation.isNew()) {
-					redirectAttributes.addFlashAttribute("msg", "Donation added successfully!");
-				} else {
-					redirectAttributes.addFlashAttribute("msg", "Donation updated successfully!");
-				}
-
-				donationService.saveOrUpdate(donation);
-
-				// POST/REDIRECT/GET
-				return "redirect:/donations/" + donation.getId();
-
-				// POST/FORWARD/GET
-				// return "donation/list";
-
-			}
-
-		}
-
-		// show add user form
-		@RequestMapping(value = "/donations/{id}/add", method = RequestMethod.GET)
-		public String showAddDonationForm(Model model, @PathVariable("id") int id) {
-
-			logger.debug("showAddDonationForm()");
-
-			Donation donation = new Donation();
-
-			// set default value
-			donation.setDonor(id);
-			donation.setDescription("description");
-			donation.setValue(123.0);
-			donation.setScheduledDate(new Date());
-			donation.setCompletedDate(null);
-			donation.setDropFee(0.0);
-			donation.setReceiver(null);
-			donation.setTacking(null);
-
-			model.addAttribute("donationForm", donation);
-
-			return "users/donation";
-
-		}
-
-		// show update form
-		@RequestMapping(value = "/donations/{id}/update", method = RequestMethod.GET)
-		public String showUpdateDonationForm(@PathVariable("id") int id, Model model) {
-
-			logger.debug("showUpdateDonationForm() : {}", id);
-
-			Donation donation = donationService.findById(id);
-			model.addAttribute("donationForm", donation);
-
-			return "users/donation";
-
-		}
-
-		// delete user
-		@RequestMapping(value = "/donations/{id}/delete", method = RequestMethod.GET)
-		public String deleteDonation(@PathVariable("id") int id, final RedirectAttributes redirectAttributes) {
-
-			logger.debug("deleteDonation() : {}", id);
-			
-			donationService.delete(id);
+		if (result.hasErrors()) {
+			populateDefaultDonationModel(model);
+			return "donations/donateform";
+		} else {
 
 			redirectAttributes.addFlashAttribute("css", "success");
-			redirectAttributes.addFlashAttribute("msg", "User is deleted!");
-
-			return "redirect:/donations";
-
-		}
-
-		// show user
-		@RequestMapping(value = "/donations/{id}", method = RequestMethod.GET)
-		public String showDonation(@PathVariable("id") int id, Model model) {
-
-			logger.debug("showDonation() id: {}", id);
-
-			Donation donation = donationService.findById(id);
-			if (donation == null) {
-				model.addAttribute("css", "danger");
-				model.addAttribute("msg", "User not found");
+			if (donation.isNew()) {
+				redirectAttributes.addFlashAttribute("msg", "Donation added successfully!");
+			} else {
+				redirectAttributes.addFlashAttribute("msg", "Donation updated successfully!");
 			}
-			model.addAttribute("donation", donation);
 
-			return "donations/show";
+			donationService.saveOrUpdate(donation);
+
+			// POST/REDIRECT/GET
+			return "redirect:/donations/" + donation.getId();
+
+			// POST/FORWARD/GET
+			// return "donation/list";
 
 		}
+
+	}
+
+	// show add user form
+	@RequestMapping(value = "/donations/{id}/add", method = RequestMethod.GET)
+	public String showAddDonationForm(Model model, @PathVariable("id") int id) {
+
+		logger.debug("showAddDonationForm()");
+
+		Donation donation = new Donation();
+		User donor = userService.findById(id);
+
+		// set default value
+		donation.setDonor(id);
+		donation.setDescription("description");
+		donation.setValue(123.0);
+		donation.setScheduledDate(new Date());
+		donation.setCompletedDate(null);
+		donation.setAddress(donor.getAddress());
+		donation.setCity(donor.getCity());
+		donation.setProvince(donor.getProvince());
+		donation.setPostalCode(donor.getPostalCode());
+		donation.setDropFee(0.0);
+		donation.setReceiver(null);
+		donation.setTacking(null);
+		donation.setReceipts(true);
+
+		model.addAttribute("donationForm", donation);
+		
+		populateDefaultDonationModel(model);
+
+		return "donations/donateform";
+
+	}
+
+	// show update form
+	@RequestMapping(value = "/donations/{id}/update", method = RequestMethod.GET)
+	public String showUpdateDonationForm(@PathVariable("id") int id, Model model) {
+
+		logger.debug("showUpdateDonationForm() : {}", id);
+
+		Donation donation = donationService.findById(id);
+		model.addAttribute("donationForm", donation);
+		
+		populateDefaultDonationModel(model);
+
+		return "donations/donateform";
+
+	}
+
+	// delete user
+	@RequestMapping(value = "/donations/{id}/delete", method = RequestMethod.GET)
+	public String deleteDonation(@PathVariable("id") int id, final RedirectAttributes redirectAttributes) {
+
+		logger.debug("deleteDonation() : {}", id);
+
+		donationService.delete(id);
+
+		redirectAttributes.addFlashAttribute("css", "success");
+		redirectAttributes.addFlashAttribute("msg", "User is deleted!");
+
+		return "redirect:/donations";
+
+	}
+
+	// show user
+	@RequestMapping(value = "/donations/{id}", method = RequestMethod.GET)
+	public String showDonation(@PathVariable("id") int id, Model model) {
+
+		logger.debug("showDonation() id: {}", id);
+
+		Donation donation = donationService.findById(id);
+		if (donation == null) {
+			model.addAttribute("css", "danger");
+			model.addAttribute("msg", "User not found");
+		}
+		model.addAttribute("donation", donation);
+
+		return "donations/show";
+
+	}
 
 	private void populateDefaultUserModel(Model model) {
 
+		populateProvinces(model);
+
+	}
+	
+	private void populateDefaultDonationModel(Model model) {
+
+		populateProvinces(model);
+
+	}
+	
+	private void populateProvinces(Model model) {
+		
 		Map<String, String> province = new LinkedHashMap<String, String>();
 		province.put("AB", "Alberta");
 		province.put("BC", "British Columbia");
@@ -322,12 +344,11 @@ public class UserController {
 		province.put("NU", "Nunavut");
 		province.put("YU", "Yukon");
 		model.addAttribute("provinceList", province);
-
+		
 	}
-	
+
 	@SuppressWarnings("unused")
-	private void populateDefaultModel1(Model model1) 
-	{
+	private void populateDefaultModel1(Model model1) {
 
 		Map<String, String> categoryList = new LinkedHashMap<String, String>();
 		categoryList.put("c1", "category1");
@@ -336,7 +357,7 @@ public class UserController {
 		model1.addAttribute("categoryList", categoryList);
 
 	}
-	
+
 	@ExceptionHandler(EmptyResultDataAccessException.class)
 	public ModelAndView handleEmptyData(HttpServletRequest req, Exception ex) {
 

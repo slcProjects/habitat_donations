@@ -8,7 +8,7 @@ public class Donation {
 
 	// form:input - textbox
 	Integer donor;
-	
+
 	// form:input - textbox
 	String description;
 
@@ -22,13 +22,28 @@ public class Donation {
 	Date completedDate;
 
 	// form:input - textbox
+	String address;
+
+	// form:input - textbox
+	String city;
+
+	// form:select - form:option - dropdown - single select
+	String province;
+
+	// form:input - textbox
+	String postalCode;
+
+	// form:input - textbox
 	Double dropFee;
 
 	// form:input - textbox
 	Integer receiver;
-	
+
 	// form:input - textbox
 	Date tacking;
+	
+	// form:checkbox - single checkbox
+	boolean receipts;
 
 	public boolean isNew() {
 		return (this.id == null);
@@ -45,11 +60,11 @@ public class Donation {
 	public Integer getDonor() {
 		return donor;
 	}
-	
+
 	public void setDonor(Integer donor) {
 		this.donor = donor;
 	}
-	
+
 	public String getDescription() {
 		return description;
 	}
@@ -81,6 +96,38 @@ public class Donation {
 	public void setCompletedDate(Date completedDate) {
 		this.completedDate = completedDate;
 	}
+	
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getProvince() {
+		return province;
+	}
+
+	public void setProvince(String province) {
+		this.province = province;
+	}
+
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
 
 	public Double getDropFee() {
 		return dropFee;
@@ -105,12 +152,21 @@ public class Donation {
 	public void setTacking(Date tacking) {
 		this.tacking = tacking;
 	}
+	
+	public boolean isReceipts() {
+		return receipts;
+	}
+
+	public void setReceipts(boolean receipts) {
+		this.receipts = receipts;
+	}
 
 	@Override
 	public String toString() {
-		return "Donation [id=" + id + ", donor=" + donor + ", description=" + description + ", value="
-				+ value + ", scheduledDate=" + scheduledDate + ", completedDate=" + completedDate + ", dropFee=" + dropFee
-				+ ", receiver=" + receiver + ", tacking=" + tacking + "]" + isNew();
+		return "Donation [id=" + id + ", donor=" + donor + ", description=" + description + ", value=" + value
+				+ ", scheduledDate=" + scheduledDate + ", completedDate=" + completedDate + ", address=" + address 
+				+ ", city=" + city + ", province=" + province + ", postalCode=" + postalCode + ", dropFee=" + dropFee
+				+ ", receiver=" + receiver + ", tacking=" + tacking + ", receipts=" + receipts + "]" + isNew();
 	}
 
 }
