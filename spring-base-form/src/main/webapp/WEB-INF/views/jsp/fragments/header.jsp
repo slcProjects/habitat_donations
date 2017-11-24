@@ -1623,6 +1623,8 @@ transform
 	transform: scale(.75, .75)
 }
 </style>
+<spring:url value="/resources/core/css/style.css" var="coreCss" />
+<link href="${coreCss}" rel="stylesheet" />
 </head>
 <body>
 <header id="header"
