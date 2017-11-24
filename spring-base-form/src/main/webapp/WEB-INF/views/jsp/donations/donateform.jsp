@@ -28,6 +28,8 @@
 			
 			<form:hidden path="id" />
 			
+			<form:hidden path="donor" />
+			
 			<%-- <spring:bind path="category">
 				<div class="form-group ${status.error ? 'has-error' : ''}">
 					<label class="col-sm-2 control-label">Category</label>

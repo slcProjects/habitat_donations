@@ -246,7 +246,7 @@ public class UserController {
 		User donor = userService.findById(id);
 
 		// set default value
-		donation.setDonor(id);
+		donation.setDonor(donor.getId());
 		donation.setDescription("description");
 		donation.setValue(123.0);
 		donation.setScheduledDate(new Date());
