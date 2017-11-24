@@ -69,8 +69,8 @@ public class UserDaoImpl implements UserDao {
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		
-		String sql = "INSERT INTO User(LoginName, Password, FirstName, LastName, Gender, Email, Phone, Address, City, Province, PostalCode, Role, Notify) "
-				+ "VALUES (:loginName, :password, :firstName, :lastName, :gender, :email, :phone, :address, :city, :province, :postalCode, :role, :notify)";
+		String sql = "INSERT INTO User(LoginName, Password, FirstName, LastName, Email, Phone, Address, City, Province, PostalCode, Role, Notify) "
+				+ "VALUES (:loginName, :password, :firstName, :lastName, :email, :phone, :address, :city, :province, :postalCode, :role, :notify)";
 		
 		namedParameterJdbcTemplate.update(sql, getUserSqlParameterByModel(user), keyHolder);
 		user.setId(keyHolder.getKey().intValue());
@@ -81,7 +81,7 @@ public class UserDaoImpl implements UserDao {
 	public void update(User user) {
 
 		String sql = "UPDATE User SET LoginName=:loginName, Password=:password, FirstName=:firstName, "
-				+ "LastName=:lastName, Gender=:gender, Email=:email, Phone=:phone, "
+				+ "LastName=:lastName, Email=:email, Phone=:phone, "
 				+ "Address=:address, City=:city, Province=:province, PostalCode=:postalCode, Role=:role, Notify=:notify WHERE UserID= :userID";
 		
 		namedParameterJdbcTemplate.update(sql, getUserSqlParameterByModel(user));
@@ -107,7 +107,7 @@ public class UserDaoImpl implements UserDao {
 		paramSource.addValue("password", user.getPassword());
 		paramSource.addValue("firstName", user.getFirstName());
 		paramSource.addValue("lastName", user.getLastName());
-		paramSource.addValue("gender", user.getGender());
+		//paramSource.addValue("gender", user.getGender());
 		paramSource.addValue("email", user.getEmail());
 		paramSource.addValue("phone", user.getPhone());
 		paramSource.addValue("address", user.getAddress());
@@ -129,7 +129,7 @@ public class UserDaoImpl implements UserDao {
 			user.setPassword(rs.getString("Password"));
 			user.setFirstName(rs.getString("FirstName"));
 			user.setLastName(rs.getString("LastName"));
-			user.setGender(rs.getString("Gender"));
+			//user.setGender(rs.getString("Gender"));
 			user.setEmail(rs.getString("Email"));
 			user.setPhone(rs.getString("Phone"));
 			user.setAddress(rs.getString("Address"));
