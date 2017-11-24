@@ -12,9 +12,14 @@
 	<div class="container">
 		<h1>Confirmation Page</h1>
 		
-		<p> Thank you for Registering with us 
-		    And your donation is apperciated!
+		<p> Thank you for Registering with us. 
+		    Your donation is appreciated!
 		</p>
+		
+		<spring:url value="/users" var="userList" />
+		<button class="btn btn-info" onclick="location.href='${userList}'">View all users</button>
+		<spring:url value="/donations" var="donationUrl" />
+		<button class="btn btn-info" onclick="location.href='${donationUrl}'">Received Donations</button>
     </div>
 </div>
 

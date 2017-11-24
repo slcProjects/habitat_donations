@@ -55,7 +55,7 @@
 		<spring:url value="/users/add" var="urlAddUser" />
 		<button class="btn btn-info" onclick="location.href='${urlAddUser}'">Add New User</button>
 		<spring:url value="/donations" var="donationUrl" />
-		<button class="btn btn-info" onclick="location.href='${donationUrl}'">Recieved Donations</button>
+		<button class="btn btn-info" onclick="location.href='${donationUrl}'">Received Donations</button>
 	</div>
 </div>
 

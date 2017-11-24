@@ -130,7 +130,7 @@ public class UserController {
 		// user.setConfirmPassword("123");
 		user.setFirstName("First");
 		user.setLastName("Last");
-		//user.setGender("M");
+		// user.setGender("M");
 		user.setEmail("test@gmail.com");
 		user.setPhone("012-345-6789");
 		user.setAddress("abc 88");
@@ -205,8 +205,8 @@ public class UserController {
 
 	}
 
-	// save or update user
-	@RequestMapping(value = "/donations", method = RequestMethod.POST)
+	// save or update donation
+	@RequestMapping(value = "/confirmation", method = RequestMethod.POST)
 	public String saveOrUpdateDonation(@ModelAttribute("donationForm") @Validated Donation donation,
 			BindingResult result, Model model, final RedirectAttributes redirectAttributes) {
 
@@ -227,16 +227,16 @@ public class UserController {
 			donationService.saveOrUpdate(donation);
 
 			// POST/REDIRECT/GET
-			return "redirect:/donations/" + donation.getId();
+			return "confirmation/confirm";
 
 			// POST/FORWARD/GET
-			// return "donation/list";
+			// return "confirmation/confirm";
 
 		}
 
 	}
 
-	// show add user form
+	// show add donation form
 	@RequestMapping(value = "/donations/{id}/add", method = RequestMethod.GET)
 	public String showAddDonationForm(Model model, @PathVariable("id") int id) {
 
@@ -261,7 +261,7 @@ public class UserController {
 		donation.setReceipts(true);
 
 		model.addAttribute("donationForm", donation);
-		
+
 		populateDefaultDonationModel(model);
 
 		return "donations/donateform";
@@ -276,14 +276,14 @@ public class UserController {
 
 		Donation donation = donationService.findById(id);
 		model.addAttribute("donationForm", donation);
-		
+
 		populateDefaultDonationModel(model);
 
 		return "donations/donateform";
 
 	}
 
-	// delete user
+	// delete donation
 	@RequestMapping(value = "/donations/{id}/delete", method = RequestMethod.GET)
 	public String deleteDonation(@PathVariable("id") int id, final RedirectAttributes redirectAttributes) {
 
@@ -298,7 +298,7 @@ public class UserController {
 
 	}
 
-	// show user
+	// show donation
 	@RequestMapping(value = "/donations/{id}", method = RequestMethod.GET)
 	public String showDonation(@PathVariable("id") int id, Model model) {
 
@@ -320,15 +320,15 @@ public class UserController {
 		populateProvinces(model);
 
 	}
-	
+
 	private void populateDefaultDonationModel(Model model) {
 
 		populateProvinces(model);
 
 	}
-	
+
 	private void populateProvinces(Model model) {
-		
+
 		Map<String, String> province = new LinkedHashMap<String, String>();
 		province.put("AB", "Alberta");
 		province.put("BC", "British Columbia");
@@ -344,7 +344,7 @@ public class UserController {
 		province.put("NU", "Nunavut");
 		province.put("YU", "Yukon");
 		model.addAttribute("provinceList", province);
-		
+
 	}
 
 	@SuppressWarnings("unused")

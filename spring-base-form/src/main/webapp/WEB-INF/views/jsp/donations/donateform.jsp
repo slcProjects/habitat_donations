@@ -21,7 +21,7 @@
 		</c:choose>
 		<br />
 
-		<spring:url value="/donations" var="donationActionUrl" />
+		<spring:url value="/confirmation" var="donationActionUrl" />
 		
 		<form:form class="form-horizontal" method="post"
 			modelAttribute="donationForm" action="${donationActionUrl}">
@@ -146,7 +146,7 @@
 
 		</form:form>
 		<spring:url value="/donations" var="donationList" />
-		<button class="btn btn-info" onclick="location.href='${donationList}'">Recieved Donations</button>
+		<button class="btn btn-info" onclick="location.href='${donationList}'">Received Donations</button>
 	</div>
 </div>
 

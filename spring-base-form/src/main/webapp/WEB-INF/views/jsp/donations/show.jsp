@@ -88,7 +88,7 @@
 		</div>
 		
 		<spring:url value="/donations" var="donationList" />
-		<button class="btn btn-info" onclick="location.href='${donationList}'">View Recieved Donations</button>
+		<button class="btn btn-info" onclick="location.href='${donationList}'">View Received Donations</button>
 
 	</div>
 </div>
