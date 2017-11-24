@@ -13,7 +13,7 @@
 
 		<c:choose>
 			<c:when test="${userForm['new']}">
-				<h1>testing please ignore</h1>
+				<h1>Register User</h1>
 			</c:when>
 			<c:otherwise>
 				<h1>Update User</h1>
