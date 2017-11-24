@@ -3334,6 +3334,7 @@ select[multiple].form-group-lg .form-control, textarea.form-group-lg .form-contr
 	outline-offset: -2px
 }
 
+/* edited by satya #333 to #333 */
 .btn.focus, .btn:focus, .btn:hover {
 	color: #333;
 	text-decoration: none
@@ -3355,10 +3356,11 @@ select[multiple].form-group-lg .form-control, textarea.form-group-lg .form-contr
 	opacity: .65
 }
 
+/* edited by satya #333 to #333 */
 .btn-default {
 	color: #333;
 	background-color: #fff;
-	border-color: #ccc
+	border-color: #ccc;
 }
 
 .btn-default.active, .btn-default.focus, .btn-default:active,
@@ -3465,7 +3467,7 @@ select[multiple].form-group-lg .form-control, textarea.form-group-lg .form-contr
 
 .btn-info {
 	color: #fff;
-	background-color: #5bc0de;
+	background-color: #2fc4f4;
 	border-color: #46b8da
 }
 

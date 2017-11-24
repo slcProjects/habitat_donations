@@ -83,12 +83,12 @@
 		</div>
 		
 		<div class="row">
-			<label class="col-sm-2">Tax Receipts?</label>
+			<label class="col-sm-2">Would you like to have Tax Receipts?</label>
 			<div class="col-sm-10">${donation.receipts}</div>
 		</div>
 		
 		<spring:url value="/donations" var="donationList" />
-		<button class="btn btn-info" onclick="location.href='${donationList}'">Donations</button>
+		<button class="btn btn-info" onclick="location.href='${donationList}'">View Recieved Donations</button>
 
 	</div>
 </div>

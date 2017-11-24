@@ -42,8 +42,8 @@
 						<spring:url value="/donations/${donation.id}/delete" var="deleteUrl" /> 
 						<spring:url value="/donations/${donation.id}/update" var="updateUrl" />
 
-						<button onclick="location.href='${donationUrl}'">Query</button>
-						<button onclick="location.href='${updateUrl}'">Update</button>
+						<button onclick="location.href='${donationUrl}'">Donation Detail</button>
+						<button onclick="location.href='${updateUrl}'">Edit Donation</button>
 						<button onclick="location.href='${deleteUrl}'">Delete</button>
 					</td>
 				</tr>
@@ -51,7 +51,7 @@
 		</table>
 
 		<spring:url value="/users" var="urlUser" />
-		<button class="btn btn-info" onclick="location.href='${urlUser}'">Users</button>
+		<button class="btn btn-info" onclick="location.href='${urlUser}'">View all Users</button>
 
 	</div>
 </div>

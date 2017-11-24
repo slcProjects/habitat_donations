@@ -82,7 +82,7 @@
 					</div>
 				</div>
 			</spring:bind>
-
+<%--
 			<spring:bind path="gender">
 				<div class="form-group ${status.error ? 'has-error' : ''}">
 					<label class="col-sm-2 control-label">Gender</label>
@@ -96,6 +96,7 @@
 					</div>
 				</div>
 			</spring:bind>
+ --%>			
 
 			<spring:bind path="email">
 				<div class="form-group ${status.error ? 'has-error' : ''}">
@@ -208,7 +209,7 @@
 
 			<c:choose>
 				<c:when test="${userForm['new']}">
-					<button type="submit">Add</button>
+					<button type="submit">Submit Detail</button>
 				</c:when>
 				<c:otherwise>
 					<button type="submit">Update</button>
@@ -217,7 +218,7 @@
 
 		</form:form>
 		<spring:url value="/users" var="userList" />
-		<button class="btn btn-info" onclick="location.href='${userList}'">Users</button>
+		<button class="btn btn-info" onclick="location.href='${userList}'">View all users</button>
 	</div>
 </div>
 

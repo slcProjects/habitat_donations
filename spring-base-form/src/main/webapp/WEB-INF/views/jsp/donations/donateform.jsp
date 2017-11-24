@@ -137,7 +137,7 @@
 			
 			<c:choose>
 				<c:when test="${donationForm['new']}">
-					<button type="submit">Donate</button>
+					<button type="submit">Submit Donation</button>
 				</c:when>
 				<c:otherwise>
 					<button type="submit">Update</button>
@@ -146,7 +146,7 @@
 
 		</form:form>
 		<spring:url value="/donations" var="donationList" />
-		<button class="btn btn-info" onclick="location.href='${donationList}'">Donations</button>
+		<button class="btn btn-info" onclick="location.href='${donationList}'">Recieved Donations</button>
 	</div>
 </div>
 

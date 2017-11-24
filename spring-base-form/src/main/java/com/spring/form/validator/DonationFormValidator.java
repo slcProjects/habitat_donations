@@ -22,6 +22,7 @@ public class DonationFormValidator implements Validator {
 
 	@Override
 	public void validate(Object target, Errors errors) {
+		@SuppressWarnings("unused")
 		Donation donation = (Donation) target;
 		
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "NotEmpty.donationForm.description");
