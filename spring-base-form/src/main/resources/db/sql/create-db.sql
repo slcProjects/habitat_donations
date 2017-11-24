@@ -6,7 +6,7 @@ CREATE TABLE User (
   Password VARCHAR(20),
   FirstName VARCHAR(45),
   LastName VARCHAR(45),
-  Gender VARCHAR(1),
+  /*Gender VARCHAR(1),*/
   Email  VARCHAR(50),
   Phone VARCHAR(12),
   Address VARCHAR(255),

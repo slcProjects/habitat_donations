@@ -130,7 +130,7 @@ public class UserController {
 		// user.setConfirmPassword("123");
 		user.setFirstName("First");
 		user.setLastName("Last");
-		user.setGender("M");
+		//user.setGender("M");
 		user.setEmail("test@gmail.com");
 		user.setPhone("012-345-6789");
 		user.setAddress("abc 88");
