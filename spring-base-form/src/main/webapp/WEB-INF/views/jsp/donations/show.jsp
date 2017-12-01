@@ -38,6 +38,15 @@
 			<label class="col-sm-2">Item Description</label>
 			<div class="col-sm-10">${donation.description}</div>
 		</div>
+		
+		<div class="row">
+			<label class="col-sm-2">Item Images</label>
+			<div class="col-sm-10">
+				<c:forEach var="image" items="${images}">
+					image should go here
+				</c:forEach>
+			</div>
+		</div>
 
 		<div class="row">
 			<label class="col-sm-2">Scheduled Date</label>

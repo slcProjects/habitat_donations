@@ -18,7 +18,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.spring.form.model.Donation;
-import com.spring.form.web.UserController;
 
 @Repository
 public class DonationDaoImpl implements DonationDao {

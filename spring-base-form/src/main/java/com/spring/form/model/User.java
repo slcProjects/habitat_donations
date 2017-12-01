@@ -1,9 +1,5 @@
 package com.spring.form.model;
 
-
-import java.util.List;
-
-
 public class User 
 {
 

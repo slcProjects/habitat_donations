@@ -1,10 +1,21 @@
 package com.spring.form.web;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Blob;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +35,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.spring.form.model.Attachment;
 import com.spring.form.model.Donation;
 //import javax.validation.Valid;
 import com.spring.form.model.User;
+import com.spring.form.service.AttachmentService;
 import com.spring.form.service.DonationService;
 import com.spring.form.service.UserService;
 import com.spring.form.validator.DonationFormValidator;
@@ -58,6 +71,7 @@ public class UserController {
 
 	private UserService userService;
 	private DonationService donationService;
+	private AttachmentService attachmentService;
 
 	@Autowired
 	public void setUserService(UserService userService) {
@@ -68,10 +82,26 @@ public class UserController {
 	public void setDonationService(DonationService donationService) {
 		this.donationService = donationService;
 	}
+	
+	@Autowired
+	public void setAttachmentService(AttachmentService attachmentService) {
+		this.attachmentService = attachmentService;
+	}
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(Model model) {
 		logger.debug("index()");
+		
+		for (int i = 1; i <= 4; i++) {
+			Blob image = loadImage("C:\\Users\\faul-\\Documents\\git\\spring-base-form\\src\\main\\webapp\\resources\\images\\testimg" + i + ".png");
+			if (image != null) {
+				Attachment attachment = new Attachment();
+				attachment.setDonation(i);
+				attachment.setImage(image);
+				attachmentService.saveOrUpdate(attachment);
+			}
+		}
+		
 		return "redirect:/users/add";
 	}
 
@@ -309,7 +339,15 @@ public class UserController {
 			model.addAttribute("css", "danger");
 			model.addAttribute("msg", "User not found");
 		}
+		List<Attachment> attachments = attachmentService.findAll();
+		List<Blob> images = new ArrayList<Blob>();
+		for (int ctr = 0; ctr < attachments.size(); ctr++) {
+			if (attachments.get(ctr).getDonation() == id) {
+				images.add(attachments.get(ctr).getImage());
+			}
+		}
 		model.addAttribute("donation", donation);
+		model.addAttribute("images", images);
 
 		return "donations/show";
 
@@ -370,6 +408,29 @@ public class UserController {
 
 		return model;
 
+	}
+	
+	private Blob loadImage(String string) {
+		
+		logger.debug("loadImage() string: {}", string);
+		Blob blob = null;
+		
+	    try {
+	    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	    	File source = new File(string);
+	    	BufferedImage image = ImageIO.read(source);
+	    	ImageIO.write(image, "png", baos);
+	    	blob = new SerialBlob(baos.toByteArray());
+	    } catch (IOException e) {
+	    	logger.debug("loadImage() IO Exception : {}", e.getMessage());
+	    } catch (SerialException e) {
+	    	logger.debug("loadImage() Serial Exception : {}", e.getMessage());
+		} catch (SQLException e) {
+			logger.debug("loadImage() SQL Exception : {}", e.getMessage());
+		}
+	    
+	    return blob;
+	    
 	}
 
 }
