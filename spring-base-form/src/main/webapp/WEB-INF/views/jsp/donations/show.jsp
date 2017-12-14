@@ -44,10 +44,17 @@
 			<div class="row">
 				<label class="col-sm-2">Item Images</label>
 				<div class="col-sm-10">
- 					<c:forEach var="imageIds" items="${imageIds}">
- 						<spring:url value="/images/${imageIds}" var="imageUrl" />
-						<img src="${imageUrl}"/>
- 					</c:forEach>
+					<c:choose>
+						<c:when test="${noImage == true}">
+							No images
+						</c:when>
+						<c:otherwise>
+							<c:forEach var="imageIds" items="${imageIds}">
+ 								<spring:url value="/images/${imageIds}" var="imageUrl" />
+								<img src="${imageUrl}"/>
+ 							</c:forEach>
+						</c:otherwise>
+					</c:choose>
 				</div>
 			</div>
 
@@ -60,7 +67,7 @@
 				<label class="col-sm-2">Completed Date</label>
 				<div class="col-sm-10">
 					<c:choose>
-						<c:when test="empty ${donation.completedDate}">
+						<c:when test="${donation.completedDate == null}">
 							Incomplete
 						</c:when>
 						<c:otherwise>
@@ -85,7 +92,7 @@
 				<label class="col-sm-2">Tacking</label>
 				<div class="col-sm-10">
 					<c:choose>
-						<c:when test="empty ${donation.tacking}">
+						<c:when test="${donation.tacking == null}">
 						N/A
 					</c:when>
 						<c:otherwise>

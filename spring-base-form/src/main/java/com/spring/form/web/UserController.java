@@ -94,7 +94,7 @@ public class UserController {
 	public String index(Model model) {
 		logger.debug("index()");
 
-		for (int i = 1; i <= 4; i++) {
+		for (int i = 1; i <= 3; i++) {
 			byte[] image = loadImage("C:\\tomcat\\webapps\\spring-base-form-initial_load\\resources\\images\\testimg" + i + ".png");
 			//may need to change above file path if user's tomcat directory is different
 			if (image != null) {
@@ -324,11 +324,17 @@ public class UserController {
 		}
 		model.addAttribute("donation", donation);
 		List<Attachment> attachments = donation.getAttachments();
-		List<Integer> ids = new ArrayList<Integer>();
-		for (int ctr = 0; ctr < attachments.size(); ctr++) {
-			ids.add(attachments.get(ctr).getId());
+		Boolean noImage = false;
+		if (attachments.size() == 0) {
+			noImage = true;
+		} else {
+			List<Integer> ids = new ArrayList<Integer>();
+			for (int ctr = 0; ctr < attachments.size(); ctr++) {
+				ids.add(attachments.get(ctr).getId());
+			}
+			model.addAttribute("imageIds", ids);
 		}
-		model.addAttribute("imageIds", ids);
+		model.addAttribute("noImage", noImage);
 
 		return "donations/show";
 
