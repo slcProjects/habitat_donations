@@ -32,20 +32,6 @@
 
 				<form:hidden path="donor" />
 
-				<%-- <spring:bind path="category">
-				<div class="form-group ${status.error ? 'has-error' : ''}">
-					<label class="col-sm-2 control-label">Category</label>
-					<div class="col-sm-10">
-						<form:select path="category" class="form-control">
-							<form:option value="NONE" label="--- Select ---" />
-							<form:options items="${categoryList}" />
-						</form:select>
-						<form:errors path="category" class="control-label" />
-					</div>
-					<div class="col-sm-10"></div>
-				</div>
-			</spring:bind> --%>
-
 				<spring:bind path="description">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
 						<label class="col-sm-2 control-label">Item Description</label>
@@ -57,15 +43,14 @@
 					</div>
 				</spring:bind>
 				
-				<spring:bind path="image">
+				<%-- <spring:bind path="image">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
 						<label class="col-sm-2 control-label">Item Images</label>
 						<div class="col-sm-10">
 							<form:input path="image" type="file" />
-							<form:errors path="image" class="control-label" />
 						</div>
 					</div>
-				</spring:bind>
+				</spring:bind> --%>
 
 				<spring:bind path="value">
 					<div class="form-group ${status.error ? 'has-error' : ''}">

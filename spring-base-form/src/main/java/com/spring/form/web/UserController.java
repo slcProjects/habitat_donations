@@ -4,10 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Blob;
 import java.sql.Date;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -16,8 +13,6 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.rowset.serial.SerialBlob;
-import javax.sql.rowset.serial.SerialException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +34,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.spring.form.model.Attachment;
 import com.spring.form.model.Donation;
-//import javax.validation.Valid;
 import com.spring.form.model.User;
 import com.spring.form.service.AttachmentService;
 import com.spring.form.service.DonationService;
@@ -88,13 +82,8 @@ public class UserController {
 	@Autowired
 	public void setAttachmentService(AttachmentService attachmentService) {
 		this.attachmentService = attachmentService;
-	}
-
-	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String index(Model model) {
-		logger.debug("index()");
-
-		for (int i = 1; i <= 3; i++) {
+		
+		for (int i = 1; i <= 4; i++) {
 			byte[] image = loadImage("C:\\tomcat\\webapps\\spring-base-form-initial_load\\resources\\images\\testimg" + i + ".png");
 			//may need to change above file path if user's tomcat directory is different
 			if (image != null) {
@@ -104,8 +93,15 @@ public class UserController {
 				attachmentService.saveOrUpdate(attachment);
 			}
 		}
+	}
+
+	@RequestMapping(value = "/", method = RequestMethod.GET)
+	public String index(Model model) {
+		
+		logger.debug("index()");
 
 		return "redirect:/users/add";
+		
 	}
 
 	// list page
@@ -312,8 +308,7 @@ public class UserController {
 
 	// show donation
 	@RequestMapping(value = "/donations/{id}", method = RequestMethod.GET)
-	public String showDonation(@PathVariable("id") int id, Model model, HttpServletResponse response,
-			HttpServletRequest request) {
+	public String showDonation(@PathVariable("id") int id, Model model, HttpServletResponse response, HttpServletRequest request) {
 
 		logger.debug("showDonation() id: {}", id);
 
@@ -323,6 +318,7 @@ public class UserController {
 			model.addAttribute("msg", "User not found");
 		}
 		model.addAttribute("donation", donation);
+		
 		List<Attachment> attachments = donation.getAttachments();
 		Boolean noImage = false;
 		if (attachments.size() == 0) {
@@ -340,9 +336,9 @@ public class UserController {
 
 	}
 	
+	//display image
 	@RequestMapping(value = "/images/{id}", method = RequestMethod.GET)
-	private void displayImages(@PathVariable("id") int id, Model model, HttpServletResponse response,
-			HttpServletRequest request) {
+	private void displayImages(@PathVariable("id") int id, Model model, HttpServletResponse response, HttpServletRequest request) {
 		
 		logger.debug("displayImages() id: {}", id);
 
@@ -393,17 +389,6 @@ public class UserController {
 		province.put("NU", "Nunavut");
 		province.put("YU", "Yukon");
 		model.addAttribute("provinceList", province);
-
-	}
-
-	@SuppressWarnings("unused")
-	private void populateDefaultModel1(Model model1) {
-
-		Map<String, String> categoryList = new LinkedHashMap<String, String>();
-		categoryList.put("c1", "category1");
-		categoryList.put("c2", "category2");
-		categoryList.put("c3", "category3");
-		model1.addAttribute("categoryList", categoryList);
 
 	}
 

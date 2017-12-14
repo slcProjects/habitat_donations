@@ -2,13 +2,10 @@ package com.spring.form.dao;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -169,7 +166,6 @@ public class AttachmentDaoImpl implements AttachmentDao {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
 			
 			return attachment;
 		}
