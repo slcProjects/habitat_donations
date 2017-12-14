@@ -4,16 +4,18 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Blob;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.rowset.serial.SerialBlob;
 import javax.sql.rowset.serial.SerialException;
 
@@ -82,7 +84,7 @@ public class UserController {
 	public void setDonationService(DonationService donationService) {
 		this.donationService = donationService;
 	}
-	
+
 	@Autowired
 	public void setAttachmentService(AttachmentService attachmentService) {
 		this.attachmentService = attachmentService;
@@ -91,9 +93,9 @@ public class UserController {
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(Model model) {
 		logger.debug("index()");
-		
+
 		for (int i = 1; i <= 4; i++) {
-			Blob image = loadImage("C:\\Users\\faul-\\Documents\\git\\spring-base-form\\src\\main\\webapp\\resources\\images\\testimg" + i + ".png");
+			Blob image = loadImage("C:\\Users\\faul-\\Documents\\git\\spring-base-form\\target\\spring-base-form-initial_load\\resources\\images\\testimg" + i + ".png");
 			if (image != null) {
 				Attachment attachment = new Attachment();
 				attachment.setDonation(i);
@@ -101,7 +103,7 @@ public class UserController {
 				attachmentService.saveOrUpdate(attachment);
 			}
 		}
-		
+
 		return "redirect:/users/add";
 	}
 
@@ -153,22 +155,6 @@ public class UserController {
 		logger.debug("showAddUserForm()");
 
 		User user = new User();
-
-		// set default value
-		user.setLoginName("login_name");
-		// user.setPassword("123");
-		// user.setConfirmPassword("123");
-		user.setFirstName("First");
-		user.setLastName("Last");
-		// user.setGender("M");
-		user.setEmail("test@gmail.com");
-		user.setPhone("012-345-6789");
-		user.setAddress("abc 88");
-		user.setCity("Kingston");
-		user.setProvince("ON");
-		user.setPostalCode("A1A1A1");
-		user.setRole("Donor");
-		user.setNotify(true);
 
 		model.addAttribute("userForm", user);
 
@@ -238,7 +224,8 @@ public class UserController {
 	// save or update donation
 	@RequestMapping(value = "/confirmation", method = RequestMethod.POST)
 	public String saveOrUpdateDonation(@ModelAttribute("donationForm") @Validated Donation donation,
-			BindingResult result, Model model, final RedirectAttributes redirectAttributes) {
+			BindingResult result, Model model, final RedirectAttributes redirectAttributes,
+			HttpServletResponse response, HttpServletRequest request) {
 
 		logger.debug("saveOrUpdateDonation() : {}", donation);
 
@@ -274,21 +261,15 @@ public class UserController {
 
 		Donation donation = new Donation();
 		User donor = userService.findById(id);
+		java.util.Date date = new java.util.Date();
 
 		// set default value
 		donation.setDonor(donor.getId());
-		donation.setDescription("description");
-		donation.setValue(123.0);
-		donation.setScheduledDate(new Date());
-		donation.setCompletedDate(null);
+		donation.setScheduledDate(new Date(date.getTime()));
 		donation.setAddress(donor.getAddress());
 		donation.setCity(donor.getCity());
 		donation.setProvince(donor.getProvince());
 		donation.setPostalCode(donor.getPostalCode());
-		donation.setDropFee(0.0);
-		donation.setReceiver(null);
-		donation.setTacking(null);
-		donation.setReceipts(true);
 
 		model.addAttribute("donationForm", donation);
 
@@ -322,7 +303,7 @@ public class UserController {
 		donationService.delete(id);
 
 		redirectAttributes.addFlashAttribute("css", "success");
-		redirectAttributes.addFlashAttribute("msg", "User is deleted!");
+		redirectAttributes.addFlashAttribute("msg", "Donation is deleted!");
 
 		return "redirect:/donations";
 
@@ -330,7 +311,8 @@ public class UserController {
 
 	// show donation
 	@RequestMapping(value = "/donations/{id}", method = RequestMethod.GET)
-	public String showDonation(@PathVariable("id") int id, Model model) {
+	public String showDonation(@PathVariable("id") int id, Model model, HttpServletResponse response,
+			HttpServletRequest request) {
 
 		logger.debug("showDonation() id: {}", id);
 
@@ -339,18 +321,49 @@ public class UserController {
 			model.addAttribute("css", "danger");
 			model.addAttribute("msg", "User not found");
 		}
-		List<Attachment> attachments = attachmentService.findAll();
-		List<Blob> images = new ArrayList<Blob>();
-		for (int ctr = 0; ctr < attachments.size(); ctr++) {
-			if (attachments.get(ctr).getDonation() == id) {
-				images.add(attachments.get(ctr).getImage());
-			}
-		}
 		model.addAttribute("donation", donation);
-		model.addAttribute("images", images);
+		List<Attachment> attachments = donation.getAttachments();
+		List<Integer> ids = new ArrayList<Integer>();
+		for (int ctr = 0; ctr < attachments.size(); ctr++) {
+			ids.add(attachments.get(ctr).getId());
+		}
+		model.addAttribute("imageIds", ids);
 
 		return "donations/show";
 
+	}
+	
+	@RequestMapping(value = "/images/{id}", method = RequestMethod.GET)
+	private void displayImages(@PathVariable("id") int id, Model model, HttpServletResponse response,
+			HttpServletRequest request) {
+		
+		logger.debug("displayImages() id: {}", id);
+
+		try {
+			Attachment attachment = attachmentService.findById(id);
+			Blob image = attachment.getImage();
+			if (image == null) {
+				logger.debug("displayImages() : No image found");
+			} else {
+				InputStream is = image.getBinaryStream();
+				BufferedImage myImage = ImageIO.read(is);
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				ImageIO.write(myImage, "png", baos);
+				baos.flush();
+				byte[] bytes = baos.toByteArray();
+				baos.close();
+				response.reset();
+				response.setContentType("image/png");
+				response.setContentLength(bytes.length);
+				response.getOutputStream().write(bytes);
+				response.getOutputStream().close();
+			}
+		} catch (IOException e) {
+			logger.debug("displayImages() IO Exception : {}", e.getCause());
+		} catch (SQLException e) {
+			logger.debug("displayImages() SQL Exception : {}", e.getCause());
+		}
+		
 	}
 
 	private void populateDefaultUserModel(Model model) {
@@ -409,28 +422,30 @@ public class UserController {
 		return model;
 
 	}
-	
+
 	private Blob loadImage(String string) {
-		
+
 		logger.debug("loadImage() string: {}", string);
 		Blob blob = null;
-		
-	    try {
-	    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	    	File source = new File(string);
-	    	BufferedImage image = ImageIO.read(source);
-	    	ImageIO.write(image, "png", baos);
-	    	blob = new SerialBlob(baos.toByteArray());
-	    } catch (IOException e) {
-	    	logger.debug("loadImage() IO Exception : {}", e.getMessage());
-	    } catch (SerialException e) {
-	    	logger.debug("loadImage() Serial Exception : {}", e.getMessage());
+
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			File source = new File(string);
+			BufferedImage image = ImageIO.read(source);
+			ImageIO.write(image, "png", baos);
+			baos.flush();
+			blob = new SerialBlob(baos.toByteArray());
+			baos.close();
+		} catch (IOException e) {
+			logger.debug("loadImage() IO Exception : {}", e.getCause());
+		} catch (SerialException e) {
+			logger.debug("loadImage() Serial Exception : {}", e.getCause());
 		} catch (SQLException e) {
-			logger.debug("loadImage() SQL Exception : {}", e.getMessage());
+			logger.debug("loadImage() SQL Exception : {}", e.getCause());
 		}
-	    
-	    return blob;
-	    
+
+		return blob;
+
 	}
 
 }

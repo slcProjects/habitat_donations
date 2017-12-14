@@ -1,6 +1,7 @@
 package com.spring.form.model;
 
-import java.util.Date;
+import java.sql.Date;
+import java.util.ArrayList;
 
 public class Donation {
 	// form:hidden - hidden value
@@ -44,6 +45,9 @@ public class Donation {
 	
 	// form:checkbox - single checkbox
 	boolean receipts;
+	
+	// form - image upload
+	ArrayList<Attachment> attachments;
 
 	public boolean isNew() {
 		return (this.id == null);
@@ -159,6 +163,14 @@ public class Donation {
 
 	public void setReceipts(boolean receipts) {
 		this.receipts = receipts;
+	}
+	
+	public ArrayList<Attachment> getAttachments() {
+		return attachments;
+	}
+	
+	public void setAttachments(ArrayList<Attachment> attachments) {
+		this.attachments = attachments;
 	}
 
 	@Override

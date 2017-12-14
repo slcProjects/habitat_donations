@@ -10,6 +10,8 @@ public interface AttachmentService {
 	
 	List<Attachment> findAll();
 	
+	List<Attachment> findByDonation(Integer id);
+	
 	void saveOrUpdate(Attachment attachment);
 	
 	void delete(int id);

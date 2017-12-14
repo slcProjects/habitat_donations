@@ -11,7 +11,7 @@ INSERT INTO Donation (DonorID, Description, Value, ScheduledDate, CompletedDate,
            (3, 'desc 2', 500, '2017-10-14 17:00:00', '2017-10-14 17:00:00', 'address 3', 'Kingston', 'ON', 'K7M4H4', 99, 1, NULL, FALSE),
            (2, 'desc 3', 100, '2017-10-14 17:00:00', NULL, 'address 2', 'Kingston', 'ON', 'K7M4H4', 0, NULL, NULL, FALSE),
            (3, 'desc 4', 0, '2017-09-14 8:00:00', '2017-09-14 8:30:00', 'different address', 'Kingston', 'ON', 'K7M4H4', 1000, 1, NULL, TRUE);
-           
+     
 --INSERT INTO Attachment (DonationID, Image)
 --	VALUES (1, LOAD_FILE('C:\Users\faul-\Documents\git\spring-base-form\src\main\webapp\resources\images\testimg1.png')),
 --		   (2, LOAD_FILE('C:\Users\faul-\Documents\git\spring-base-form\src\main\webapp\resources\images\testimg2.png')),

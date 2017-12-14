@@ -2,6 +2,8 @@ package com.spring.form.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +64,30 @@ public class AttachmentDaoImpl implements AttachmentDao {
 		return result;
 		
 	}
+	
+	@Override
+	public List<Attachment> findByDonation(Integer id) {
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("id", id);
+
+		String sql = "SELECT * FROM Attachment WHERE DonationID=:id";
+
+		List<Attachment> resultList = new ArrayList<Attachment>();
+		try {
+			resultList = namedParameterJdbcTemplate.query(sql, params, new AttachmentMapper());
+		} catch (EmptyResultDataAccessException e) {
+			// do nothing, return null
+		}
+
+		/*
+		 * Donation result = namedParameterJdbcTemplate.queryForObject( sql, params,
+		 * new BeanPropertyRowMapper<Attachment>());
+		 */
+
+		return resultList;
+		
+	}
 
 	@Override
 	public void save(Attachment attachment) {
@@ -79,7 +105,7 @@ public class AttachmentDaoImpl implements AttachmentDao {
 	@Override
 	public void update(Attachment attachment) {
 		
-		String sql = "UPDATE Attachment SET Donation=:donation, Image=:image WHERE AttachmentID=:id";
+		String sql = "UPDATE Attachment SET DonationID=:donation, Image=:image WHERE AttachmentID=:id";
 		
 		namedParameterJdbcTemplate.update(sql, getSqlParameterByModel(attachment));
 		

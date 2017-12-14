@@ -2,6 +2,7 @@ package com.spring.form.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,16 +18,25 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import com.spring.form.model.Attachment;
 import com.spring.form.model.Donation;
+import com.spring.form.service.AttachmentService;
 
 @Repository
 public class DonationDaoImpl implements DonationDao {
 	
 	NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 	
+	private AttachmentService attachmentService;
+	
 	@Autowired
 	public void setNamedParameterJdbcTemplate(NamedParameterJdbcTemplate namedParameterJdbcTemplate) throws DataAccessException {
 		this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+	}
+	
+	@Autowired
+	public void setAttachmentService(AttachmentService attachmentService) {
+		this.attachmentService = attachmentService;
 	}
 
 	@Override
@@ -40,6 +50,8 @@ public class DonationDaoImpl implements DonationDao {
 		Donation result = null;
 		try {
 			result = namedParameterJdbcTemplate.queryForObject(sql, params, new DonationMapper());
+			ArrayList<Attachment> images = (ArrayList<Attachment>) attachmentService.findByDonation(id);
+			result.setAttachments(images);
 		} catch (EmptyResultDataAccessException e) {
 			// do nothing, return null
 		}
@@ -82,7 +94,7 @@ public class DonationDaoImpl implements DonationDao {
 		String sql = "UPDATE Donation SET DonorID=:donor, Description=:description, Value=:value, "
 				+ "ScheduledDate=:scheduledDate, CompletedDate=:completedDate, Address=:address, City=:city, "
 				+ "Province=:province, PostalCode=:postalCode, DropFee=:dropFee, "
-				+ "Receiver=:receiver, Tacking=:tacking, Receipts=:receipts WHERE DonationID=:id";
+				+ "ReceiverID=:receiver, Tacking=:tacking, Receipts=:receipts WHERE DonationID=:id";
 		
 		namedParameterJdbcTemplate.update(sql, getSqlParameterByModel(donation));
 		

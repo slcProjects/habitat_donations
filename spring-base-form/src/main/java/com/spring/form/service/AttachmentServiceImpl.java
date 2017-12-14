@@ -27,6 +27,11 @@ public class AttachmentServiceImpl implements AttachmentService {
 	public List<Attachment> findAll() {
 		return attachmentDao.findAll();
 	}
+	
+	@Override
+	public List<Attachment> findByDonation(Integer id) {
+		return attachmentDao.findByDonation(id);
+	}
 
 	@Override
 	public void saveOrUpdate(Attachment attachment) {

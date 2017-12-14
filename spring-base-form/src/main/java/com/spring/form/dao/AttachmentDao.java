@@ -9,6 +9,8 @@ public interface AttachmentDao {
 	Attachment findById(Integer id);
 
 	List<Attachment> findAll();
+	
+	List<Attachment> findByDonation(Integer id);
 
 	void save(Attachment attachment);
 
