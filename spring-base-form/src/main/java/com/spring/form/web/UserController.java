@@ -82,6 +82,10 @@ public class UserController {
 	@Autowired
 	public void setAttachmentService(AttachmentService attachmentService) {
 		this.attachmentService = attachmentService;
+		insertTestImages();
+	}
+	
+	public void insertTestImages() {
 		
 		for (int i = 1; i <= 4; i++) {
 			byte[] image = loadImage("C:\\tomcat\\webapps\\spring-base-form-initial_load\\resources\\images\\testimg" + i + ".png");
@@ -90,9 +94,10 @@ public class UserController {
 				Attachment attachment = new Attachment();
 				attachment.setDonation(i);
 				attachment.setImage(image);
-				this.attachmentService.saveOrUpdate(attachment);
+				attachmentService.saveOrUpdate(attachment);
 			}
 		}
+		
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
