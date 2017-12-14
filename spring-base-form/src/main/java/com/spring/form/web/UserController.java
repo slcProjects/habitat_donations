@@ -90,7 +90,7 @@ public class UserController {
 				Attachment attachment = new Attachment();
 				attachment.setDonation(i);
 				attachment.setImage(image);
-				attachmentService.saveOrUpdate(attachment);
+				this.attachmentService.saveOrUpdate(attachment);
 			}
 		}
 	}
