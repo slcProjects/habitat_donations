@@ -1,5 +1,11 @@
 package com.spring.form.dao;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -7,6 +13,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.imageio.ImageIO;
+import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -127,7 +137,13 @@ public class AttachmentDaoImpl implements AttachmentDao {
 		MapSqlParameterSource paramSource = new MapSqlParameterSource();
 		paramSource.addValue("id", attachment.getId());
 		paramSource.addValue("donation", attachment.getDonation());
-		paramSource.addValue("image", attachment.getImage());
+		try {
+			paramSource.addValue("image", new SerialBlob(attachment.getImage()));
+		} catch (SerialException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		
 		return paramSource;
 		
@@ -140,7 +156,20 @@ public class AttachmentDaoImpl implements AttachmentDao {
 			Attachment attachment = new Attachment();
 			attachment.setId(rs.getInt("AttachmentID"));
 			attachment.setDonation(rs.getInt("DonationID"));
-			attachment.setImage(rs.getBlob("Image"));
+			try {
+				InputStream is = rs.getBlob("Image").getBinaryStream();
+				BufferedImage myImage;
+				myImage = ImageIO.read(is);
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				ImageIO.write(myImage, "png", baos);
+				baos.flush();
+				byte[] bytes = baos.toByteArray();
+				attachment.setImage(bytes);
+				baos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
 			
 			return attachment;
 		}

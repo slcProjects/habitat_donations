@@ -95,7 +95,8 @@ public class UserController {
 		logger.debug("index()");
 
 		for (int i = 1; i <= 4; i++) {
-			Blob image = loadImage("C:\\Users\\faul-\\Documents\\git\\spring-base-form\\target\\spring-base-form-initial_load\\resources\\images\\testimg" + i + ".png");
+			byte[] image = loadImage("C:\\Users\\faul-\\Documents\\git\\spring-base-form\\target\\spring-base-form-initial_load\\resources\\images\\testimg" + i + ".png");
+			//likely need to change above file path to new project target directory once downloaded
 			if (image != null) {
 				Attachment attachment = new Attachment();
 				attachment.setDonation(i);
@@ -341,27 +342,18 @@ public class UserController {
 
 		try {
 			Attachment attachment = attachmentService.findById(id);
-			Blob image = attachment.getImage();
+			byte[] image = attachment.getImage();
 			if (image == null) {
 				logger.debug("displayImages() : No image found");
 			} else {
-				InputStream is = image.getBinaryStream();
-				BufferedImage myImage = ImageIO.read(is);
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				ImageIO.write(myImage, "png", baos);
-				baos.flush();
-				byte[] bytes = baos.toByteArray();
-				baos.close();
 				response.reset();
 				response.setContentType("image/png");
-				response.setContentLength(bytes.length);
-				response.getOutputStream().write(bytes);
+				response.setContentLength(image.length);
+				response.getOutputStream().write(image);
 				response.getOutputStream().close();
 			}
 		} catch (IOException e) {
 			logger.debug("displayImages() IO Exception : {}", e.getCause());
-		} catch (SQLException e) {
-			logger.debug("displayImages() SQL Exception : {}", e.getCause());
 		}
 		
 	}
@@ -423,10 +415,10 @@ public class UserController {
 
 	}
 
-	private Blob loadImage(String string) {
+	private byte[] loadImage(String string) {
 
 		logger.debug("loadImage() string: {}", string);
-		Blob blob = null;
+		byte[] bytes = null;
 
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -434,17 +426,13 @@ public class UserController {
 			BufferedImage image = ImageIO.read(source);
 			ImageIO.write(image, "png", baos);
 			baos.flush();
-			blob = new SerialBlob(baos.toByteArray());
+			bytes = baos.toByteArray();
 			baos.close();
 		} catch (IOException e) {
 			logger.debug("loadImage() IO Exception : {}", e.getCause());
-		} catch (SerialException e) {
-			logger.debug("loadImage() Serial Exception : {}", e.getCause());
-		} catch (SQLException e) {
-			logger.debug("loadImage() SQL Exception : {}", e.getCause());
 		}
 
-		return blob;
+		return bytes;
 
 	}
 

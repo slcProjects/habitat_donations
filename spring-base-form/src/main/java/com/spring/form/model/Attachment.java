@@ -1,14 +1,12 @@
 package com.spring.form.model;
 
-import java.sql.Blob;
-
 public class Attachment {
 	
 	Integer id;
 	
 	Integer donation;
 	
-	Blob image;
+	byte[] image;
 	
 	public boolean isNew() {
 		return (this.id == null);
@@ -30,11 +28,11 @@ public class Attachment {
 		this.donation = donation;
 	}
 
-	public Blob getImage() {
+	public byte[] getImage() {
 		return image;
 	}
 
-	public void setImage(Blob image) {
+	public void setImage(byte[] image) {
 		this.image = image;
 	}
 
