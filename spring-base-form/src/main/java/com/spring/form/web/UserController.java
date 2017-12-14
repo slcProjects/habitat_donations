@@ -95,8 +95,8 @@ public class UserController {
 		logger.debug("index()");
 
 		for (int i = 1; i <= 4; i++) {
-			byte[] image = loadImage("C:\\Users\\faul-\\Documents\\git\\spring-base-form\\target\\spring-base-form-initial_load\\resources\\images\\testimg" + i + ".png");
-			//likely need to change above file path to new project target directory once downloaded
+			byte[] image = loadImage("C:\\tomcat\\webapps\\spring-base-form-initial_load\\resources\\images\\testimg" + i + ".png");
+			//may need to change above file path if user's tomcat directory is different
 			if (image != null) {
 				Attachment attachment = new Attachment();
 				attachment.setDonation(i);
