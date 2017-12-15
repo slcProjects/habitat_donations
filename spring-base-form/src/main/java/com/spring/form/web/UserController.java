@@ -82,29 +82,12 @@ public class UserController {
 	@Autowired
 	public void setAttachmentService(AttachmentService attachmentService) {
 		this.attachmentService = attachmentService;
-		insertTestImages();
-	}
-	
-	public void insertTestImages() {
-		
-		for (int i = 1; i <= 4; i++) {
-			byte[] image = loadImage("C:\\tomcat\\webapps\\spring-base-form-initial_load\\resources\\images\\testimg" + i + ".png");
-			//may need to change above file path if user's tomcat directory is different
-			if (image != null) {
-				Attachment attachment = new Attachment();
-				attachment.setDonation(i);
-				attachment.setImage(image);
-				attachmentService.saveOrUpdate(attachment);
-			}
-		}
-		
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(Model model) {
 		
 		logger.debug("index()");
-
 		return "redirect:/users/add";
 		
 	}
@@ -224,7 +207,7 @@ public class UserController {
 	}
 
 	// save or update donation
-	@RequestMapping(value = "/confirmation", method = RequestMethod.POST)
+	@RequestMapping(value = "/donations", method = RequestMethod.POST)
 	public String saveOrUpdateDonation(@ModelAttribute("donationForm") @Validated Donation donation,
 			BindingResult result, Model model, final RedirectAttributes redirectAttributes,
 			HttpServletResponse response, HttpServletRequest request) {
@@ -246,7 +229,7 @@ public class UserController {
 			donationService.saveOrUpdate(donation);
 
 			// POST/REDIRECT/GET
-			return "confirmation/confirm";
+			return "redirect:/confirmation";
 
 			// POST/FORWARD/GET
 			// return "confirmation/confirm";
@@ -341,6 +324,15 @@ public class UserController {
 
 	}
 	
+	// donation confirm page
+	@RequestMapping(value = "/confirmation", method = RequestMethod.GET)
+	public String donationConfirm(Model model) {
+
+		logger.debug("donationConfirm()");
+		return "confirmation/confirm";
+
+	}
+	
 	//display image
 	@RequestMapping(value = "/images/{id}", method = RequestMethod.GET)
 	private void displayImages(@PathVariable("id") int id, Model model, HttpServletResponse response, HttpServletRequest request) {
@@ -410,22 +402,37 @@ public class UserController {
 		return model;
 
 	}
+	
+	/*public void insertTestImages() {
+		
+		for (int i = 1; i <= 4; i++) {
+			byte[] bytes = convertImageToBytes(new File("C:\\tomcat\\webapps\\spring-base-form-initial_load\\resources\\images\\testimg" + i + ".png"));
+			                                            //may need to change above file path if user's tomcat directory is different
+			if (bytes != null) {
+				Attachment attachment = new Attachment();
+				attachment.setDonation(i);
+				attachment.setImage(bytes);
+				attachmentService.saveOrUpdate(attachment);
+			}
+		}
+		
+	}*/
 
-	private byte[] loadImage(String string) {
+	@SuppressWarnings("unused")
+	private byte[] convertImageToBytes(File source) {
 
-		logger.debug("loadImage() string: {}", string);
+		logger.debug("convertImageToBytes() source name: {}", source.getName());
 		byte[] bytes = null;
 
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			File source = new File(string);
 			BufferedImage image = ImageIO.read(source);
 			ImageIO.write(image, "png", baos);
 			baos.flush();
 			bytes = baos.toByteArray();
 			baos.close();
 		} catch (IOException e) {
-			logger.debug("loadImage() IO Exception : {}", e.getCause());
+			logger.debug("convertImageToBytes() IO Exception : {}", e.getCause());
 		}
 
 		return bytes;

@@ -23,7 +23,7 @@
 			</c:choose>
 			<br />
 
-			<spring:url value="/confirmation" var="donationActionUrl" />
+			<spring:url value="/donations" var="donationActionUrl" />
 
 			<form:form class="form-horizontal" method="post"
 				modelAttribute="donationForm" action="${donationActionUrl}">
