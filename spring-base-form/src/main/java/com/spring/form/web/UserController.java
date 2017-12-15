@@ -315,7 +315,7 @@ public class UserController {
 	@RequestMapping(value = "/donations/{id}", method = RequestMethod.GET)
 	public String showDonation(@PathVariable("id") int id, Model model, HttpServletResponse response, HttpServletRequest request) {
 
-		logger.debug("showDonation() id: {}", id);
+		logger.debug("showDonation() donation id: {}", id);
 
 		Donation donation = donationService.findById(id);
 		if (donation == null) {
@@ -345,7 +345,7 @@ public class UserController {
 	@RequestMapping(value = "/images/{id}", method = RequestMethod.GET)
 	private void displayImages(@PathVariable("id") int id, Model model, HttpServletResponse response, HttpServletRequest request) {
 		
-		logger.debug("displayImages() id: {}", id);
+		logger.debug("displayImages() image id: {}", id);
 
 		try {
 			Attachment attachment = attachmentService.findById(id);
@@ -387,7 +387,7 @@ public class UserController {
 		province.put("NL", "Newfoundland & Labrador");
 		province.put("NS", "Nova Scotia");
 		province.put("ON", "Ontario");
-		province.put("PI", "Prince Edward Island");
+		province.put("PE", "Prince Edward Island");
 		province.put("QE", "Quebec");
 		province.put("SA", "Saskatchewan");
 		province.put("NT", "Northwest Territories");
