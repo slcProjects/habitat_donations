@@ -26,7 +26,7 @@
 			<spring:url value="/donations" var="donationActionUrl" />
 
 			<form:form class="form-horizontal" method="post"
-				modelAttribute="donationForm" action="${donationActionUrl}">
+				modelAttribute="donationForm" action="${donationActionUrl}" enctype="multipart/form-data">
 
 				<form:hidden path="id" />
 
@@ -129,6 +129,19 @@
 								<label> <form:checkbox path="receipts" id="receipts" />
 								</label>
 								<form:errors path="receipts" class="control-label" />
+							</div>
+						</div>
+					</div>
+				</spring:bind>
+				
+				<spring:bind path="file">
+					<div class="form-group ${status.error ? 'has-error' : ''}">
+						<label class="col-sm-2 control-label">Upload a file</label>
+						<div class="col-sm-10">
+							<div class="checkbox">
+								<label> <form:input type="file" path="file" id="file" class="form-control input-sm"/>
+								</label>
+								<form:errors path="file" class="control-label" />
 							</div>
 						</div>
 					</div>

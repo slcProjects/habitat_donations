@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -29,8 +30,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.support.ByteArrayMultipartFileEditor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.ServletRequestUtils;
 
 import com.spring.form.model.Attachment;
 import com.spring.form.model.Donation;
@@ -63,6 +69,13 @@ public class UserController {
 	@InitBinder("donation")
 	protected void initDonationBinder(WebDataBinder binder) {
 		binder.setValidator(donationFormValidator);
+	}
+	
+	
+    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder)
+        throws ServletException {
+        // Convert multipart object to byte[]
+        binder.registerCustomEditor(byte[].class, new ByteArrayMultipartFileEditor());
 	}
 
 	private UserService userService;
@@ -247,6 +260,7 @@ public class UserController {
 		Donation donation = new Donation();
 		User donor = userService.findById(id);
 		java.util.Date date = new java.util.Date();
+		
 
 		// set default value
 		donation.setDonor(donor.getId());
@@ -255,7 +269,7 @@ public class UserController {
 		donation.setCity(donor.getCity());
 		donation.setProvince(donor.getProvince());
 		donation.setPostalCode(donor.getPostalCode());
-
+		
 		model.addAttribute("donationForm", donation);
 
 		populateDefaultDonationModel(model);
@@ -307,7 +321,7 @@ public class UserController {
 		}
 		model.addAttribute("donation", donation);
 		
-		List<Attachment> attachments = donation.getAttachments();
+	/*	List<Attachment> attachments = donation.getAttachments();
 		Boolean noImage = false;
 		if (attachments.size() == 0) {
 			noImage = true;
@@ -319,7 +333,7 @@ public class UserController {
 			model.addAttribute("imageIds", ids);
 		}
 		model.addAttribute("noImage", noImage);
-
+*/
 		return "donations/show";
 
 	}
@@ -337,11 +351,11 @@ public class UserController {
 	@RequestMapping(value = "/images/{id}", method = RequestMethod.GET)
 	private void displayImages(@PathVariable("id") int id, Model model, HttpServletResponse response, HttpServletRequest request) {
 		
-		logger.debug("displayImages() image id: {}", id);
+	/*	logger.debug("displayImages() image id: {}", id);
 
 		try {
 			Attachment attachment = attachmentService.findById(id);
-			byte[] image = attachment.getImage();
+		/	byte[] image = attachment.getImage();
 			if (image == null) {
 				logger.debug("displayImages() : No image found");
 			} else {
@@ -354,7 +368,7 @@ public class UserController {
 		} catch (IOException e) {
 			logger.debug("displayImages() IO Exception : {}", e.getCause());
 		}
-		
+	*/	
 	}
 
 	private void populateDefaultUserModel(Model model) {

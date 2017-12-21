@@ -1,11 +1,17 @@
 package com.spring.form.dao;
 
+import java.io.File;
+import java.io.IOException;
+import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -50,8 +56,8 @@ public class DonationDaoImpl implements DonationDao {
 		Donation result = null;
 		try {
 			result = namedParameterJdbcTemplate.queryForObject(sql, params, new DonationMapper());
-			ArrayList<Attachment> images = (ArrayList<Attachment>) attachmentService.findByDonation(id);
-			result.setAttachments(images);
+			//ArrayList<Attachment> images = (ArrayList<Attachment>) attachmentService.findByDonation(id);
+			//result.setAttachments(images);
 		} catch (EmptyResultDataAccessException e) {
 			// do nothing, return null
 		}
@@ -78,25 +84,58 @@ public class DonationDaoImpl implements DonationDao {
 	@Override
 	public void save(Donation donation) {
 
+		/*byte[] picBytes;
+		SerialBlob sBlob;
+		try {
+			picBytes = donation.getFile().getBytes();
+			sBlob = new SerialBlob(picBytes);
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SerialException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		
-		String sql = "INSERT INTO Donation(DonorID, Description, Value, ScheduledDate, CompletedDate, Address, City, Province, PostalCode, DropFee, ReceiverID, Tacking, Receipts) "
-				+ "VALUES (:donor, :description, :value, :scheduledDate, :completedDate, :address, :city, :province, :postalCode, :dropFee, :receiver, :tacking, :receipts)";
+		String sql = "INSERT INTO Donation(DonorID, Description, Value, ScheduledDate, CompletedDate, Address, City, Province, PostalCode, DropFee, ReceiverID, Tacking, Receipts,File) "
+				+ "VALUES (:donor, :description, :value, :scheduledDate, :completedDate, :address, :city, :province, :postalCode, :dropFee, :receiver, :tacking, :receipts, :file)";
 		
-		namedParameterJdbcTemplate.update(sql, getSqlParameterByModel(donation), keyHolder);
+		try {
+			namedParameterJdbcTemplate.update(sql, getSqlParameterByModel(donation), keyHolder);
+		} catch (DataAccessException | IOException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		donation.setId(keyHolder.getKey().intValue());
 		
 	}
 
 	@Override
 	public void update(Donation donation) {
+		/*try {
+			File uploadFile = donation.getFile().getBytes();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 		
 		String sql = "UPDATE Donation SET DonorID=:donor, Description=:description, Value=:value, "
 				+ "ScheduledDate=:scheduledDate, CompletedDate=:completedDate, Address=:address, City=:city, "
 				+ "Province=:province, PostalCode=:postalCode, DropFee=:dropFee, "
 				+ "ReceiverID=:receiver, Tacking=:tacking, Receipts=:receipts WHERE DonationID=:id";
 		
-		namedParameterJdbcTemplate.update(sql, getSqlParameterByModel(donation));
+		try {
+			namedParameterJdbcTemplate.update(sql, getSqlParameterByModel(donation));
+		} catch (DataAccessException | IOException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 
@@ -108,11 +147,17 @@ public class DonationDaoImpl implements DonationDao {
 		
 	}
 	
-	private SqlParameterSource getSqlParameterByModel(Donation donation) {
+	private SqlParameterSource getSqlParameterByModel(Donation donation) throws IOException, SerialException, SQLException {
 
 		// Unable to handle List<String> or Array
 		// BeanPropertySqlParameterSource
 
+		 byte[] bytes;
+		  Blob blob;
+	     bytes = donation.getFile().getBytes();
+	     blob = new SerialBlob(bytes);
+		
+	     
 		MapSqlParameterSource paramSource = new MapSqlParameterSource();
 		paramSource.addValue("id", donation.getId());
 		paramSource.addValue("donor", donation.getDonor());
@@ -128,6 +173,7 @@ public class DonationDaoImpl implements DonationDao {
 		paramSource.addValue("receiver", donation.getReceiver());
 		paramSource.addValue("tacking", donation.getTacking());
 		paramSource.addValue("receipts", donation.isReceipts());
+		paramSource.addValue("file", blob);
 		
 		return paramSource;
 	}

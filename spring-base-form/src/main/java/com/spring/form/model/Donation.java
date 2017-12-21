@@ -1,7 +1,14 @@
 package com.spring.form.model;
 
+import java.io.IOException;
+import java.sql.Blob;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.ArrayList;
+
+import javax.sql.rowset.serial.SerialBlob;
+
+import org.springframework.web.multipart.MultipartFile;
 
 public class Donation {
 	// form:hidden - hidden value
@@ -46,8 +53,38 @@ public class Donation {
 	// form:checkbox - single checkbox
 	boolean receipts;
 	
-	// form - image upload
-	ArrayList<Attachment> attachments;
+
+	
+	Blob blob;
+	
+    public Blob getBlob() {
+		return blob;
+	}
+
+	public void setBlob() {
+		 byte[] bytes;
+	     try {
+	     bytes = file.getBytes();
+	     blob = new SerialBlob(bytes);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+	  }
+
+	
+    private MultipartFile file;
+    
+	public MultipartFile getFile() {
+		return file;
+	}
+
+	public void setFile(MultipartFile file) {
+		this.file = file;
+	}
 
 	public boolean isNew() {
 		return (this.id == null);
@@ -165,20 +202,13 @@ public class Donation {
 		this.receipts = receipts;
 	}
 	
-	public ArrayList<Attachment> getAttachments() {
-		return attachments;
-	}
-	
-	public void setAttachments(ArrayList<Attachment> attachments) {
-		this.attachments = attachments;
-	}
 
 	@Override
 	public String toString() {
 		return "Donation [id=" + id + ", donor=" + donor + ", description=" + description + ", value=" + value
 				+ ", scheduledDate=" + scheduledDate + ", completedDate=" + completedDate + ", address=" + address 
 				+ ", city=" + city + ", province=" + province + ", postalCode=" + postalCode + ", dropFee=" + dropFee
-				+ ", receiver=" + receiver + ", tacking=" + tacking + ", receipts=" + receipts + "]" + isNew();
+				+ ", receiver=" + receiver + ", tacking=" + tacking + ", receipts=" + receipts + ", file=" + file +"]" + isNew();
 	}
 
 }
