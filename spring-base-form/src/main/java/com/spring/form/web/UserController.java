@@ -4,7 +4,10 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Blob;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -70,12 +73,10 @@ public class UserController {
 	protected void initDonationBinder(WebDataBinder binder) {
 		binder.setValidator(donationFormValidator);
 	}
-	
-	
-    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder)
-        throws ServletException {
-        // Convert multipart object to byte[]
-        binder.registerCustomEditor(byte[].class, new ByteArrayMultipartFileEditor());
+
+	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws ServletException {
+		// Convert multipart object to byte[]
+		binder.registerCustomEditor(byte[].class, new ByteArrayMultipartFileEditor());
 	}
 
 	private UserService userService;
@@ -99,10 +100,10 @@ public class UserController {
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(Model model) {
-		
+
 		logger.debug("index()");
 		return "redirect:/users/add";
-		
+
 	}
 
 	// list page
@@ -240,6 +241,43 @@ public class UserController {
 			}
 
 			donationService.saveOrUpdate(donation);
+			int id = donation.getId();
+
+			try {
+				InputStream input = donation.getFile1().getInputStream();
+				ImageIO.read(input).toString();
+				saveAttachment(donation.getFile1(), id);
+				logger.debug("saveOrUpdateDonation() : file1 image uploaded");
+			} catch (Exception e) {
+				logger.debug("saveOrUpdateDonation() : file1 no image uploaded");
+			}
+
+			try {
+				InputStream input = donation.getFile2().getInputStream();
+				ImageIO.read(input).toString();
+				saveAttachment(donation.getFile2(), id);
+				logger.debug("saveOrUpdateDonation() : file2 image uploaded");
+			} catch (Exception e) {
+				logger.debug("saveOrUpdateDonation() : file2 no image uploaded");
+			}
+
+			try {
+				InputStream input = donation.getFile3().getInputStream();
+				ImageIO.read(input).toString();
+				saveAttachment(donation.getFile3(), id);
+				logger.debug("saveOrUpdateDonation() : file3 image uploaded");
+			} catch (Exception e) {
+				logger.debug("saveOrUpdateDonation() : file3 no image uploaded");
+			}
+
+			try {
+				InputStream input = donation.getFile4().getInputStream();
+				ImageIO.read(input).toString();
+				saveAttachment(donation.getFile4(), id);
+				logger.debug("saveOrUpdateDonation() : file4 image uploaded");
+			} catch (Exception e) {
+				logger.debug("saveOrUpdateDonation() : file4 no image uploaded");
+			}
 
 			// POST/REDIRECT/GET
 			return "redirect:/confirmation";
@@ -260,7 +298,6 @@ public class UserController {
 		Donation donation = new Donation();
 		User donor = userService.findById(id);
 		java.util.Date date = new java.util.Date();
-		
 
 		// set default value
 		donation.setDonor(donor.getId());
@@ -269,8 +306,9 @@ public class UserController {
 		donation.setCity(donor.getCity());
 		donation.setProvince(donor.getProvince());
 		donation.setPostalCode(donor.getPostalCode());
-		
+
 		model.addAttribute("donationForm", donation);
+		model.addAttribute("noImage", true);
 
 		populateDefaultDonationModel(model);
 
@@ -285,7 +323,23 @@ public class UserController {
 		logger.debug("showUpdateDonationForm() : {}", id);
 
 		Donation donation = donationService.findById(id);
+		List<Attachment> images = attachmentService.findByDonation(id);
 		model.addAttribute("donationForm", donation);
+
+		Boolean noImage = false;
+		List<Integer> imageIds = new ArrayList<>();
+		for (int ctr = 0; ctr < images.size(); ctr++) {
+			Attachment attach = images.get(ctr);
+			if (attach.getImage() != null) {
+				imageIds.add(attach.getId());
+			}
+		}
+		if (imageIds.size() == 0) {
+			noImage = true;
+		} else {
+			model.addAttribute("imageIds", imageIds);
+		}
+		model.addAttribute("noImage", noImage);
 
 		populateDefaultDonationModel(model);
 
@@ -299,6 +353,12 @@ public class UserController {
 
 		logger.debug("deleteDonation() : {}", id);
 
+		List<Attachment> images = attachmentService.findByDonation(id);
+
+		for (int ctr = 0; ctr < images.size(); ctr++) {
+			attachmentService.delete(images.get(ctr).getId());
+		}
+
 		donationService.delete(id);
 
 		redirectAttributes.addFlashAttribute("css", "success");
@@ -310,34 +370,39 @@ public class UserController {
 
 	// show donation
 	@RequestMapping(value = "/donations/{id}", method = RequestMethod.GET)
-	public String showDonation(@PathVariable("id") int id, Model model, HttpServletResponse response, HttpServletRequest request) {
+	public String showDonation(@PathVariable("id") int id, Model model, HttpServletResponse response,
+			HttpServletRequest request) {
 
 		logger.debug("showDonation() donation id: {}", id);
 
 		Donation donation = donationService.findById(id);
+		List<Attachment> images = attachmentService.findByDonation(id);
+
 		if (donation == null) {
 			model.addAttribute("css", "danger");
 			model.addAttribute("msg", "User not found");
 		}
 		model.addAttribute("donation", donation);
-		
-	/*	List<Attachment> attachments = donation.getAttachments();
+
 		Boolean noImage = false;
-		if (attachments.size() == 0) {
+		List<Integer> imageIds = new ArrayList<>();
+		for (int ctr = 0; ctr < images.size(); ctr++) {
+			Attachment attach = images.get(ctr);
+			if (attach.getImage() != null) {
+				imageIds.add(attach.getId());
+			}
+		}
+		if (imageIds.size() == 0) {
 			noImage = true;
 		} else {
-			List<Integer> ids = new ArrayList<Integer>();
-			for (int ctr = 0; ctr < attachments.size(); ctr++) {
-				ids.add(attachments.get(ctr).getId());
-			}
-			model.addAttribute("imageIds", ids);
+			model.addAttribute("imageIds", imageIds);
 		}
 		model.addAttribute("noImage", noImage);
-*/
+
 		return "donations/show";
 
 	}
-	
+
 	// donation confirm page
 	@RequestMapping(value = "/confirmation", method = RequestMethod.GET)
 	public String donationConfirm(Model model) {
@@ -346,16 +411,17 @@ public class UserController {
 		return "confirmation/confirm";
 
 	}
-	
-	//display image
+
+	// display image
 	@RequestMapping(value = "/images/{id}", method = RequestMethod.GET)
-	private void displayImages(@PathVariable("id") int id, Model model, HttpServletResponse response, HttpServletRequest request) {
-		
-	/*	logger.debug("displayImages() image id: {}", id);
+	private void displayImages(@PathVariable("id") int id, Model model, HttpServletResponse response,
+			HttpServletRequest request) {
+
+		logger.debug("displayImages() image id: {}", id);
 
 		try {
-			Attachment attachment = attachmentService.findById(id);
-		/	byte[] image = attachment.getImage();
+			Attachment attach = attachmentService.findById(id);
+			byte[] image = attach.getBytes();
 			if (image == null) {
 				logger.debug("displayImages() : No image found");
 			} else {
@@ -368,7 +434,34 @@ public class UserController {
 		} catch (IOException e) {
 			logger.debug("displayImages() IO Exception : {}", e.getCause());
 		}
-	*/	
+
+	}
+	
+	// save attachment
+	public void saveAttachment(MultipartFile file, int id) {
+		
+		logger.debug("saveAttachment() file : {}", file);
+		
+		Attachment attach = new Attachment();
+		attach.setFile(file);
+		attach.setDonation(id);
+		attachmentService.saveOrUpdate(attach);
+	}
+
+	// delete attachment
+	@RequestMapping(value = "/images/{id}/delete", method = RequestMethod.POST)
+	public String deleteAttachment(@PathVariable("id") int id, final RedirectAttributes redirectAttributes) {
+
+		logger.debug("deleteAttachment() : {}", id);
+
+		int donId = attachmentService.findById(id).getDonation();
+		attachmentService.delete(id);
+
+		redirectAttributes.addFlashAttribute("css", "success");
+		redirectAttributes.addFlashAttribute("msg", "Image is deleted!");
+
+		return "redirect:/donations/" + donId + "/update";
+
 	}
 
 	private void populateDefaultUserModel(Model model) {
@@ -416,41 +509,34 @@ public class UserController {
 		return model;
 
 	}
-	
-	/*public void insertTestImages() {
-		
-		for (int i = 1; i <= 4; i++) {
-			byte[] bytes = convertImageToBytes(new File("C:\\tomcat\\webapps\\spring-base-form-initial_load\\resources\\images\\testimg" + i + ".png"));
-			                                            //may need to change above file path if user's tomcat directory is different
-			if (bytes != null) {
-				Attachment attachment = new Attachment();
-				attachment.setDonation(i);
-				attachment.setImage(bytes);
-				attachmentService.saveOrUpdate(attachment);
-			}
-		}
-		
-	}*/
 
-	@SuppressWarnings("unused")
-	private byte[] convertImageToBytes(File source) {
+	/*
+	 * public void insertTestImages() {
+	 * 
+	 * for (int i = 1; i <= 4; i++) { byte[] bytes = convertImageToBytes(new File(
+	 * "C:\\tomcat\\webapps\\spring-base-form-initial_load\\resources\\images\\testimg"
+	 * + i + ".png")); //may need to change above file path if user's tomcat
+	 * directory is different if (bytes != null) { Attachment attachment = new
+	 * Attachment(); attachment.setDonation(i); attachment.setImage(bytes);
+	 * attachmentService.saveOrUpdate(attachment); } }
+	 * 
+	 * }
+	 */
 
-		logger.debug("convertImageToBytes() source name: {}", source.getName());
-		byte[] bytes = null;
-
-		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			BufferedImage image = ImageIO.read(source);
-			ImageIO.write(image, "png", baos);
-			baos.flush();
-			bytes = baos.toByteArray();
-			baos.close();
-		} catch (IOException e) {
-			logger.debug("convertImageToBytes() IO Exception : {}", e.getCause());
-		}
-
-		return bytes;
-
-	}
+	/*
+	 * private byte[] convertImageToBytes(File source) {
+	 * 
+	 * logger.debug("convertImageToBytes() source name: {}", source.getName());
+	 * byte[] bytes = null;
+	 * 
+	 * try { ByteArrayOutputStream baos = new ByteArrayOutputStream(); BufferedImage
+	 * image = ImageIO.read(source); ImageIO.write(image, "png", baos);
+	 * baos.flush(); bytes = baos.toByteArray(); baos.close(); } catch (IOException
+	 * e) { logger.debug("convertImageToBytes() IO Exception : {}", e.getCause()); }
+	 * 
+	 * return bytes;
+	 * 
+	 * }
+	 */
 
 }

@@ -1,11 +1,15 @@
 package com.spring.form.model;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.sql.rowset.serial.SerialBlob;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -49,41 +53,42 @@ public class Donation {
 
 	// form:input - textbox
 	Date tacking;
-	
+
 	// form:checkbox - single checkbox
 	boolean receipts;
-	
 
-	
-	Blob blob;
-	
-    public Blob getBlob() {
-		return blob;
+	private MultipartFile file1, file2, file3, file4;
+
+	public MultipartFile getFile1() {
+		return file1;
 	}
 
-	public void setBlob() {
-		 byte[] bytes;
-	     try {
-	     bytes = file.getBytes();
-	     blob = new SerialBlob(bytes);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	
-	  }
-
+	public void setFile1(MultipartFile file1) {
+		this.file1 = file1;
+	}
 	
-    private MultipartFile file;
-    
-	public MultipartFile getFile() {
-		return file;
+	public MultipartFile getFile2() {
+		return file2;
 	}
 
-	public void setFile(MultipartFile file) {
-		this.file = file;
+	public void setFile2(MultipartFile file2) {
+		this.file2 = file2;
+	}
+	
+	public MultipartFile getFile3() {
+		return file3;
+	}
+
+	public void setFile3(MultipartFile file3) {
+		this.file3 = file3;
+	}
+	
+	public MultipartFile getFile4() {
+		return file4;
+	}
+
+	public void setFile4(MultipartFile file4) {
+		this.file4 = file4;
 	}
 
 	public boolean isNew() {
@@ -137,7 +142,7 @@ public class Donation {
 	public void setCompletedDate(Date completedDate) {
 		this.completedDate = completedDate;
 	}
-	
+
 	public String getAddress() {
 		return address;
 	}
@@ -145,7 +150,7 @@ public class Donation {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	
+
 	public String getCity() {
 		return city;
 	}
@@ -193,7 +198,7 @@ public class Donation {
 	public void setTacking(Date tacking) {
 		this.tacking = tacking;
 	}
-	
+
 	public boolean isReceipts() {
 		return receipts;
 	}
@@ -201,14 +206,13 @@ public class Donation {
 	public void setReceipts(boolean receipts) {
 		this.receipts = receipts;
 	}
-	
 
 	@Override
 	public String toString() {
 		return "Donation [id=" + id + ", donor=" + donor + ", description=" + description + ", value=" + value
-				+ ", scheduledDate=" + scheduledDate + ", completedDate=" + completedDate + ", address=" + address 
+				+ ", scheduledDate=" + scheduledDate + ", completedDate=" + completedDate + ", address=" + address
 				+ ", city=" + city + ", province=" + province + ", postalCode=" + postalCode + ", dropFee=" + dropFee
-				+ ", receiver=" + receiver + ", tacking=" + tacking + ", receipts=" + receipts + ", file=" + file +"]" + isNew();
+				+ ", receiver=" + receiver + ", tacking=" + tacking + ", receipts=" + receipts + "]" + isNew();
 	}
 
 }

@@ -26,7 +26,8 @@
 			<spring:url value="/donations" var="donationActionUrl" />
 
 			<form:form class="form-horizontal" method="post"
-				modelAttribute="donationForm" action="${donationActionUrl}" enctype="multipart/form-data">
+				modelAttribute="donationForm" action="${donationActionUrl}"
+				enctype="multipart/form-data">
 
 				<form:hidden path="id" />
 
@@ -42,7 +43,7 @@
 						</div>
 					</div>
 				</spring:bind>
-				
+
 				<%-- <spring:bind path="image">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
 						<label class="col-sm-2 control-label">Item Images</label>
@@ -133,15 +134,79 @@
 						</div>
 					</div>
 				</spring:bind>
-				
-				<spring:bind path="file">
+
+				<div class="row">
+					<label class="col-sm-2">Item Images</label>
+					<div class="col-sm-10">
+						<c:choose>
+							<c:when test="${noImage == true}">
+							No images
+						</c:when>
+							<c:otherwise>
+								<c:forEach var="imageIds" items="${imageIds}">
+									<spring:url value="/images/${imageIds}" var="imageUrl" />
+									<img src="${imageUrl}" />
+									<spring:url value="/images/${imageIds}/delete" var="deleteUrl" />
+									<button formaction="${deleteUrl}">Delete Image</button>
+								</c:forEach>
+								<%-- <spring:url value="/images/${donId}" var="imageUrl" />
+								<img src="${imageUrl}" /> --%>
+							</c:otherwise>
+						</c:choose>
+					</div>
+				</div>
+
+				<spring:bind path="file1">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
 						<label class="col-sm-2 control-label">Upload a file</label>
 						<div class="col-sm-10">
 							<div class="checkbox">
-								<label> <form:input type="file" path="file" id="file" class="form-control input-sm"/>
+								<label> <form:input type="file" path="file1" id="file1"
+										class="form-control input-sm" />
 								</label>
-								<form:errors path="file" class="control-label" />
+								<form:errors path="file1" class="control-label" />
+							</div>
+						</div>
+					</div>
+				</spring:bind>
+				
+				<spring:bind path="file2">
+					<div class="form-group ${status.error ? 'has-error' : ''}">
+						<label class="col-sm-2 control-label">Upload a file</label>
+						<div class="col-sm-10">
+							<div class="checkbox">
+								<label> <form:input type="file" path="file2" id="file2"
+										class="form-control input-sm" />
+								</label>
+								<form:errors path="file2" class="control-label" />
+							</div>
+						</div>
+					</div>
+				</spring:bind>
+				
+				<spring:bind path="file3">
+					<div class="form-group ${status.error ? 'has-error' : ''}">
+						<label class="col-sm-2 control-label">Upload a file</label>
+						<div class="col-sm-10">
+							<div class="checkbox">
+								<label> <form:input type="file" path="file3" id="file3"
+										class="form-control input-sm" />
+								</label>
+								<form:errors path="file3" class="control-label" />
+							</div>
+						</div>
+					</div>
+				</spring:bind>
+				
+				<spring:bind path="file4">
+					<div class="form-group ${status.error ? 'has-error' : ''}">
+						<label class="col-sm-2 control-label">Upload a file</label>
+						<div class="col-sm-10">
+							<div class="checkbox">
+								<label> <form:input type="file" path="file4" id="file4"
+										class="form-control input-sm" />
+								</label>
+								<form:errors path="file4" class="control-label" />
 							</div>
 						</div>
 					</div>

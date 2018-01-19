@@ -42,23 +42,6 @@
 			</div>
 
 			<div class="row">
-				<label class="col-sm-2">Item Images</label>
-				<div class="col-sm-10">
-					<c:choose>
-						<c:when test="${noImage == true}">
-							No images
-						</c:when>
-						<c:otherwise>
-							<c:forEach var="imageIds" items="${imageIds}">
- 								<spring:url value="/images/${imageIds}" var="imageUrl" />
-								<img src="${imageUrl}"/>
- 							</c:forEach>
-						</c:otherwise>
-					</c:choose>
-				</div>
-			</div>
-
-			<div class="row">
 				<label class="col-sm-2">Scheduled Date</label>
 				<div class="col-sm-10">${donation.scheduledDate}</div>
 			</div>
@@ -79,7 +62,7 @@
 
 			<div class="row">
 				<label class="col-sm-2">Address</label>
-				<div class="col-sm-10">${donation.address} ${donation.city},
+				<div class="col-sm-10">${donation.address}${donation.city},
 					${donation.province}, ${donation.postalCode}</div>
 			</div>
 
@@ -105,6 +88,25 @@
 			<div class="row">
 				<label class="col-sm-2">Would you like to have Tax Receipts?</label>
 				<div class="col-sm-10">${donation.receipts}</div>
+			</div>
+
+			<div class="row">
+				<label class="col-sm-2">Item Images</label>
+				<div class="col-sm-10">
+					<c:choose>
+						<c:when test="${noImage == true}">
+							No images
+						</c:when>
+						<c:otherwise>
+							<c:forEach var="imageIds" items="${imageIds}">
+								<spring:url value="/images/${imageIds}" var="imageUrl" />
+ 									<img src="${imageUrl}" />
+							</c:forEach>
+							<%-- <spring:url value="/images/${donId}" var="imageUrl" />
+								<img src="${imageUrl}" /> --%>
+						</c:otherwise>
+					</c:choose>
+				</div>
 			</div>
 
 			<spring:url value="/donations" var="donationList" />
