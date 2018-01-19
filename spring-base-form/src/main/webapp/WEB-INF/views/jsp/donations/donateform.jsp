@@ -13,6 +13,16 @@
 	<div class="content_body" style="margin-top: 156px">
 		<div class="container">
 
+			<c:if test="${not empty msg}">
+				<div class="alert alert-${css} alert-dismissible" role="alert">
+					<button type="button" class="close" data-dismiss="alert"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<strong>${msg}</strong>
+				</div>
+			</c:if>
+
 			<c:choose>
 				<c:when test="${donationForm['new']}">
 					<h1>Donate</h1>
@@ -32,6 +42,8 @@
 				<form:hidden path="id" />
 
 				<form:hidden path="donor" />
+
+				<form:hidden path="numImages" />
 
 				<spring:bind path="description">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
@@ -122,6 +134,17 @@
 					</div>
 				</spring:bind>
 
+				<spring:bind path="receiver">
+					<div class="form-group ${status.error ? 'has-error' : ''}">
+						<label class="col-sm-2 control-label">Receiver ID</label>
+						<div class="col-sm-10">
+							<form:input path="receiver" class="form-control" id="receiver"
+								placeholder="1" />
+							<form:errors path="receiver" class="control-label" />
+						</div>
+					</div>
+				</spring:bind>
+
 				<spring:bind path="receipts">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
 						<label class="col-sm-2 control-label">Send Tax Receipts?</label>
@@ -169,7 +192,7 @@
 						</div>
 					</div>
 				</spring:bind>
-				
+
 				<spring:bind path="file2">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
 						<label class="col-sm-2 control-label">Upload a file</label>
@@ -183,7 +206,7 @@
 						</div>
 					</div>
 				</spring:bind>
-				
+
 				<spring:bind path="file3">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
 						<label class="col-sm-2 control-label">Upload a file</label>
@@ -197,7 +220,7 @@
 						</div>
 					</div>
 				</spring:bind>
-				
+
 				<spring:bind path="file4">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
 						<label class="col-sm-2 control-label">Upload a file</label>

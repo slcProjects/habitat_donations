@@ -37,17 +37,10 @@ public class DonationDaoImpl implements DonationDao {
 
 	NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-	private AttachmentService attachmentService;
-
 	@Autowired
 	public void setNamedParameterJdbcTemplate(NamedParameterJdbcTemplate namedParameterJdbcTemplate)
 			throws DataAccessException {
 		this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-	}
-
-	@Autowired
-	public void setAttachmentService(AttachmentService attachmentService) {
-		this.attachmentService = attachmentService;
 	}
 
 	@Override
@@ -61,9 +54,6 @@ public class DonationDaoImpl implements DonationDao {
 		Donation result = null;
 		try {
 			result = namedParameterJdbcTemplate.queryForObject(sql, params, new DonationMapper());
-			// ArrayList<Attachment> images = (ArrayList<Attachment>)
-			// attachmentService.findByDonation(id);
-			// result.setAttachments(images);
 		} catch (EmptyResultDataAccessException e) {
 			// do nothing, return null
 		}
@@ -102,11 +92,8 @@ public class DonationDaoImpl implements DonationDao {
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 
-		//String sql = "INSERT INTO Donation(DonorID, Description, Value, ScheduledDate, CompletedDate, Address, City, Province, PostalCode, DropFee, ReceiverID, Tacking, File, Receipts) "
-		//		+ "VALUES (:donor, :description, :value, :scheduledDate, :completedDate, :address, :city, :province, :postalCode, :dropFee, :receiver, :tacking, :file, :receipts)";
-
-		String sql = "INSERT INTO Donation(DonorID, Description, Value, ScheduledDate, CompletedDate, Address, City, Province, PostalCode, DropFee, ReceiverID, Tacking, Receipts) "
-				+ "VALUES (:donor, :description, :value, :scheduledDate, :completedDate, :address, :city, :province, :postalCode, :dropFee, :receiver, :tacking, :receipts)";
+		String sql = "INSERT INTO Donation(DonorID, Description, Value, ScheduledDate, CompletedDate, Address, City, Province, PostalCode, DropFee, ReceiverID, Tacking, Receipts, NumImages) "
+				+ "VALUES (:donor, :description, :value, :scheduledDate, :completedDate, :address, :city, :province, :postalCode, :dropFee, :receiver, :tacking, :receipts, :numImages)";
 				
 		try {
 			namedParameterJdbcTemplate.update(sql, getSqlParameterByModel(donation), keyHolder);
@@ -125,15 +112,10 @@ public class DonationDaoImpl implements DonationDao {
 		 * e) { // TODO Auto-generated catch block e.printStackTrace(); }
 		 */
 
-		/*String sql = "UPDATE Donation SET DonorID=:donor, Description=:description, Value=:value, "
-				+ "ScheduledDate=:scheduledDate, CompletedDate=:completedDate, Address=:address, City=:city, "
-				+ "Province=:province, PostalCode=:postalCode, DropFee=:dropFee, "
-				+ "ReceiverID=:receiver, Tacking=:tacking, File=:file, Receipts=:receipts WHERE DonationID=:id";*/
-		
 		String sql = "UPDATE Donation SET DonorID=:donor, Description=:description, Value=:value, "
 				+ "ScheduledDate=:scheduledDate, CompletedDate=:completedDate, Address=:address, City=:city, "
 				+ "Province=:province, PostalCode=:postalCode, DropFee=:dropFee, "
-				+ "ReceiverID=:receiver, Tacking=:tacking, Receipts=:receipts WHERE DonationID=:id";
+				+ "ReceiverID=:receiver, Tacking=:tacking, Receipts=:receipts, NumImages=:numImages WHERE DonationID=:id";
 
 		try {
 			namedParameterJdbcTemplate.update(sql, getSqlParameterByModel(donation));
@@ -178,7 +160,7 @@ public class DonationDaoImpl implements DonationDao {
 		paramSource.addValue("receiver", donation.getReceiver());
 		paramSource.addValue("tacking", donation.getTacking());
 		paramSource.addValue("receipts", donation.isReceipts());
-		//paramSource.addValue("file", donation.getBlob());
+		paramSource.addValue("numImages", donation.getNumImages());
 
 		return paramSource;
 	}
@@ -201,31 +183,7 @@ public class DonationDaoImpl implements DonationDao {
 			donation.setReceiver(rs.getInt("ReceiverID"));
 			donation.setTacking(rs.getDate("Tacking"));
 			donation.setReceipts(rs.getBoolean("Receipts"));
-
-			/*if (rs.getBlob("File") != null) {
-				donation.setBlob(rs.getBlob("File"));
-				try {
-					InputStream is = donation.getBlob().getBinaryStream();
-					BufferedImage myImage;
-					myImage = ImageIO.read(is);
-					if (myImage == null) {
-						donation.setBytes(null);
-					} else {
-						ByteArrayOutputStream baos = new ByteArrayOutputStream();
-						ImageIO.write(myImage, "png", baos);
-						baos.flush();
-						byte[] bytes = baos.toByteArray();
-						donation.setBytes(bytes);
-						baos.close();
-					}
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}*/
+			donation.setNumImages(rs.getInt("NumImages"));
 
 			return donation;
 		}

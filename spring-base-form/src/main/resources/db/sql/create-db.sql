@@ -32,8 +32,8 @@ CREATE TABLE Donation (
   DropFee DOUBLE,
   ReceiverID INTEGER FOREIGN KEY REFERENCES User(UserID),
   Tacking TIMESTAMP,
-  File BLOB,
-  Receipts BOOLEAN
+  Receipts BOOLEAN,
+  NumImages INTEGER
 );
 
 --DROP TABLE Attachment IF EXISTS;

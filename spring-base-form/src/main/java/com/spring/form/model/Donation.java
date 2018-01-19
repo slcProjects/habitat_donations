@@ -56,6 +56,8 @@ public class Donation {
 
 	// form:checkbox - single checkbox
 	boolean receipts;
+	
+	Integer numImages;
 
 	private MultipartFile file1, file2, file3, file4;
 
@@ -206,13 +208,25 @@ public class Donation {
 	public void setReceipts(boolean receipts) {
 		this.receipts = receipts;
 	}
+	
+	public Integer getNumImages() {
+		return numImages;
+	}
 
+	public void setNumImages(Integer numImages) {
+		this.numImages = numImages;
+	}
+	
+	public void decreaseNumImages(Integer num) {
+		numImages -= num;
+	}
+	
 	@Override
 	public String toString() {
 		return "Donation [id=" + id + ", donor=" + donor + ", description=" + description + ", value=" + value
 				+ ", scheduledDate=" + scheduledDate + ", completedDate=" + completedDate + ", address=" + address
 				+ ", city=" + city + ", province=" + province + ", postalCode=" + postalCode + ", dropFee=" + dropFee
-				+ ", receiver=" + receiver + ", tacking=" + tacking + ", receipts=" + receipts + "]" + isNew();
+				+ ", receiver=" + receiver + ", tacking=" + tacking + ", receipts=" + receipts + ", numImages=" + numImages + "]" + isNew();
 	}
 
 }

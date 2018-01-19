@@ -241,43 +241,70 @@ public class UserController {
 			}
 
 			donationService.saveOrUpdate(donation);
-			int id = donation.getId();
-
-			try {
-				InputStream input = donation.getFile1().getInputStream();
-				ImageIO.read(input).toString();
-				saveAttachment(donation.getFile1(), id);
-				logger.debug("saveOrUpdateDonation() : file1 image uploaded");
-			} catch (Exception e) {
-				logger.debug("saveOrUpdateDonation() : file1 no image uploaded");
+			
+			int numImages;
+			if (donation.getNumImages() == null) {
+				numImages = 0;
+			} else {
+			    numImages = donation.getNumImages();
 			}
-
-			try {
-				InputStream input = donation.getFile2().getInputStream();
-				ImageIO.read(input).toString();
-				saveAttachment(donation.getFile2(), id);
-				logger.debug("saveOrUpdateDonation() : file2 image uploaded");
-			} catch (Exception e) {
-				logger.debug("saveOrUpdateDonation() : file2 no image uploaded");
+			
+			if (numImages == 4) {
+				redirectAttributes.addFlashAttribute("max", "Max number of images reached; images were not uploaded");
+			} else {
+				int id = donation.getId();
+				try {
+					InputStream input = donation.getFile1().getInputStream();
+					ImageIO.read(input).toString();
+					saveAttachment(donation.getFile1(), id);
+					numImages++;
+					redirectAttributes.addFlashAttribute("file1", "File 1: Image uploaded");
+				} catch (Exception e) {
+					redirectAttributes.addFlashAttribute("file1", "File 1: No image detected");
+				}
+				if (numImages == 4) {
+					redirectAttributes.addFlashAttribute("max", "Max number of images reached; rest of images were not uploaded");
+				} else {
+					try {
+						InputStream input = donation.getFile2().getInputStream();
+						ImageIO.read(input).toString();
+						saveAttachment(donation.getFile2(), id);
+						numImages++;
+						redirectAttributes.addFlashAttribute("file2", "File 2: Image uploaded");
+					} catch (Exception e) {
+						redirectAttributes.addFlashAttribute("file2", "File 2: No image detected");
+					}
+					if (numImages == 4) {
+						redirectAttributes.addFlashAttribute("max", "Max number of images reached; rest of images were not uploaded");
+					} else {
+						try {
+							InputStream input = donation.getFile3().getInputStream();
+							ImageIO.read(input).toString();
+							saveAttachment(donation.getFile3(), id);
+							numImages++;
+							redirectAttributes.addFlashAttribute("file3", "File 3: Image uploaded");
+						} catch (Exception e) {
+							redirectAttributes.addFlashAttribute("file3", "File 3: No image detected");
+						}
+						if (numImages == 4) {
+							redirectAttributes.addFlashAttribute("max", "Max number of images reached; rest of images were not uploaded");
+						} else {
+							try {
+								InputStream input = donation.getFile4().getInputStream();
+								ImageIO.read(input).toString();
+								saveAttachment(donation.getFile4(), id);
+								numImages++;
+								redirectAttributes.addFlashAttribute("file4", "File 4: Image uploaded");
+							} catch (Exception e) {
+								redirectAttributes.addFlashAttribute("file4", "File 4: No image detected");
+							}
+						}
+					}
+				}
 			}
-
-			try {
-				InputStream input = donation.getFile3().getInputStream();
-				ImageIO.read(input).toString();
-				saveAttachment(donation.getFile3(), id);
-				logger.debug("saveOrUpdateDonation() : file3 image uploaded");
-			} catch (Exception e) {
-				logger.debug("saveOrUpdateDonation() : file3 no image uploaded");
-			}
-
-			try {
-				InputStream input = donation.getFile4().getInputStream();
-				ImageIO.read(input).toString();
-				saveAttachment(donation.getFile4(), id);
-				logger.debug("saveOrUpdateDonation() : file4 image uploaded");
-			} catch (Exception e) {
-				logger.debug("saveOrUpdateDonation() : file4 no image uploaded");
-			}
+			
+			donation.setNumImages(numImages);
+			donationService.saveOrUpdate(donation);
 
 			// POST/REDIRECT/GET
 			return "redirect:/confirmation";
@@ -422,9 +449,7 @@ public class UserController {
 		try {
 			Attachment attach = attachmentService.findById(id);
 			byte[] image = attach.getBytes();
-			if (image == null) {
-				logger.debug("displayImages() : No image found");
-			} else {
+			if (image != null) {
 				response.reset();
 				response.setContentType("image/png");
 				response.setContentLength(image.length);
@@ -436,16 +461,17 @@ public class UserController {
 		}
 
 	}
-	
+
 	// save attachment
 	public void saveAttachment(MultipartFile file, int id) {
-		
+
 		logger.debug("saveAttachment() file : {}", file);
-		
+
 		Attachment attach = new Attachment();
 		attach.setFile(file);
 		attach.setDonation(id);
 		attachmentService.saveOrUpdate(attach);
+		
 	}
 
 	// delete attachment
@@ -456,6 +482,9 @@ public class UserController {
 
 		int donId = attachmentService.findById(id).getDonation();
 		attachmentService.delete(id);
+		Donation donation = donationService.findById(donId);
+		donation.decreaseNumImages(1);
+		donationService.saveOrUpdate(donation);
 
 		redirectAttributes.addFlashAttribute("css", "success");
 		redirectAttributes.addFlashAttribute("msg", "Image is deleted!");
