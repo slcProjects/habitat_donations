@@ -64,14 +64,14 @@ public class UserController {
 	@Autowired
 	DonationFormValidator donationFormValidator;
 
-	@InitBinder("user")
+	@InitBinder("userForm")
 	protected void initUserBinder(WebDataBinder binder) {
-		binder.setValidator(userFormValidator);
+		binder.addValidators(userFormValidator);
 	}
 
-	@InitBinder("donation")
+	@InitBinder("donationForm")
 	protected void initDonationBinder(WebDataBinder binder) {
-		binder.setValidator(donationFormValidator);
+		binder.addValidators(donationFormValidator);
 	}
 
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws ServletException {
@@ -538,19 +538,6 @@ public class UserController {
 		return model;
 
 	}
-
-	/*
-	 * public void insertTestImages() {
-	 * 
-	 * for (int i = 1; i <= 4; i++) { byte[] bytes = convertImageToBytes(new File(
-	 * "C:\\tomcat\\webapps\\spring-base-form-initial_load\\resources\\images\\testimg"
-	 * + i + ".png")); //may need to change above file path if user's tomcat
-	 * directory is different if (bytes != null) { Attachment attachment = new
-	 * Attachment(); attachment.setDonation(i); attachment.setImage(bytes);
-	 * attachmentService.saveOrUpdate(attachment); } }
-	 * 
-	 * }
-	 */
 
 	/*
 	 * private byte[] convertImageToBytes(File source) {

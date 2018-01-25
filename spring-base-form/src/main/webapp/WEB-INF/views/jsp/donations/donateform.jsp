@@ -56,15 +56,6 @@
 					</div>
 				</spring:bind>
 
-				<%-- <spring:bind path="image">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Item Images</label>
-						<div class="col-sm-10">
-							<form:input path="image" type="file" />
-						</div>
-					</div>
-				</spring:bind> --%>
-
 				<spring:bind path="value">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
 						<label class="col-sm-2 control-label">Estimated Value</label>
@@ -172,8 +163,6 @@
 									<spring:url value="/images/${imageIds}/delete" var="deleteUrl" />
 									<button formaction="${deleteUrl}">Delete Image</button>
 								</c:forEach>
-								<%-- <spring:url value="/images/${donId}" var="imageUrl" />
-								<img src="${imageUrl}" /> --%>
 							</c:otherwise>
 						</c:choose>
 					</div>

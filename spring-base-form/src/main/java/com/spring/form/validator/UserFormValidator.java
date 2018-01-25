@@ -37,11 +37,10 @@ public class UserFormValidator implements Validator {
 		User user = (User) target;
 
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "loginName", "NotEmpty.userForm.loginName");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotEmpty.userForm.password");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "confirmPassword","NotEmpty.userForm.confirmPassword");
+		//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotEmpty.userForm.password");
+		//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "confirmPassword","NotEmpty.userForm.confirmPassword");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", "NotEmpty.userForm.firstName");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName", "NotEmpty.userForm.lastName");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "NotEmpty.userForm.gender");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "NotEmpty.userForm.email");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "phone", "NotEmpty.userForm.phone");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "address", "NotEmpty.userForm.address");
@@ -50,11 +49,11 @@ public class UserFormValidator implements Validator {
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "postalCode", "NotEmpty.userForm.postalCode");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "role", "NotEmpty.userForm.role");
 
-		if(!emailValidator.valid(user.getEmail())){
+		if(user.getEmail() != "" && !emailValidator.valid(user.getEmail())){
 			errors.rejectValue("email", "Pattern.userForm.email");
 		}
 		
-		if(!phoneValidator.valid(user.getPhone())){
+		if(user.getPhone() != "" && !phoneValidator.valid(user.getPhone())){
 			errors.rejectValue("phone", "Pattern.userForm.phone");
 		}
 		
@@ -62,9 +61,9 @@ public class UserFormValidator implements Validator {
 			errors.rejectValue("province", "NotEmpty.userForm.province");
 		}
 		
-		if (!user.getPassword().equals(user.getConfirmPassword())) {
+		/*if (user.getPassword() != "" && user.getConfirmPassword() != "" && !user.getPassword().equals(user.getConfirmPassword())) {
 			errors.rejectValue("confirmPassword", "Diff.userform.confirmPassword");
-		}
+		}*/
 
 	}
 
