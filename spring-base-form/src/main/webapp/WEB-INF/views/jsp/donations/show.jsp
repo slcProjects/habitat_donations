@@ -62,7 +62,7 @@
 
 			<div class="row">
 				<label class="col-sm-2">Address</label>
-				<div class="col-sm-10">${donation.address}${donation.city},
+				<div class="col-sm-10">${donation.address} ${donation.city},
 					${donation.province}, ${donation.postalCode}</div>
 			</div>
 

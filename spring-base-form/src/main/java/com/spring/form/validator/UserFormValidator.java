@@ -23,6 +23,10 @@ public class UserFormValidator implements Validator {
 	PhoneValidator phoneValidator;
 	
 	@Autowired
+	@Qualifier("postalCodeValidator")
+	PostalCodeValidator postalCodeValidator;
+	
+	@Autowired
 	UserService userService;
 	
 	@Override
@@ -59,6 +63,10 @@ public class UserFormValidator implements Validator {
 		
 		if(user.getProvince().equalsIgnoreCase("none")){
 			errors.rejectValue("province", "NotEmpty.userForm.province");
+		}
+		
+		if(user.getPostalCode() != "" && !postalCodeValidator.valid(user.getPostalCode())){
+			errors.rejectValue("postalCode", "Pattern.userForm.postalCode");
 		}
 		
 		/*if (user.getPassword() != "" && user.getConfirmPassword() != "" && !user.getPassword().equals(user.getConfirmPassword())) {

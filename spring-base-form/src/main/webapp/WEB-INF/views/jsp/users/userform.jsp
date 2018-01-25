@@ -116,7 +116,7 @@
 						<label class="col-sm-2 control-label">Phone</label>
 						<div class="col-sm-10">
 							<form:input path="phone" class="form-control" id="phone"
-								placeholder="012-345-6789" />
+								placeholder="[1-]012-345-6789" />
 							<form:errors path="phone" class="control-label" />
 						</div>
 					</div>
