@@ -1,16 +1,6 @@
 package com.spring.form.model;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Blob;
 import java.sql.Date;
-import java.sql.SQLException;
-import java.util.ArrayList;
-
-import javax.imageio.ImageIO;
-import javax.sql.rowset.serial.SerialBlob;
 
 import org.springframework.web.multipart.MultipartFile;
 
