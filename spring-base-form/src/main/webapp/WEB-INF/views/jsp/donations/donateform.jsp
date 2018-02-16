@@ -125,6 +125,17 @@
 					</div>
 				</spring:bind>
 
+				<spring:bind path="dropFee">
+					<div class="form-group ${status.error ? 'has-error' : ''}">
+						<label class="col-sm-2 control-label">Drop Fee</label>
+						<div class="col-sm-10">
+							<form:input path="dropFee" class="form-control" id="dropFee"
+								placeholder="123.45" />
+							<form:errors path="dropFee" class="control-label" />
+						</div>
+					</div>
+				</spring:bind>
+
 				<spring:bind path="receiver">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
 						<label class="col-sm-2 control-label">Receiver ID</label>
@@ -234,10 +245,16 @@
 				</c:choose>
 
 			</form:form>
-			<spring:url value="/donations" var="donationList" />
-			<button class="btn btn-info"
-				onclick="location.href='${donationList}'">Received
-				Donations</button>
+			
+			<c:choose>
+				<c:when test="${role == 'Staff'}">
+					<spring:url value="/donations" var="donationList" />
+					<button class="btn btn-info"
+						onclick="location.href='${donationList}'">Received
+						Donations</button>
+				</c:when>
+			</c:choose>
+			
 		</div>
 	</div>
 

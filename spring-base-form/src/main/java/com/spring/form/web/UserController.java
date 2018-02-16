@@ -37,6 +37,7 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 
 import com.spring.form.model.Attachment;
 import com.spring.form.model.Donation;
+import com.spring.form.model.Login;
 import com.spring.form.model.User;
 import com.spring.form.service.AttachmentService;
 import com.spring.form.service.DonationService;
@@ -51,6 +52,7 @@ import com.spring.form.validator.UserFormValidator;
 public class UserController {
 
 	private final Logger logger = LoggerFactory.getLogger(UserController.class);
+	private String role = "";
 
 	@Autowired
 	UserFormValidator userFormValidator;
@@ -96,7 +98,69 @@ public class UserController {
 	public String index(Model model) {
 
 		logger.debug("index()");
-		return "redirect:/users/add";
+		return "redirect:/main";
+
+	}
+
+	@RequestMapping(value = "/main", method = RequestMethod.GET)
+	public String main(Model model) {
+
+		logger.debug("main()");
+
+		Login login = new Login();
+
+		model.addAttribute("loginForm", login);
+
+		return "login/loginform";
+
+	}
+
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	public String login(@ModelAttribute("loginForm") Login login, BindingResult result, Model model,
+			final RedirectAttributes redirectAttributes) {
+
+		logger.debug("login()");
+
+		String username = login.getUsername();
+		String password = login.getPassword();
+		User user = userService.findByLoginName(username);
+
+		if (user == null || !user.getPassword().equals(password)) {
+			redirectAttributes.addFlashAttribute("css", "danger");
+			redirectAttributes.addFlashAttribute("msg", "The username or password is incorrect.");
+			return "redirect:/main";
+		} else {
+			role = user.getRole();
+			redirectAttributes.addFlashAttribute("css", "success");
+			redirectAttributes.addFlashAttribute("msg", role + " Logged in successfully!");
+			if (role.equals("Donor")) {
+				redirectAttributes.addFlashAttribute("role", role);
+				return "redirect:/donations/" + user.getId() + "/add";
+			} else {
+				return "redirect:/dashboard";
+			}
+		}
+
+	}
+
+	// log out
+	@RequestMapping(value = "/logout", method = RequestMethod.GET)
+	public String logout(Model model, final RedirectAttributes redirectAttributes) {
+
+		logger.debug("logout()");
+		role = "";
+		redirectAttributes.addFlashAttribute("css", "success");
+		redirectAttributes.addFlashAttribute("msg", "Logged out successfully!");
+		return "redirect:/main";
+
+	}
+	
+	// staff dashboard
+	@RequestMapping(value = "/dashboard", method = RequestMethod.GET)
+	public String dashboard(Model model) {
+
+		logger.debug("dashboard()");
+		return "login/dashboard";
 
 	}
 
@@ -132,7 +196,7 @@ public class UserController {
 			userService.saveOrUpdate(user);
 
 			// POST/REDIRECT/GET
-			return "redirect:/donations/" + user.getId() + "/add";
+			return "redirect:/users";
 
 			// POST/FORWARD/GET
 			// return "user/list";
@@ -237,14 +301,14 @@ public class UserController {
 
 			donation.setTacking(new Timestamp(new java.util.Date().getTime()));
 			donationService.saveOrUpdate(donation);
-			
+
 			int numImages;
 			if (donation.getNumImages() == null) {
 				numImages = 0;
 			} else {
-			    numImages = donation.getNumImages();
+				numImages = donation.getNumImages();
 			}
-			
+
 			if (numImages == 4) {
 				redirectAttributes.addFlashAttribute("max", "Max number of images reached; images were not uploaded");
 			} else {
@@ -259,7 +323,8 @@ public class UserController {
 					redirectAttributes.addFlashAttribute("file1", "File 1: No image detected");
 				}
 				if (numImages == 4) {
-					redirectAttributes.addFlashAttribute("max", "Max number of images reached; rest of images were not uploaded");
+					redirectAttributes.addFlashAttribute("max",
+							"Max number of images reached; rest of images were not uploaded");
 				} else {
 					try {
 						InputStream input = donation.getFile2().getInputStream();
@@ -271,7 +336,8 @@ public class UserController {
 						redirectAttributes.addFlashAttribute("file2", "File 2: No image detected");
 					}
 					if (numImages == 4) {
-						redirectAttributes.addFlashAttribute("max", "Max number of images reached; rest of images were not uploaded");
+						redirectAttributes.addFlashAttribute("max",
+								"Max number of images reached; rest of images were not uploaded");
 					} else {
 						try {
 							InputStream input = donation.getFile3().getInputStream();
@@ -283,7 +349,8 @@ public class UserController {
 							redirectAttributes.addFlashAttribute("file3", "File 3: No image detected");
 						}
 						if (numImages == 4) {
-							redirectAttributes.addFlashAttribute("max", "Max number of images reached; rest of images were not uploaded");
+							redirectAttributes.addFlashAttribute("max",
+									"Max number of images reached; rest of images were not uploaded");
 						} else {
 							try {
 								InputStream input = donation.getFile4().getInputStream();
@@ -298,9 +365,10 @@ public class UserController {
 					}
 				}
 			}
-			
+
 			donation.setNumImages(numImages);
 			donationService.saveOrUpdate(donation);
+			redirectAttributes.addFlashAttribute("role", role);
 
 			// POST/REDIRECT/GET
 			return "redirect:/confirmation";
@@ -467,7 +535,7 @@ public class UserController {
 		attach.setFile(file);
 		attach.setDonation(id);
 		attachmentService.saveOrUpdate(attach);
-		
+
 	}
 
 	// delete attachment

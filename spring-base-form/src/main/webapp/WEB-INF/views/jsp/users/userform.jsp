@@ -41,27 +41,27 @@
 					</div>
 				</spring:bind>
 
-				<%-- <spring:bind path="password">
-				<div class="form-group ${status.error ? 'has-error' : ''}">
-					<label class="col-sm-2 control-label">Password</label>
-					<div class="col-sm-10">
-						<form:password path="password" class="form-control" id="password"
-							placeholder="password" />
-						<form:errors path="password" class="control-label" />
+				<spring:bind path="password">
+					<div class="form-group ${status.error ? 'has-error' : ''}">
+						<label class="col-sm-2 control-label">Password</label>
+						<div class="col-sm-10">
+							<form:password path="password" class="form-control" id="password"
+								placeholder="password" />
+							<form:errors path="password" class="control-label" />
+						</div>
 					</div>
-				</div>
-			</spring:bind>
+				</spring:bind>
 
-			<spring:bind path="confirmPassword">
-				<div class="form-group ${status.error ? 'has-error' : ''}">
-					<label class="col-sm-2 control-label">Confirm Password</label>
-					<div class="col-sm-10">
-						<form:password path="confirmPassword" class="form-control"
-							id="password" placeholder="password" />
-						<form:errors path="confirmPassword" class="control-label" />
+				<spring:bind path="confirmPassword">
+					<div class="form-group ${status.error ? 'has-error' : ''}">
+						<label class="col-sm-2 control-label">Confirm Password</label>
+						<div class="col-sm-10">
+							<form:password path="confirmPassword" class="form-control"
+								id="password" placeholder="password" />
+							<form:errors path="confirmPassword" class="control-label" />
+						</div>
 					</div>
-				</div>
-			</spring:bind> --%>
+				</spring:bind>
 
 				<spring:bind path="firstName">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
@@ -84,21 +84,6 @@
 						</div>
 					</div>
 				</spring:bind>
-				<%--
-			<spring:bind path="gender">
-				<div class="form-group ${status.error ? 'has-error' : ''}">
-					<label class="col-sm-2 control-label">Gender</label>
-					<div class="col-sm-10">
-						<label class="radio-inline"> <form:radiobutton
-								path="gender" value="M" /> Male
-						</label> <label class="radio-inline"> <form:radiobutton
-								path="gender" value="F" /> Female
-						</label> <br />
-						<form:errors path="gender" class="control-label" />
-					</div>
-				</div>
-			</spring:bind>
- --%>
 
 				<spring:bind path="email">
 					<div class="form-group ${status.error ? 'has-error' : ''}">

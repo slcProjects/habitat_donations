@@ -37,7 +37,7 @@ public class UserDaoImpl implements UserDao {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", id);
 
-		String sql = "SELECT * FROM \"User\" WHERE \"UserID\"=:id";
+		String sql = "SELECT * FROM \"User\" WHERE \"UserID\"=:id ORDER BY \"UserID\" ASC";
 
 		User result = null;
 		try {
@@ -58,8 +58,32 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public List<User> findAll() {
 
-		String sql = "SELECT * FROM \"User\"";
+		String sql = "SELECT * FROM \"User\" ORDER BY \"UserID\" ASC";
 		List<User> result = namedParameterJdbcTemplate.query(sql, new UserMapper());
+
+		return result;
+
+	}
+	
+	@Override
+	public User findByLoginName(String username) {
+
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("username", username);
+
+		String sql = "SELECT * FROM \"User\" WHERE \"LoginName\"=:username";
+
+		User result = null;
+		try {
+			result = namedParameterJdbcTemplate.queryForObject(sql, params, new UserMapper());
+		} catch (EmptyResultDataAccessException e) {
+			// do nothing, return null
+		}
+
+		/*
+		 * User result = namedParameterJdbcTemplate.queryForObject( sql, params,
+		 * new BeanPropertyRowMapper<User>());
+		 */
 
 		return result;
 

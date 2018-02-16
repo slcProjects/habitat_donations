@@ -47,7 +47,7 @@ public class AttachmentDaoImpl implements AttachmentDao {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", id);
 
-		String sql = "SELECT * FROM \"Attachment\" WHERE \"AttachmentID\"=:id";
+		String sql = "SELECT * FROM \"Attachment\" WHERE \"AttachmentID\"=:id ORDER BY \"AttachmentID\" ASC";
 
 		Attachment result = null;
 		try {
@@ -68,7 +68,7 @@ public class AttachmentDaoImpl implements AttachmentDao {
 	@Override
 	public List<Attachment> findAll() {
 
-		String sql = "SELECT * FROM \"Attachment\"";
+		String sql = "SELECT * FROM \"Attachment\" ORDER BY \"AttachmentID\" ASC";
 		List<Attachment> result = namedParameterJdbcTemplate.query(sql, new AttachmentMapper());
 
 		return result;
@@ -81,7 +81,7 @@ public class AttachmentDaoImpl implements AttachmentDao {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", id);
 
-		String sql = "SELECT * FROM \"Attachment\" WHERE \"DonationID\"=:id";
+		String sql = "SELECT * FROM \"Attachment\" WHERE \"DonationID\"=:id ORDER BY \"AttachmentID\" ASC";
 
 		List<Attachment> resultList = new ArrayList<Attachment>();
 		try {

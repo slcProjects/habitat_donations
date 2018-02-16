@@ -41,7 +41,7 @@ public class DonationDaoImpl implements DonationDao {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", id);
 
-		String sql = "SELECT * FROM \"Donation\" WHERE \"DonationID\"=:id";
+		String sql = "SELECT * FROM \"Donation\" WHERE \"DonationID\"=:id ORDER BY \"DonationID\" ASC";
 
 		Donation result = null;
 		try {
@@ -62,7 +62,7 @@ public class DonationDaoImpl implements DonationDao {
 	@Override
 	public List<Donation> findAll() {
 
-		String sql = "SELECT * FROM \"Donation\"";
+		String sql = "SELECT * FROM \"Donation\" ORDER BY \"DonationID\" ASC";
 		List<Donation> result = namedParameterJdbcTemplate.query(sql, new DonationMapper());
 
 		return result;

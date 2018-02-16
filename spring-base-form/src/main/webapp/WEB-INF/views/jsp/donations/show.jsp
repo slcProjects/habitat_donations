@@ -62,12 +62,12 @@
 
 			<div class="row">
 				<label class="col-sm-2">Address</label>
-				<div class="col-sm-10">${donation.address} ${donation.city},
+				<div class="col-sm-10">${donation.address}${donation.city},
 					${donation.province}, ${donation.postalCode}</div>
 			</div>
 
 			<div class="row">
-				<label class="col-sm-2">Receiver ID</label>
+				<label class="col-sm-2">Drop Fee</label>
 				<div class="col-sm-10">
 					<c:choose>
 						<c:when test="${donation.dropFee == 0}">
@@ -79,7 +79,7 @@
 					</c:choose>
 				</div>
 			</div>
-			
+
 			<div class="row">
 				<label class="col-sm-2">Receiver ID</label>
 				<div class="col-sm-10">
@@ -123,10 +123,8 @@
 						<c:otherwise>
 							<c:forEach var="imageIds" items="${imageIds}">
 								<spring:url value="/images/${imageIds}" var="imageUrl" />
- 									<img src="${imageUrl}" />
+								<img src="${imageUrl}" />
 							</c:forEach>
-							<%-- <spring:url value="/images/${donId}" var="imageUrl" />
-								<img src="${imageUrl}" /> --%>
 						</c:otherwise>
 					</c:choose>
 				</div>

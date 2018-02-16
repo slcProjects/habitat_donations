@@ -9,6 +9,8 @@ public interface UserDao {
 	User findById(Integer id);
 
 	List<User> findAll();
+	
+	User findByLoginName(String username);
 
 	void save(User user);
 

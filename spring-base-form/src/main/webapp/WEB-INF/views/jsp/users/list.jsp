@@ -60,6 +60,10 @@
 			<spring:url value="/donations" var="donationUrl" />
 			<button class="btn btn-info" onclick="location.href='${donationUrl}'">Received
 				Donations</button>
+			<spring:url value="/dashboard" var="dashboardUrl" />
+			<button class="btn btn-info" onclick="location.href='${dashboardUrl}'">Staff Dashboard</button>
+			<spring:url value="/logout" var="logoutUrl" />
+			<button class="btn btn-info" onclick="location.href='${logoutUrl}'">Log Out</button>
 		</div>
 	</div>
 

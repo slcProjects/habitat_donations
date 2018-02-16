@@ -56,7 +56,10 @@
 			<spring:url value="/users" var="urlUser" />
 			<button class="btn btn-info" onclick="location.href='${urlUser}'">View
 				all Users</button>
-
+			<spring:url value="/dashboard" var="dashboardUrl" />
+			<button class="btn btn-info" onclick="location.href='${dashboardUrl}'">Staff Dashboard</button>
+			<spring:url value="/logout" var="logoutUrl" />
+			<button class="btn btn-info" onclick="location.href='${logoutUrl}'">Log Out</button>
 		</div>
 	</div>
 

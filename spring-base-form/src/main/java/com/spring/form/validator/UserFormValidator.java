@@ -41,8 +41,8 @@ public class UserFormValidator implements Validator {
 		User user = (User) target;
 
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "loginName", "NotEmpty.userForm.loginName");
-		//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotEmpty.userForm.password");
-		//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "confirmPassword","NotEmpty.userForm.confirmPassword");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotEmpty.userForm.password");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "confirmPassword","NotEmpty.userForm.confirmPassword");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", "NotEmpty.userForm.firstName");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName", "NotEmpty.userForm.lastName");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "NotEmpty.userForm.email");
@@ -69,9 +69,9 @@ public class UserFormValidator implements Validator {
 			errors.rejectValue("postalCode", "Pattern.userForm.postalCode");
 		}
 		
-		/*if (user.getPassword() != "" && user.getConfirmPassword() != "" && !user.getPassword().equals(user.getConfirmPassword())) {
+		if (user.getPassword() != "" && user.getConfirmPassword() != "" && !user.getPassword().equals(user.getConfirmPassword())) {
 			errors.rejectValue("confirmPassword", "Diff.userform.confirmPassword");
-		}*/
+		}
 
 	}
 

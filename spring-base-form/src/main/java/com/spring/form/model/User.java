@@ -100,14 +100,6 @@ public class User
 		this.lastName = name;
 	}
 	
-	/*public String getGender() {
-		return gender;
-	}
-
-	public void setGender(String gender) {
-		this.gender = gender;
-	}*/
-
 	public String getEmail() {
 		return email;
 	}

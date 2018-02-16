@@ -9,6 +9,8 @@ public interface UserService {
 	User findById(Integer id);
 	
 	List<User> findAll();
+	
+	User findByLoginName(String username);
 
 	void saveOrUpdate(User user);
 	
