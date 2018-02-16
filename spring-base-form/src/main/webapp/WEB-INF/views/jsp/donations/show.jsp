@@ -67,8 +67,31 @@
 			</div>
 
 			<div class="row">
-				<label class="col-sm-2">Drop Fee</label>
-				<div class="col-sm-10">${donation.dropFee}</div>
+				<label class="col-sm-2">Receiver ID</label>
+				<div class="col-sm-10">
+					<c:choose>
+						<c:when test="${donation.dropFee == 0}">
+						No Drop Fee
+					</c:when>
+						<c:otherwise>
+						${donation.dropFee}
+					</c:otherwise>
+					</c:choose>
+				</div>
+			</div>
+			
+			<div class="row">
+				<label class="col-sm-2">Receiver ID</label>
+				<div class="col-sm-10">
+					<c:choose>
+						<c:when test="${donation.receiver == 0}">
+						No Receiver
+					</c:when>
+						<c:otherwise>
+						${donation.receiver}
+					</c:otherwise>
+					</c:choose>
+				</div>
 			</div>
 
 			<div class="row">

@@ -1,5 +1,7 @@
 package com.spring.form.dao;
 
+import static java.lang.Math.toIntExact;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -35,7 +37,7 @@ public class UserDaoImpl implements UserDao {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", id);
 
-		String sql = "SELECT * FROM User WHERE UserID=:id";
+		String sql = "SELECT * FROM \"User\" WHERE \"UserID\"=:id";
 
 		User result = null;
 		try {
@@ -56,7 +58,7 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public List<User> findAll() {
 
-		String sql = "SELECT * FROM User";
+		String sql = "SELECT * FROM \"User\"";
 		List<User> result = namedParameterJdbcTemplate.query(sql, new UserMapper());
 
 		return result;
@@ -68,20 +70,21 @@ public class UserDaoImpl implements UserDao {
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		
-		String sql = "INSERT INTO User(LoginName, Password, FirstName, LastName, Email, Phone, Address, City, Province, PostalCode, Role, Notify) "
+		String sql = "INSERT INTO \"User\"(\"LoginName\", \"Password\", \"FirstName\", \"LastName\", \"Email\", \"Phone\", "
+				+ "\"Address\", \"City\", \"Province\", \"PostalCode\", \"Role\", \"Notify\") "
 				+ "VALUES (:loginName, :password, :firstName, :lastName, :email, :phone, :address, :city, :province, :postalCode, :role, :notify)";
 		
 		namedParameterJdbcTemplate.update(sql, getUserSqlParameterByModel(user), keyHolder);
-		user.setId(keyHolder.getKey().intValue());
+		user.setId((toIntExact((long) keyHolder.getKeys().get("UserID"))));
 		
 	}
 
 	@Override
 	public void update(User user) {
 
-		String sql = "UPDATE User SET LoginName=:loginName, Password=:password, FirstName=:firstName, "
-				+ "LastName=:lastName, Email=:email, Phone=:phone, "
-				+ "Address=:address, City=:city, Province=:province, PostalCode=:postalCode, Role=:role, Notify=:notify WHERE UserID= :userID";
+		String sql = "UPDATE \"User\" SET \"LoginName\"=:loginName, \"Password\"=:password, \"FirstName\"=:firstName, "
+				+ "\"LastName\"=:lastName, \"Email\"=:email, \"Phone\"=:phone, \"Address\"=:address, \"City\"=:city, "
+				+ "\"Province\"=:province, \"PostalCode\"=:postalCode, \"Role\"=:role, \"Notify\"=:notify WHERE \"UserID\"= :userID";
 		
 		namedParameterJdbcTemplate.update(sql, getUserSqlParameterByModel(user));
 
@@ -90,7 +93,7 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public void delete(Integer id) {
 
-		String sql = "DELETE FROM User WHERE UserID= :id";
+		String sql = "DELETE FROM \"User\" WHERE \"UserID\"= :id";
 		namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource("id", id));
 
 	}
@@ -106,7 +109,6 @@ public class UserDaoImpl implements UserDao {
 		paramSource.addValue("password", user.getPassword());
 		paramSource.addValue("firstName", user.getFirstName());
 		paramSource.addValue("lastName", user.getLastName());
-		//paramSource.addValue("gender", user.getGender());
 		paramSource.addValue("email", user.getEmail());
 		paramSource.addValue("phone", user.getPhone());
 		paramSource.addValue("address", user.getAddress());
@@ -128,7 +130,6 @@ public class UserDaoImpl implements UserDao {
 			user.setPassword(rs.getString("Password"));
 			user.setFirstName(rs.getString("FirstName"));
 			user.setLastName(rs.getString("LastName"));
-			//user.setGender(rs.getString("Gender"));
 			user.setEmail(rs.getString("Email"));
 			user.setPhone(rs.getString("Phone"));
 			user.setAddress(rs.getString("Address"));

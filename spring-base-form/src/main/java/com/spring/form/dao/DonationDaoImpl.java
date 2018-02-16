@@ -1,5 +1,7 @@
 package com.spring.form.dao;
 
+import static java.lang.Math.toIntExact;
+
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,7 +41,7 @@ public class DonationDaoImpl implements DonationDao {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", id);
 
-		String sql = "SELECT * FROM Donation WHERE DonationID=:id";
+		String sql = "SELECT * FROM \"Donation\" WHERE \"DonationID\"=:id";
 
 		Donation result = null;
 		try {
@@ -60,7 +62,7 @@ public class DonationDaoImpl implements DonationDao {
 	@Override
 	public List<Donation> findAll() {
 
-		String sql = "SELECT * FROM Donation";
+		String sql = "SELECT * FROM \"Donation\"";
 		List<Donation> result = namedParameterJdbcTemplate.query(sql, new DonationMapper());
 
 		return result;
@@ -82,8 +84,10 @@ public class DonationDaoImpl implements DonationDao {
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 
-		String sql = "INSERT INTO Donation(DonorID, Description, Value, ScheduledDate, CompletedDate, Address, City, Province, PostalCode, DropFee, ReceiverID, Tacking, Receipts, NumImages) "
-				+ "VALUES (:donor, :description, :value, :scheduledDate, :completedDate, :address, :city, :province, :postalCode, :dropFee, :receiver, :tacking, :receipts, :numImages)";
+		String sql = "INSERT INTO \"Donation\"(\"DonorID\", \"Description\", \"Value\", \"ScheduledDate\", \"CompletedDate\", "
+				+ "\"Address\", \"City\", \"Province\", \"PostalCode\", \"DropFee\", \"ReceiverID\", \"Tacking\", \"Receipts\", \"NumImages\") "
+				+ "VALUES (:donor, :description, :value, :scheduledDate, :completedDate, :address, :city, :province, :postalCode, :dropFee, "
+				+ ":receiver, :tacking, :receipts, :numImages)";
 				
 		try {
 			namedParameterJdbcTemplate.update(sql, getSqlParameterByModel(donation), keyHolder);
@@ -91,7 +95,7 @@ public class DonationDaoImpl implements DonationDao {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		donation.setId(keyHolder.getKey().intValue());
+		donation.setId((toIntExact((long) keyHolder.getKeys().get("DonationID"))));
 
 	}
 
@@ -102,10 +106,10 @@ public class DonationDaoImpl implements DonationDao {
 		 * e) { // TODO Auto-generated catch block e.printStackTrace(); }
 		 */
 
-		String sql = "UPDATE Donation SET DonorID=:donor, Description=:description, Value=:value, "
-				+ "ScheduledDate=:scheduledDate, CompletedDate=:completedDate, Address=:address, City=:city, "
-				+ "Province=:province, PostalCode=:postalCode, DropFee=:dropFee, "
-				+ "ReceiverID=:receiver, Tacking=:tacking, Receipts=:receipts, NumImages=:numImages WHERE DonationID=:id";
+		String sql = "UPDATE \"Donation\" SET \"DonorID\"=:donor, \"Description\"=:description, \"Value\"=:value, "
+				+ "\"ScheduledDate\"=:scheduledDate, \"CompletedDate\"=:completedDate, \"Address\"=:address, \"City\"=:city, "
+				+ "\"Province\"=:province, \"PostalCode\"=:postalCode, \"DropFee\"=:dropFee, "
+				+ "\"ReceiverID\"=:receiver, \"Tacking\"=:tacking, \"Receipts\"=:receipts, \"NumImages\"=:numImages WHERE \"DonationID\"=:id";
 
 		try {
 			namedParameterJdbcTemplate.update(sql, getSqlParameterByModel(donation));
@@ -119,7 +123,7 @@ public class DonationDaoImpl implements DonationDao {
 	@Override
 	public void delete(Integer id) {
 
-		String sql = "DELETE FROM Donation WHERE DonationID= :id";
+		String sql = "DELETE FROM \"Donation\" WHERE \"DonationID\"= :id";
 		namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource("id", id));
 
 	}
@@ -171,7 +175,7 @@ public class DonationDaoImpl implements DonationDao {
 			donation.setPostalCode(rs.getString("PostalCode"));
 			donation.setDropFee(rs.getDouble("DropFee"));
 			donation.setReceiver(rs.getInt("ReceiverID"));
-			donation.setTacking(rs.getDate("Tacking"));
+			donation.setTacking(rs.getTimestamp("Tacking"));
 			donation.setReceipts(rs.getBoolean("Receipts"));
 			donation.setNumImages(rs.getInt("NumImages"));
 

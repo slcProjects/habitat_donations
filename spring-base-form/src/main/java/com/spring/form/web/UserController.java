@@ -3,6 +3,7 @@ package com.spring.form.web;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -228,11 +229,13 @@ public class UserController {
 
 			redirectAttributes.addFlashAttribute("css", "success");
 			if (donation.isNew()) {
+				donation.setNumImages(0);
 				redirectAttributes.addFlashAttribute("msg", "Donation added successfully!");
 			} else {
 				redirectAttributes.addFlashAttribute("msg", "Donation updated successfully!");
 			}
 
+			donation.setTacking(new Timestamp(new java.util.Date().getTime()));
 			donationService.saveOrUpdate(donation);
 			
 			int numImages;

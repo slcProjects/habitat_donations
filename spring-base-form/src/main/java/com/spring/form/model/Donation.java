@@ -1,6 +1,7 @@
 package com.spring.form.model;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,7 +43,7 @@ public class Donation {
 	Integer receiver;
 
 	// form:input - textbox
-	Date tacking;
+	Timestamp tacking;
 
 	// form:checkbox - single checkbox
 	boolean receipts;
@@ -183,11 +184,11 @@ public class Donation {
 		this.receiver = receiver;
 	}
 
-	public Date getTacking() {
+	public Timestamp getTacking() {
 		return tacking;
 	}
 
-	public void setTacking(Date tacking) {
+	public void setTacking(Timestamp tacking) {
 		this.tacking = tacking;
 	}
 

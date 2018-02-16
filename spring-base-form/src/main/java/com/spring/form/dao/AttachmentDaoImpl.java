@@ -1,9 +1,12 @@
 package com.spring.form.dao;
 
+import static java.lang.Math.toIntExact;
+
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
+import javax.sql.rowset.serial.SerialBlob;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -43,7 +47,7 @@ public class AttachmentDaoImpl implements AttachmentDao {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", id);
 
-		String sql = "SELECT * FROM Attachment WHERE AttachmentID=:id";
+		String sql = "SELECT * FROM \"Attachment\" WHERE \"AttachmentID\"=:id";
 
 		Attachment result = null;
 		try {
@@ -64,7 +68,7 @@ public class AttachmentDaoImpl implements AttachmentDao {
 	@Override
 	public List<Attachment> findAll() {
 
-		String sql = "SELECT * FROM Attachment";
+		String sql = "SELECT * FROM \"Attachment\"";
 		List<Attachment> result = namedParameterJdbcTemplate.query(sql, new AttachmentMapper());
 
 		return result;
@@ -77,7 +81,7 @@ public class AttachmentDaoImpl implements AttachmentDao {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", id);
 
-		String sql = "SELECT * FROM Attachment WHERE DonationID=:id";
+		String sql = "SELECT * FROM \"Attachment\" WHERE \"DonationID\"=:id";
 
 		List<Attachment> resultList = new ArrayList<Attachment>();
 		try {
@@ -100,18 +104,18 @@ public class AttachmentDaoImpl implements AttachmentDao {
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 
-		String sql = "INSERT INTO Attachment(DonationID, Image) VALUES (:donation, :image)";
+		String sql = "INSERT INTO \"Attachment\"(\"DonationID\", \"Image\") VALUES (:donation, :image)";
 
 		namedParameterJdbcTemplate.update(sql, getSqlParameterByModel(attachment), keyHolder);
 
-		attachment.setId(keyHolder.getKey().intValue());
+		attachment.setId((toIntExact((long) keyHolder.getKeys().get("AttachmentID"))));
 
 	}
 
 	@Override
 	public void update(Attachment attachment) {
 
-		String sql = "UPDATE Attachment SET DonationID=:donation, Image=:image WHERE AttachmentID=:id";
+		String sql = "UPDATE \"Attachment\" SET \"DonationID\"=:donation, \"Image\"=:image WHERE \"AttachmentID\"=:id";
 
 		namedParameterJdbcTemplate.update(sql, getSqlParameterByModel(attachment));
 
@@ -120,7 +124,7 @@ public class AttachmentDaoImpl implements AttachmentDao {
 	@Override
 	public void delete(Integer id) {
 
-		String sql = "DELETE FROM Attachment WHERE AttachmentID= :id";
+		String sql = "DELETE FROM \"Attachment\" WHERE \"AttachmentID\"= :id";
 		namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource("id", id));
 
 	}
@@ -133,7 +137,17 @@ public class AttachmentDaoImpl implements AttachmentDao {
 		MapSqlParameterSource paramSource = new MapSqlParameterSource();
 		paramSource.addValue("id", attachment.getId());
 		paramSource.addValue("donation", attachment.getDonation());
-		paramSource.addValue("image", attachment.getImage());
+		try {
+			Blob blob = attachment.getImage();
+			int blobLength;
+			blobLength = (int) blob.length();
+			byte[] blobAsBytes = blob.getBytes(1, blobLength);
+			paramSource.addValue("image", blobAsBytes);
+			blob.free();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		return paramSource;
 
@@ -146,7 +160,7 @@ public class AttachmentDaoImpl implements AttachmentDao {
 			Attachment attachment = new Attachment();
 			attachment.setId(rs.getInt("AttachmentID"));
 			attachment.setDonation(rs.getInt("DonationID"));
-			attachment.setImage(rs.getBlob("Image"));
+			attachment.setImage(new SerialBlob(rs.getBytes("Image")));
 
 			try {
 				InputStream is = attachment.getImage().getBinaryStream();

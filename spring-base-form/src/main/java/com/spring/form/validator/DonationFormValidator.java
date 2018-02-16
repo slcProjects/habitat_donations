@@ -33,7 +33,6 @@ public class DonationFormValidator implements Validator {
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "NotEmpty.donationForm.description");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "value", "NotEmpty.donationForm.value");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "scheduledDate", "NotEmpty.donationForm.scheduledDate");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "receiver", "NotEmpty.donationForm.receiver");
 		
 		if(donation.getPostalCode() != "" && !postalCodeValidator.valid(donation.getPostalCode())){
 			errors.rejectValue("postalCode", "Pattern.userForm.postalCode");
