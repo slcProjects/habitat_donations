@@ -179,22 +179,6 @@
 					</div>
 				</spring:bind>
 
-				<!-- Custom Script, Spring map to model via 'name' attribute
-		<div class="form-group">
-			<label class="col-sm-2 control-label">Number</label>
-			<div class="col-sm-10">
-
-				<c:forEach items="${numberList}" var="obj">
-					<div class="radio">
-						<label> 
-							<input type="radio" name="number" value="${obj}">${obj}
-						</label>
-					</div>
-				</c:forEach>
-			</div>
-		</div>
- 		-->
-
 				<c:choose>
 					<c:when test="${userForm['new']}">
 						<button type="submit">Submit Detail</button>
@@ -205,9 +189,23 @@
 				</c:choose>
 
 			</form:form>
-			<spring:url value="/users" var="userList" />
-			<button class="btn btn-info" onclick="location.href='${userList}'">View
-				all users</button>
+			
+			<spring:url value="/dashboard" var="dashboardUrl" />
+			
+			<c:choose>
+				<c:when test="${role == 'Staff'}">
+					<spring:url value="/users" var="donationList" />
+					<button class="btn btn-info"
+						onclick="location.href='${donationList}'">View All Users</button>
+					<button class="btn btn-info" onclick="location.href='${dashboardUrl}'">Staff Dashboard</button>
+				</c:when>
+				<c:otherwise>
+					<c:if test="${role != 'Staff' && not empty role}">
+						<button class="btn btn-info" onclick="location.href='${dashboardUrl}'">User Dashboard</button>
+					</c:if>
+				</c:otherwise>
+			</c:choose>
+			
 		</div>
 	</div>
 

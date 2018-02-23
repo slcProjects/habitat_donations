@@ -5,3 +5,9 @@ table, th, td {
 button {
 	margin-top: 10px;
 }
+.emptyday {
+	background-color: gainsboro;
+}
+.today {
+	background-color: gold;
+}

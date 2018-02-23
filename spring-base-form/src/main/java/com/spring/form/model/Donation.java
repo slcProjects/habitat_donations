@@ -1,6 +1,5 @@
 package com.spring.form.model;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -19,10 +18,10 @@ public class Donation {
 	Double value;
 
 	// form:input - textbox
-	Date scheduledDate;
+	Timestamp scheduledDate;
 
 	// form:input - textbox
-	Date completedDate;
+	Timestamp completedDate;
 
 	// form:input - textbox
 	String address;
@@ -49,6 +48,16 @@ public class Donation {
 	boolean receipts;
 	
 	Integer numImages;
+	
+	String time;
+	
+	public String getTime() {
+		return time;
+	}
+	
+	public void setTime(String time) {
+		this.time = time;
+	}
 
 	private MultipartFile file1, file2, file3, file4;
 
@@ -120,19 +129,19 @@ public class Donation {
 		this.value = value;
 	}
 
-	public Date getScheduledDate() {
+	public Timestamp getScheduledDate() {
 		return scheduledDate;
 	}
 
-	public void setScheduledDate(Date scheduledDate) {
+	public void setScheduledDate(Timestamp scheduledDate) {
 		this.scheduledDate = scheduledDate;
 	}
 
-	public Date getCompletedDate() {
+	public Timestamp getCompletedDate() {
 		return completedDate;
 	}
 
-	public void setCompletedDate(Date completedDate) {
+	public void setCompletedDate(Timestamp completedDate) {
 		this.completedDate = completedDate;
 	}
 

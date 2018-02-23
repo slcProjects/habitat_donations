@@ -18,11 +18,8 @@
 			</c:forEach>
 	  	-->
 
-		<spring:url value="/users" var="userUrl" />
-		<spring:url value="/donations" var="donationUrl" />
-
-		<button class="btn btn-info" onclick="location.href='${userUrl}'">Users</button>
-		<button class="btn btn-info" onclick="location.href='${donationUrl}'">Donations</button>
+		<spring:url value="/logout" var="logoutUrl" />
+		<button class="btn btn-info" onclick="location.href='${logoutUrl}'">Log Out</button>
 
 	</div>
 

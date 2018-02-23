@@ -68,6 +68,34 @@ public class DonationDaoImpl implements DonationDao {
 		return result;
 
 	}
+	
+	@Override
+	public List<Donation> findByUserId(Integer id) {
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("id", id);
+
+		String sql = "SELECT * FROM \"Donation\" WHERE \"DonorID\"=:id ORDER BY \"DonationID\" ASC";
+		List<Donation> result = namedParameterJdbcTemplate.query(sql, params, new DonationMapper());
+
+		return result;
+
+	}
+	
+	@Override
+	public List<Donation> findByScheduledDate(String date) {
+		
+		List<Donation> result = null;
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("date", date);
+		params.put("format", "YYYY-MM-DD");
+		String sql = "SELECT * FROM \"Donation\" WHERE to_char(\"ScheduledDate\", :format)=:date ORDER BY \"ScheduledDate\" ASC";
+		result = namedParameterJdbcTemplate.query(sql, params, new DonationMapper());
+
+		return result;
+
+	}
 
 	@Override
 	public void save(Donation donation) {
@@ -167,8 +195,8 @@ public class DonationDaoImpl implements DonationDao {
 			donation.setDonor(rs.getInt("DonorID"));
 			donation.setDescription(rs.getString("Description"));
 			donation.setValue(rs.getDouble("Value"));
-			donation.setScheduledDate(rs.getDate("ScheduledDate"));
-			donation.setCompletedDate(rs.getDate("CompletedDate"));
+			donation.setScheduledDate(rs.getTimestamp("ScheduledDate"));
+			donation.setCompletedDate(rs.getTimestamp("CompletedDate"));
 			donation.setAddress(rs.getString("Address"));
 			donation.setCity(rs.getString("City"));
 			donation.setProvince(rs.getString("Province"));

@@ -15,5 +15,9 @@ public interface DonationDao {
 	void update(Donation donation);
 
 	void delete(Integer id);
+
+	List<Donation> findByUserId(Integer id);
+
+	List<Donation> findByScheduledDate(String date);
 	
 }

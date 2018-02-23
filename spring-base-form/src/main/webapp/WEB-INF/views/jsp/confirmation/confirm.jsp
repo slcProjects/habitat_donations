@@ -77,16 +77,28 @@
 
 			<p>Thank you for Registering with us. Your donation is
 				appreciated!</p>
+			
+			<spring:url value="/donations/${donId}" var="viewUrl" />
+			<button onclick="location.href='${viewUrl}'">Donation Detail</button>
+			
+			<spring:url value="/donationsforuser" var="forUserUrl" />
+			<button onclick="location.href='${forUserUrl}'">View Your Donations</button>
 				
+			<spring:url value="/dashboard" var="dashboardUrl" />
+			
 			<c:choose>
 				<c:when test="${role == 'Staff'}">
+					<spring:url value="/donations/${donId}/update" var="editUrl" />
+					<button onclick="location.href='${editUrl}'">Edit Donation</button>
 					<spring:url value="/donations" var="donationList" />
 					<button class="btn btn-info"
 						onclick="location.href='${donationList}'">Received
 						Donations</button>
-					<spring:url value="/dashboard" var="dashboardUrl" />
 					<button class="btn btn-info" onclick="location.href='${dashboardUrl}'">Staff Dashboard</button>
 				</c:when>
+				<c:otherwise>
+					<button class="btn btn-info" onclick="location.href='${dashboardUrl}'">User Dashboard</button>
+				</c:otherwise>
 			</c:choose>
 
 			<spring:url value="/logout" var="logoutUrl" />

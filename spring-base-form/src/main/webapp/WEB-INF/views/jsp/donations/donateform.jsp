@@ -26,6 +26,12 @@
 			<c:choose>
 				<c:when test="${donationForm['new']}">
 					<h1>Donate</h1>
+					<c:choose>
+						<c:when test="${role != 'Staff'}">
+							<p>Details are final once you confirm donation.
+							Please contact us afterwards if you must make any changes or cancellations.</p>
+						</c:when>
+					</c:choose>
 				</c:when>
 				<c:otherwise>
 					<h1>Update Donation</h1>
@@ -69,10 +75,10 @@
 
 				<spring:bind path="scheduledDate">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Scheduled Date</label>
+						<label class="col-sm-2 control-label">Scheduled Date (24 hour format)</label>
 						<div class="col-sm-10">
 							<form:input path="scheduledDate" class="form-control"
-								id="scheduledDate" placeholder="2018-01-01" />
+								id="scheduledDate" placeholder="YYYY-MM-DD HH:MM:SS" />
 							<form:errors path="scheduledDate" class="control-label" />
 						</div>
 					</div>
@@ -246,13 +252,23 @@
 
 			</form:form>
 			
+			<spring:url value="/donationsforuser" var="forUserUrl" />
+			<button onclick="location.href='${forUserUrl}'">View Your Donations</button>
+			
+			<spring:url value="/dashboard" var="dashboardUrl" />
+			
 			<c:choose>
 				<c:when test="${role == 'Staff'}">
+				
 					<spring:url value="/donations" var="donationList" />
 					<button class="btn btn-info"
 						onclick="location.href='${donationList}'">Received
 						Donations</button>
+					<button class="btn btn-info" onclick="location.href='${dashboardUrl}'">Staff Dashboard</button>
 				</c:when>
+				<c:otherwise>
+					<button class="btn btn-info" onclick="location.href='${dashboardUrl}'">User Dashboard</button>
+				</c:otherwise>
 			</c:choose>
 			
 		</div>

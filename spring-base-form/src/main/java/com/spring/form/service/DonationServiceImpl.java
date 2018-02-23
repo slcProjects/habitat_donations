@@ -41,5 +41,15 @@ public class DonationServiceImpl implements DonationService {
 	public void delete(int id) {
 		donationDao.delete(id);
 	}
+	
+	@Override 
+	public List<Donation> findByUserId(Integer id) {
+		return donationDao.findByUserId(id);
+	}
+	
+	@Override 
+	public List<Donation> findByScheduledDate(String date) {
+		return donationDao.findByScheduledDate(date);
+	}
 
 }

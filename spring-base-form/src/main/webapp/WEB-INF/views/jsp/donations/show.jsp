@@ -62,7 +62,7 @@
 
 			<div class="row">
 				<label class="col-sm-2">Address</label>
-				<div class="col-sm-10">${donation.address}${donation.city},
+				<div class="col-sm-10">${donation.address} ${donation.city},
 					${donation.province}, ${donation.postalCode}</div>
 			</div>
 
@@ -129,11 +129,27 @@
 					</c:choose>
 				</div>
 			</div>
-
-			<spring:url value="/donations" var="donationList" />
-			<button class="btn btn-info"
-				onclick="location.href='${donationList}'">View Received
-				Donations</button>
+			
+			<spring:url value="/donationsforuser" var="forUserUrl" />
+			<button onclick="location.href='${forUserUrl}'">View Your Donations</button>
+			
+			<spring:url value="/dashboard" var="dashboardUrl" />
+			
+			<c:choose>
+				<c:when test="${role == 'Staff'}">
+					<spring:url value="/donations/${donation.id}/update" var="updateUrl" />
+					<button onclick="location.href='${updateUrl}'">Update Details</button>
+					<spring:url value="/donations" var="donationList" />
+					<button class="btn btn-info" onclick="location.href='${donationList}'">View all donations</button>
+					<button class="btn btn-info" onclick="location.href='${dashboardUrl}'">Staff Dashboard</button>
+				</c:when>
+				<c:otherwise>
+					<button class="btn btn-info" onclick="location.href='${dashboardUrl}'">User Dashboard</button>
+				</c:otherwise>
+			</c:choose>
+				
+			<spring:url value="/logout" var="logoutUrl" />
+			<button class="btn btn-info" onclick="location.href='${logoutUrl}'">Log Out</button>
 
 		</div>
 	</div>

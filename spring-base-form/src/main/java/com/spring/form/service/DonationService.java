@@ -13,5 +13,9 @@ public interface DonationService {
 	void saveOrUpdate(Donation donation);
 	
 	void delete(int id);
+
+	List<Donation> findByUserId(Integer id);
+
+	List<Donation> findByScheduledDate(String date);
 	
 }

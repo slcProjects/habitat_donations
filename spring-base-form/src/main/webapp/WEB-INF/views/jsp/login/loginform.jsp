@@ -55,6 +55,11 @@
 				<button type="submit">Log In</button>
 
 			</form:form>
+			
+			<p>New donor? Register today!</p>
+			<spring:url value="/users/add" var="registerUrl" />
+			<button class="btn btn-info" onclick="location.href='${registerUrl}'">Register</button>
+			
 
 		</div>
 	</div>

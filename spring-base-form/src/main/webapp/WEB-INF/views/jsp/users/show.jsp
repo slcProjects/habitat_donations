@@ -38,7 +38,7 @@
 
 			<div class="row">
 				<label class="col-sm-2">Full Name</label>
-				<div class="col-sm-10">${user.firstName}${user.lastName}</div>
+				<div class="col-sm-10">${user.firstName} ${user.lastName}</div>
 			</div>
 			
 			<div class="row">
@@ -66,11 +66,28 @@
 				<label class="col-sm-2">Notifications?</label>
 				<div class="col-sm-10">${user.notify}</div>
 			</div>
+			
+			<spring:url value="/users/${user.id}/update" var="updateUrl" />
+			<button onclick="location.href='${updateUrl}'">Edit User Detail</button>
+			
+			<spring:url value="/dashboard" var="dashboardUrl" />
+			
+			<c:choose>
+				<c:when test="${role == 'Staff'}">
+					<spring:url value="/users" var="userList" />
+					<button class="btn btn-info" onclick="location.href='${userList}'">View all users</button>
+					<button class="btn btn-info" onclick="location.href='${dashboardUrl}'">Staff Dashboard</button>
+				</c:when>
+				<c:otherwise>
+					<spring:url value="/donations/${user.id}/add" var="donateUrl" />
+					<button onclick="location.href='${donateUrl}'">Donate</button>
+					<button class="btn btn-info" onclick="location.href='${dashboardUrl}'">User Dashboard</button>
+				</c:otherwise>
+			</c:choose>
 
-			<spring:url value="/users" var="userList" />
-			<button class="btn btn-info" onclick="location.href='${userList}'">View
-				all users</button>
-
+			<spring:url value="/logout" var="logoutUrl" />
+			<button class="btn btn-info" onclick="location.href='${logoutUrl}'">Log Out</button>
+			
 		</div>
 	</div>
 
