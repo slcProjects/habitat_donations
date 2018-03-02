@@ -35,12 +35,7 @@
 								<th>Description</th>
 								<th>Scheduled Date</th>
 								<th>Actions</th>
-							<tr style='border: 2px solid black'>
-								<th style='border: 2px solid black'>#ID</th>
-								<th style='border: 2px solid black'>Description</th>
-								<th style='border: 2px solid black'>Scheduled Date</th>
-								<th style='border: 2px solid black'>Actions</th>
-								<th style='border: 2px solid black'>Direction</th>
+								<th>Direction</th>
 							</tr>
 						</thead>
 

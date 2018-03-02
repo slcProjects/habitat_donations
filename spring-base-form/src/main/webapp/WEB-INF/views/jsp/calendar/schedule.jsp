@@ -29,12 +29,7 @@
 								<th>Description</th>
 								<th>Scheduled Time</th>
 								<th>Address</th>
-							<tr style='border: 2px solid black'>
-								<th style='border: 2px solid black'>#ID</th>
-								<th style='border: 2px solid black'>Description</th>
-								<th style='border: 2px solid black'>Scheduled Time</th>
-								<th style='border: 2px solid black'>Address</th>
-								<th style='border: 2px solid black'>Direction</th>
+								<th>Direction</th>
 							</tr>
 						</thead>
 
