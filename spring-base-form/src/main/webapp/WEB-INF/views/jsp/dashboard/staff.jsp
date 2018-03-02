@@ -37,10 +37,10 @@
 			<spring:url value="/donations" var="donations" />
 			<button class="btn btn-info" onclick="location.href='${donations}'">View all donations</button>
 				
-			<spring:url value="/schedule" var="schedule" />
+			<spring:url value="/schedule/${month}/${day}/${year}" var="schedule" />
 			<button class="btn btn-info" onclick="location.href='${schedule}'">View today's schedule</button>
 			
-			<spring:url value="/calendar" var="calendar" />
+			<spring:url value="/calendar/${month}/${year}/current" var="calendar" />
 			<button class="btn btn-info" onclick="location.href='${calendar}'">View calendar</button>
 			
 			<!--<button class="btn btn-info">Print today's schedule</button>-->

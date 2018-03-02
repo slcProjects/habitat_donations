@@ -17,21 +17,20 @@ public class UserFormValidator implements Validator {
 	@Autowired
 	@Qualifier("emailValidator")
 	EmailValidator emailValidator;
-	
+
 	@Autowired
 	@Qualifier("phoneValidator")
 	PhoneValidator phoneValidator;
-	
+
 	@Autowired
 	@Qualifier("postalCodeValidator")
 	PostalCodeValidator postalCodeValidator;
-	
+
 	@Autowired
 	UserService userService;
-	
+
 	@Override
-	public boolean supports(Class<?> clazz) 
-	{
+	public boolean supports(Class<?> clazz) {
 		return User.class.equals(clazz);
 	}
 
@@ -42,7 +41,7 @@ public class UserFormValidator implements Validator {
 
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "loginName", "NotEmpty.userForm.loginName");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotEmpty.userForm.password");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "confirmPassword","NotEmpty.userForm.confirmPassword");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "confirmPassword", "NotEmpty.userForm.confirmPassword");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", "NotEmpty.userForm.firstName");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName", "NotEmpty.userForm.lastName");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "NotEmpty.userForm.email");
@@ -53,24 +52,30 @@ public class UserFormValidator implements Validator {
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "postalCode", "NotEmpty.userForm.postalCode");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "role", "NotEmpty.userForm.role");
 
-		if(user.getEmail() != "" && !emailValidator.valid(user.getEmail())){
+		if (user.getEmail() != "" && !emailValidator.valid(user.getEmail())) {
 			errors.rejectValue("email", "Pattern.userForm.email");
 		}
-		
-		if(user.getPhone() != "" && !phoneValidator.valid(user.getPhone())){
+
+		if (user.getPhone() != "" && !phoneValidator.valid(user.getPhone())) {
 			errors.rejectValue("phone", "Pattern.userForm.phone");
 		}
-		
-		if(user.getProvince().equalsIgnoreCase("none")){
+
+		if (user.getProvince().equalsIgnoreCase("none")) {
 			errors.rejectValue("province", "NotEmpty.userForm.province");
 		}
-		
-		if(user.getPostalCode() != "" && !postalCodeValidator.valid(user.getPostalCode())){
+
+		if (user.getPostalCode() != "" && !postalCodeValidator.valid(user.getPostalCode())) {
 			errors.rejectValue("postalCode", "Pattern.userForm.postalCode");
 		}
-		
-		if (user.getPassword() != "" && user.getConfirmPassword() != "" && !user.getPassword().equals(user.getConfirmPassword())) {
+
+		if (user.getPassword() != "" && user.getConfirmPassword() != ""
+				&& !user.getPassword().equals(user.getConfirmPassword())) {
 			errors.rejectValue("confirmPassword", "Diff.userform.confirmPassword");
+		}
+
+		if (!user.getRole().equals("") && !user.getRole().equals("Donor") && !user.getRole().equals("Volunteer")
+				&& !user.getRole().equals("Staff")) {
+			errors.rejectValue("role", "Invalid.userForm.role");
 		}
 
 	}

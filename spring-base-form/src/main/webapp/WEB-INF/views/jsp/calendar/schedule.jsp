@@ -22,33 +22,33 @@
 					<p>No donations found</p>
 				</c:when>
 				<c:otherwise>
-					<table style='border: 2px solid black'>
+					<table>
 						<thead>
-							<tr style='border: 2px solid black'>
-								<th style='border: 2px solid black'>#ID</th>
-								<th style='border: 2px solid black'>Description</th>
-								<th style='border: 2px solid black'>Scheduled Time</th>
-								<th style='border: 2px solid black'>Address</th>
+							<tr>
+								<th>#ID</th>
+								<th>Description</th>
+								<th>Scheduled Time</th>
+								<th>Address</th>
 							</tr>
 						</thead>
 
 						<c:forEach var="donation" items="${donations}">
-							<tr style='border: 2px solid black'>
-								<td style='border: 2px solid black'>${donation.id}</td>
-								<td style='border: 2px solid black'>${donation.description}</td>
-								<td style='border: 2px solid black'>${donation.time}</td>
-								<td style='border: 2px solid black'>${donation.address} ${donation.city},
+							<tr>
+								<td>${donation.id}</td>
+								<td>${donation.description}</td>
+								<td>${donation.time}</td>
+								<td>${donation.address} ${donation.city},
 									${donation.province}, ${donation.postalCode}</td>
 							</tr>
 						</c:forEach>
 					</table>
 					<input class="btn btn-info" type="submit" value="Print Schedule" onClick="window.print()"/>
-					<spring:url value="/schedule/print" var="printUrl" />
+					<spring:url value="/schedule/print/${month}/${day}/${year}" var="printUrl" />
 					<button class="btn btn-info" onclick="location.href='${printUrl}'">Printer Friendly Version</button>
 				</c:otherwise>
 			</c:choose>
 			
-			<spring:url value="/calendar" var="calendar" />
+			<spring:url value="/calendar/${month}/${year}/recent" var="calendar" />
 			<button class="btn btn-info" onclick="location.href='${calendar}'">View calendar</button>
 			
 			<spring:url value="/donations" var="donationList" />

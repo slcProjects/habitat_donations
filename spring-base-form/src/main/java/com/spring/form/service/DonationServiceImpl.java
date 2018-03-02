@@ -51,5 +51,15 @@ public class DonationServiceImpl implements DonationService {
 	public List<Donation> findByScheduledDate(String date) {
 		return donationDao.findByScheduledDate(date);
 	}
+	
+	@Override 
+	public List<Donation> findByScheduledMonth(Integer month, Integer year) {
+		return donationDao.findByScheduledMonth(month, year);
+	}
+	
+	@Override 
+	public List<Donation> findByScheduledWeekOfMonth(Integer firstDay, Integer lastDay, Integer month, Integer year) {
+		return donationDao.findByScheduledWeekOfMonth(firstDay, lastDay, month, year);
+	}
 
 }

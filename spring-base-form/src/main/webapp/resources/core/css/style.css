@@ -1,13 +1,42 @@
+table, th, td, tr {
+	border: 2px solid black;
+    border-collapse: collapse;
+}
 table, th, td {
 	padding: 15px;
-	text-align: center;
+ 	text-align: center;
 }
 button {
 	margin-top: 10px;
 }
-.emptyday {
-	background-color: gainsboro;
+.donlink {
+	display: block;
+	font-weight: bold;
+	font-size: 13px;
+	text-align: right;
 }
 .today {
 	background-color: gold;
+}
+.day-number { 
+    padding: 5px; 
+    float: left; 
+    width: 30px;
+    margin: -5px -5px 0 0;
+    left: -5px;
+    text-align: center;
+}
+.calendar-day { 
+    height: 100px;
+    min-height: 100px;
+}
+.calendar-day, .calendar-day-np { 
+    width: 180px;
+    padding: 5px;
+}
+.calendar-day-np { 
+    background: #eee;
+}
+.week {
+	vertical-align: middle;
 }

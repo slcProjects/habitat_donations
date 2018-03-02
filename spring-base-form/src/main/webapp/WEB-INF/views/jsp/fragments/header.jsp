@@ -35,7 +35,7 @@
 		<div class="container">
 			<div class="section rel_pos ">
 				<div id="logo">
-					<div class="logo_img " initital_width="213">
+					<div class="logo_img ">
 						<a href="https://habitatkingston.com/"
 							title="Habitat for Humanity" rel="home"> <img
 							src="https://habitatkingston.com/wp-content/uploads/2017/05/habitat-white.png"

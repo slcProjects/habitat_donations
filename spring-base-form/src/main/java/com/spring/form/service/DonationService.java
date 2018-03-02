@@ -17,5 +17,9 @@ public interface DonationService {
 	List<Donation> findByUserId(Integer id);
 
 	List<Donation> findByScheduledDate(String date);
+
+	List<Donation> findByScheduledMonth(Integer date, Integer year);
+
+	List<Donation> findByScheduledWeekOfMonth(Integer firstDay, Integer lastDay, Integer month, Integer year);
 	
 }

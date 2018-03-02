@@ -193,6 +193,8 @@
 			<spring:url value="/dashboard" var="dashboardUrl" />
 			
 			<c:choose>
+			<c:when test="${not empty role}">
+			<c:choose>
 				<c:when test="${role == 'Staff'}">
 					<spring:url value="/users" var="donationList" />
 					<button class="btn btn-info"
@@ -204,6 +206,14 @@
 						<button class="btn btn-info" onclick="location.href='${dashboardUrl}'">User Dashboard</button>
 					</c:if>
 				</c:otherwise>
+			</c:choose>
+			</c:when>
+			<c:otherwise>
+				<p>Already registered? Log in below!</p>
+				<spring:url value="/main" var="loginUrl" />
+					<button class="btn btn-info"
+						onclick="location.href='${loginUrl}'">Login</button>
+			</c:otherwise>
 			</c:choose>
 			
 		</div>

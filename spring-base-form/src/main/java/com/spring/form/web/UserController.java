@@ -56,7 +56,7 @@ import com.spring.form.validator.UserFormValidator;
 public class UserController {
 
 	private final Logger logger = LoggerFactory.getLogger(UserController.class);
-	private String role = "";
+	private String currentRole = "";
 	private int currentId = 0;
 	private SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE MMMM dd, yyyy");
 	private SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a");
@@ -106,11 +106,13 @@ public class UserController {
 		this.attachmentService = attachmentService;
 	}
 
+	
+	// log in redirect or dashboard redirect
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(Model model) {
 
 		logger.debug("index()");
-		if (!role.equals("") && currentId != 0) {
+		if (!currentRole.equals("") && currentId != 0) {
 			return "redirect:/dashboard";
 		} else {
 			return "redirect:/main";
@@ -118,22 +120,23 @@ public class UserController {
 
 	}
 
+	// log in page or dashboard redirect
 	@RequestMapping(value = "/main", method = RequestMethod.GET)
 	public String main(Model model) {
 
 		logger.debug("main()");
 
-		Login login = new Login();
-
-		role = "";
-		currentId = 0;
-
-		model.addAttribute("loginForm", login);
-
-		return "login/loginform";
+		if (!currentRole.equals("") && currentId != 0) {
+			return "redirect:/dashboard";
+		} else {
+			Login login = new Login();
+			model.addAttribute("loginForm", login);
+			return "login/loginform";
+		}
 
 	}
 
+	// checks username and password
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public String login(@ModelAttribute("loginForm") Login login, BindingResult result, Model model,
 			final RedirectAttributes redirectAttributes) {
@@ -149,15 +152,13 @@ public class UserController {
 			redirectAttributes.addFlashAttribute("msg", "The username or password is incorrect.");
 			return "redirect:/main";
 		} else {
-			role = user.getRole();
+			currentRole = user.getRole();
 			currentId = user.getId();
 			today = new GregorianCalendar();
-			month = today.get(Calendar.MONTH);
-			year = today.get(Calendar.YEAR);
 			redirectAttributes.addFlashAttribute("css", "success");
-			redirectAttributes.addFlashAttribute("msg", role + " logged in successfully!");
-			if (role.equals("Donor")) {
-				redirectAttributes.addFlashAttribute("role", role);
+			redirectAttributes.addFlashAttribute("msg", currentRole + " logged in successfully!");
+			if (currentRole.equals("Donor")) {
+				redirectAttributes.addFlashAttribute("role", currentRole);
 			}
 			return "redirect:/dashboard";
 		}
@@ -169,11 +170,8 @@ public class UserController {
 	public String logout(Model model, final RedirectAttributes redirectAttributes) {
 
 		logger.debug("logout()");
-		role = "";
+		currentRole = "";
 		currentId = 0;
-		today = null;
-		month = 0;
-		year = 0;
 		redirectAttributes.addFlashAttribute("css", "success");
 		redirectAttributes.addFlashAttribute("msg", "Logged out successfully!");
 		return "redirect:/main";
@@ -186,13 +184,18 @@ public class UserController {
 
 		logger.debug("dashboard()");
 
-		if (role.equals("") || currentId == 0) {
+		if (currentRole.equals("") || currentId == 0) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
 			return "redirect:/main";
 		} else {
 			model.addAttribute("userId", currentId);
-			if (role.equals("Staff")) {
+			if (currentRole.equals("Staff")) {
+				month = today.get(Calendar.MONTH);
+				year = today.get(Calendar.YEAR);
+				model.addAttribute("day", today.get(Calendar.DAY_OF_MONTH));
+				model.addAttribute("month", month);
+				model.addAttribute("year", year);
 				return "dashboard/staff";
 			} else {
 				return "dashboard/donor";
@@ -207,11 +210,11 @@ public class UserController {
 
 		logger.debug("showAllUsers()");
 
-		if (role.equals("") || currentId == 0) {
+		if (currentRole.equals("") || currentId == 0) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
 			return "redirect:/main";
-		} else if (!role.equals("Staff")) {
+		} else if (!currentRole.equals("Staff")) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
 			return "redirect:/dashboard";
@@ -230,7 +233,7 @@ public class UserController {
 		logger.debug("saveOrUpdateUser() : {}", user);
 
 		if (result.hasErrors()) {
-			populateDefaultUserModel(model);
+			populateProvinces(model);
 			return "users/userform";
 		} else {
 
@@ -244,10 +247,10 @@ public class UserController {
 			userService.saveOrUpdate(user);
 
 			// POST/REDIRECT/GET
-			if (role.equals("Staff")) {
+			if (currentRole.equals("Staff")) {
 				return "redirect:/users";
 			} else {
-				role = user.getRole();
+				currentRole = user.getRole();
 				currentId = user.getId();
 				return "redirect:/dashboard";
 			}
@@ -268,9 +271,26 @@ public class UserController {
 		User user = new User();
 
 		model.addAttribute("userForm", user);
-		model.addAttribute("role", role);
+		model.addAttribute("role", currentRole);
 
-		populateDefaultUserModel(model);
+		populateProvinces(model);
+
+		return "users/userform";
+
+	}
+	
+	// show register user form
+	@RequestMapping(value = "/users/register", method = RequestMethod.GET)
+	public String showRegisterUserForm(Model model, final RedirectAttributes redirectAttributes) {
+
+		logger.debug("showAddRegisterForm()");
+
+		User user = new User();
+
+		model.addAttribute("userForm", user);
+		model.addAttribute("register", true);
+
+		populateProvinces(model);
 
 		return "users/userform";
 
@@ -283,16 +303,16 @@ public class UserController {
 
 		logger.debug("showUpdateUserForm() : {}", id);
 
-		if (role.equals("") || currentId == 0) {
+		if (currentRole.equals("") || currentId == 0) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
 			return "redirect:/main";
 		} else {
 			User user = userService.findById(id);
 			model.addAttribute("userForm", user);
-			model.addAttribute("role", role);
+			model.addAttribute("role", currentRole);
 
-			populateDefaultUserModel(model);
+			populateProvinces(model);
 
 			return "users/userform";
 		}
@@ -305,11 +325,11 @@ public class UserController {
 
 		logger.debug("deleteUser() : {}", id);
 
-		if (role.equals("") || currentId == 0) {
+		if (currentRole.equals("") || currentId == 0) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
 			return "redirect:/main";
-		} else if (!role.equals("Staff")) {
+		} else if (!currentRole.equals("Staff")) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
 			return "redirect:/dashboard";
@@ -330,7 +350,7 @@ public class UserController {
 
 		logger.debug("showUser() id: {}", id);
 
-		if (role.equals("") || currentId == 0) {
+		if (currentRole.equals("") || currentId == 0) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
 			return "redirect:/main";
@@ -341,7 +361,7 @@ public class UserController {
 				model.addAttribute("msg", "User not found");
 			}
 			model.addAttribute("user", user);
-			model.addAttribute("role", role);
+			model.addAttribute("role", currentRole);
 
 			return "users/show";
 		}
@@ -353,11 +373,11 @@ public class UserController {
 	public String showAllDonations(Model model, final RedirectAttributes redirectAttributes) {
 
 		logger.debug("showAllDonations()");
-		if (role.equals("") || currentId == 0) {
+		if (currentRole.equals("") || currentId == 0) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
 			return "redirect:/main";
-		} else if (!role.equals("Staff")) {
+		} else if (!currentRole.equals("Staff")) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
 			return "redirect:/dashboard";
@@ -373,12 +393,12 @@ public class UserController {
 	public String showAllDonationsForUser(Model model, final RedirectAttributes redirectAttributes) {
 
 		logger.debug("showAllDonationsForUser()");
-		if (role.equals("") || currentId == 0) {
+		if (currentRole.equals("") || currentId == 0) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
 			return "redirect:/main";
 		} else {
-			model.addAttribute("role", role);
+			model.addAttribute("role", currentRole);
 			model.addAttribute("donations", donationService.findByUserId(currentId));
 			return "donations/listforuser";
 		}
@@ -394,7 +414,7 @@ public class UserController {
 		logger.debug("saveOrUpdateDonation() : {}", donation);
 
 		if (result.hasErrors()) {
-			populateDefaultDonationModel(model);
+			populateProvinces(model);
 			return "donations/donateform";
 		} else {
 
@@ -476,7 +496,7 @@ public class UserController {
 
 			donation.setNumImages(numImages);
 			donationService.saveOrUpdate(donation);
-			redirectAttributes.addFlashAttribute("role", role);
+			redirectAttributes.addFlashAttribute("role", currentRole);
 
 			// POST/REDIRECT/GET
 			return "redirect:/confirmation/" + donation.getId();
@@ -495,7 +515,7 @@ public class UserController {
 
 		logger.debug("showAddDonationForm()");
 
-		if (role.equals("") || currentId == 0) {
+		if (currentRole.equals("") || currentId == 0) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
 			return "redirect:/main";
@@ -513,9 +533,9 @@ public class UserController {
 
 			model.addAttribute("donationForm", donation);
 			model.addAttribute("noImage", true);
-			model.addAttribute("role", role);
+			model.addAttribute("role", currentRole);
 
-			populateDefaultDonationModel(model);
+			populateProvinces(model);
 
 			return "donations/donateform";
 		}
@@ -529,11 +549,11 @@ public class UserController {
 
 		logger.debug("showUpdateDonationForm() : {}", id);
 
-		if (role.equals("") || currentId == 0) {
+		if (currentRole.equals("") || currentId == 0) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
 			return "redirect:/main";
-		} else if (!role.equals("Staff")) {
+		} else if (!currentRole.equals("Staff")) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
 			return "redirect:/dashboard";
@@ -556,9 +576,9 @@ public class UserController {
 				model.addAttribute("imageIds", imageIds);
 			}
 			model.addAttribute("noImage", noImage);
-			model.addAttribute("role", role);
+			model.addAttribute("role", currentRole);
 
-			populateDefaultDonationModel(model);
+			populateProvinces(model);
 
 			return "donations/donateform";
 		}
@@ -571,11 +591,11 @@ public class UserController {
 
 		logger.debug("deleteDonation() : {}", id);
 
-		if (role.equals("") || currentId == 0) {
+		if (currentRole.equals("") || currentId == 0) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
 			return "redirect:/main";
-		} else if (!role.equals("Staff")) {
+		} else if (!currentRole.equals("Staff")) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
 			return "redirect:/dashboard";
@@ -603,7 +623,7 @@ public class UserController {
 
 		logger.debug("showDonation() donation id: {}", id);
 
-		if (role.equals("") || currentId == 0) {
+		if (currentRole.equals("") || currentId == 0) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
 			return "redirect:/main";
@@ -616,6 +636,11 @@ public class UserController {
 				model.addAttribute("msg", "Donation not found");
 			}
 			model.addAttribute("donation", donation);
+
+			GregorianCalendar calendar = new GregorianCalendar();
+			calendar.setTime(donation.getScheduledDate());
+			month = calendar.get(Calendar.MONTH);
+			year = calendar.get(Calendar.YEAR);
 
 			Boolean noImage = false;
 			List<Integer> imageIds = new ArrayList<>();
@@ -631,7 +656,9 @@ public class UserController {
 				model.addAttribute("imageIds", imageIds);
 			}
 			model.addAttribute("noImage", noImage);
-			model.addAttribute("role", role);
+			model.addAttribute("role", currentRole);
+			model.addAttribute("month", month);
+			model.addAttribute("year", year);
 
 			return "donations/show";
 		}
@@ -645,7 +672,7 @@ public class UserController {
 
 		logger.debug("donationConfirm() id : {}", id);
 
-		if (role.equals("") || currentId == 0) {
+		if (currentRole.equals("") || currentId == 0) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
 			return "redirect:/main";
@@ -657,87 +684,111 @@ public class UserController {
 
 	}
 
-	// donation schedule page
-	@RequestMapping(value = "/schedule", method = RequestMethod.GET)
-	public String donationSchedule(Model model, final RedirectAttributes redirectAttributes) {
+	// day schedule page
+	@RequestMapping(value = "/schedule/{month}/{day}/{year}", method = RequestMethod.GET)
+	public String donationSchedule(@PathVariable("month") int month, @PathVariable("day") int day,
+			@PathVariable("year") int year, Model model, HttpServletResponse response, HttpServletRequest request,
+			final RedirectAttributes redirectAttributes) {
 
 		logger.debug("donationSchedule()");
 
-		if (role.equals("") || currentId == 0) {
+		if (currentRole.equals("") || currentId == 0) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
 			return "redirect:/main";
-		} else if (!role.equals("Staff")) {
+		} else if (!currentRole.equals("Staff")) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
 			return "redirect:/dashboard";
 		} else {
-			java.util.Date date = new java.util.Date();
-
-			List<Donation> donations = getSchedule(date);
-
-			model.addAttribute("date", dayFormat.format(date));
-			model.addAttribute("donations", donations);
-
-			return "calendar/schedule";
+			return getSchedule(model, month, day, year) + "schedule";
 		}
 
 	}
 
-	// printer friendly schedule page
-	@RequestMapping(value = "/schedule/print", method = RequestMethod.GET)
-	public String printFriendlySchedule(Model model, final RedirectAttributes redirectAttributes) {
+	// printer friendly day schedule page
+	@RequestMapping(value = "/schedule/print/{month}/{day}/{year}", method = RequestMethod.GET)
+	public String printFriendlySchedule(@PathVariable("month") int month, @PathVariable("day") int day,
+			@PathVariable("year") int year, Model model, HttpServletResponse response, HttpServletRequest request,
+			final RedirectAttributes redirectAttributes) {
 
 		logger.debug("printFriendlySchedule()");
 
-		if (role.equals("") || currentId == 0) {
+		if (currentRole.equals("") || currentId == 0) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
 			return "redirect:/main";
-		} else if (!role.equals("Staff")) {
+		} else if (!currentRole.equals("Staff")) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
 			return "redirect:/dashboard";
 		} else {
-			java.util.Date date = new java.util.Date();
-
-			List<Donation> donations = getSchedule(date);
-
-			model.addAttribute("date", dayFormat.format(date));
-			model.addAttribute("donations", donations);
-
-			return "calendar/printschedule";
+			return getSchedule(model, month, day, year) + "printschedule";
 		}
 
 	}
 
-	private List<Donation> getSchedule(java.util.Date date) {
+	// process day schedule
+	private String getSchedule(Model model, int month, int day, int year) {
 
-		List<Donation> donations = donationService.findByScheduledDate(sqlFormat.format(date));
+		GregorianCalendar date = new GregorianCalendar(year, month, day);
+
+		List<Donation> donations = donationService.findByScheduledDate(sqlFormat.format(date.getTime()));
 
 		for (int ctr = 0; ctr < donations.size(); ctr++) {
 			donations.get(ctr).setTime(timeFormat.format(donations.get(ctr).getScheduledDate()));
 		}
 
-		return donations;
+		model.addAttribute("date", dayFormat.format(date.getTime()));
+		model.addAttribute("donations", donations);
+		model.addAttribute("month", month);
+		model.addAttribute("day", day);
+		model.addAttribute("year", year);
+
+		return "calendar/";
 	}
 
-	// this month's calendar
-	@RequestMapping(value = "/calendar", method = RequestMethod.GET)
-	public String thisCalendar(Model model, final RedirectAttributes redirectAttributes) {
+	// donation calendar
+	@RequestMapping(value = "/calendar/{month}/{year}/{sequence}", method = RequestMethod.GET)
+	public String calendar(@PathVariable("month") int month, @PathVariable("year") int year,
+			@PathVariable("sequence") String sequence, Model model, final RedirectAttributes redirectAttributes) {
 
-		logger.debug("thisCalendar()");
+		logger.debug("calendar()");
 
-		if (role.equals("") || currentId == 0) {
+		if (currentRole.equals("") || currentId == 0) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
 			return "redirect:/main";
-		} else if (!role.equals("Staff")) {
+		} else if (!currentRole.equals("Staff")) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
 			return "redirect:/dashboard";
 		} else {
-			int day = today.get(Calendar.DATE);
+			if (!sequence.equals("recent")) {
+				if (sequence.equals("last")) {
+					if (month == 0) {
+						month = 11;
+						year--;
+					} else {
+						month--;
+					}
+				} else if (sequence.equals("next")) {
+					if (month == 11) {
+						month = 0;
+						year++;
+					} else {
+						month++;
+					}
+				} else {
+					year = today.get(Calendar.YEAR);
+					month = today.get(Calendar.MONTH);
+				}
+			}
+
+			if (today.get(Calendar.YEAR) == year && today.get(Calendar.MONTH) == month) {
+				int day = today.get(Calendar.DATE);
+				model.addAttribute("day", day);
+			}
 
 			GregorianCalendar first = new GregorianCalendar(year, month, 1);
 			int daysInMonth = first.getActualMaximum(Calendar.DAY_OF_MONTH);
@@ -746,101 +797,105 @@ public class UserController {
 			GregorianCalendar last = new GregorianCalendar(year, month, daysInMonth);
 			int weeksInMonth = last.get(Calendar.WEEK_OF_MONTH);
 
-			model.addAttribute("month", months[month] + " " + year);
-			model.addAttribute("day", day);
+			List<Donation> donations = donationService.findByScheduledMonth(month + 1, year);
+
+			model.addAttribute("monthName", months[month] + " " + year);
+			model.addAttribute("month", month);
+			model.addAttribute("year", year);
 			model.addAttribute("daysInMonth", daysInMonth);
 			model.addAttribute("first", firstOfMonth);
 			model.addAttribute("weeksInMonth", weeksInMonth);
+			model.addAttribute("donations", donations);
+
+			this.month = month;
+			this.year = year;
 
 			return "calendar/calendar";
 		}
 
 	}
 
-	// last month's calendar
-	@RequestMapping(value = "/last", method = RequestMethod.GET)
-	public String lastCalendar(Model model, final RedirectAttributes redirectAttributes) {
+	// week schedule page
+	@RequestMapping(value = "/calendar/weekof/{day}/{month}/{year}", method = RequestMethod.GET)
+	private String scheduleWeek(@PathVariable("day") int day, @PathVariable("month") int month,
+			@PathVariable("year") int year, Model model, HttpServletResponse response, HttpServletRequest request,
+			final RedirectAttributes redirectAttributes) {
 
-		logger.debug("lastCalendar()");
+		logger.debug("scheduleWeek()");
 
-		if (role.equals("") || currentId == 0) {
+		if (currentRole.equals("") || currentId == 0) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
 			return "redirect:/main";
-		} else if (!role.equals("Staff")) {
+		} else if (!currentRole.equals("Staff")) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
 			return "redirect:/dashboard";
 		} else {
-			if (month == 0) {
-				month = 11;
-				year--;
-			} else {
-				month--;
-			}
-
-			if (month == today.get(Calendar.MONTH) && year == today.get(Calendar.YEAR)) {
-				return "redirect:/calendar";
-			} else {
-				GregorianCalendar first = new GregorianCalendar(year, month, 1);
-				int daysInMonth = first.getActualMaximum(Calendar.DAY_OF_MONTH);
-				int firstOfMonth = first.get(Calendar.DAY_OF_WEEK);
-
-				GregorianCalendar last = new GregorianCalendar(year, month, daysInMonth);
-				int weeksInMonth = last.get(Calendar.WEEK_OF_MONTH);
-
-				model.addAttribute("month", months[month] + " " + year);
-				model.addAttribute("daysInMonth", daysInMonth);
-				model.addAttribute("first", firstOfMonth);
-				model.addAttribute("weeksInMonth", weeksInMonth);
-
-				return "calendar/calendar";
-			}
+			return getWeekSchedule(model, day, month, year) + "weekschedule";
 		}
-
+		
 	}
+	
+	// printer friendly week schedule page
+	@RequestMapping(value = "/weekof/print/{day}/{month}/{year}", method = RequestMethod.GET)
+	private String scheduleWeekPrint(@PathVariable("day") int day, @PathVariable("month") int month,
+			@PathVariable("year") int year, Model model, HttpServletResponse response, HttpServletRequest request,
+			final RedirectAttributes redirectAttributes) {
 
-	// next month's calendar
-	@RequestMapping(value = "/next", method = RequestMethod.GET)
-	public String nextCalendar(Model model, final RedirectAttributes redirectAttributes) {
+		logger.debug("scheduleWeek()");
 
-		logger.debug("nextCalendar()");
-
-		if (role.equals("") || currentId == 0) {
+		if (currentRole.equals("") || currentId == 0) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
 			return "redirect:/main";
-		} else if (!role.equals("Staff")) {
+		} else if (!currentRole.equals("Staff")) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
 			return "redirect:/dashboard";
 		} else {
-			if (month == 11) {
-				month = 0;
-				year++;
-			} else {
-				month++;
-			}
-
-			if (month == today.get(Calendar.MONTH) && year == today.get(Calendar.YEAR)) {
-				return "redirect:/calendar";
-			} else {
-				GregorianCalendar first = new GregorianCalendar(year, month, 1);
-				int daysInMonth = first.getActualMaximum(Calendar.DAY_OF_MONTH);
-				int firstOfMonth = first.get(Calendar.DAY_OF_WEEK);
-
-				GregorianCalendar last = new GregorianCalendar(year, month, daysInMonth);
-				int weeksInMonth = last.get(Calendar.WEEK_OF_MONTH);
-
-				model.addAttribute("month", months[month] + " " + year);
-				model.addAttribute("daysInMonth", daysInMonth);
-				model.addAttribute("first", firstOfMonth);
-				model.addAttribute("weeksInMonth", weeksInMonth);
-
-				return "calendar/calendar";
-			}
+			return getWeekSchedule(model, day, month, year) + "printweekschedule";
 		}
-
+		
+	}
+	
+	// process week schedule
+	private String getWeekSchedule(Model model, int day, int month, int year) {
+		
+		logger.debug("getWeekSchedule()");
+		
+		GregorianCalendar firstOfWeek = new GregorianCalendar(year, month, day);
+		int lastDayOfWeek = day;
+		switch (firstOfWeek.get(Calendar.DAY_OF_WEEK)) {
+			case 1:
+				lastDayOfWeek += 6;
+				break;
+			case 2:
+				lastDayOfWeek += 5;
+				break;
+			case 3:
+				lastDayOfWeek += 4;
+				break;
+			case 4:
+				lastDayOfWeek += 3;
+				break;
+			case 5:
+				lastDayOfWeek += 2;
+				break;
+			case 6:
+				lastDayOfWeek += 1;
+		}
+		
+		List<Donation> donations = donationService.findByScheduledWeekOfMonth(day, lastDayOfWeek, month + 1, year);
+		
+		model.addAttribute("week", months[month] + " " + day + " - " + lastDayOfWeek + ", " + year);
+		model.addAttribute("day", day);
+		model.addAttribute("month", month);
+		model.addAttribute("year", year);
+		model.addAttribute("donations", donations);
+		
+		return "calendar/";
+		
 	}
 
 	// display image
@@ -894,18 +949,6 @@ public class UserController {
 		redirectAttributes.addFlashAttribute("msg", "Image is deleted!");
 
 		return "redirect:/donations/" + donId + "/update";
-
-	}
-
-	private void populateDefaultUserModel(Model model) {
-
-		populateProvinces(model);
-
-	}
-
-	private void populateDefaultDonationModel(Model model) {
-
-		populateProvinces(model);
 
 	}
 

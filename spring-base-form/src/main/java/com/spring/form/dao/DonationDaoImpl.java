@@ -96,6 +96,55 @@ public class DonationDaoImpl implements DonationDao {
 		return result;
 
 	}
+	
+	@Override
+	public List<Donation> findByScheduledMonth(Integer month, Integer year) {
+		
+		List<Donation> result = null;
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		
+		params.put("month", month);
+		params.put("year", year);
+		
+		String sql = "SELECT * FROM \"Donation\" WHERE Extract(month from \"ScheduledDate\")=:month "
+				+ "AND Extract(year from \"ScheduledDate\")=:year ORDER BY \"ScheduledDate\" ASC";
+		
+		try {
+			result = namedParameterJdbcTemplate.query(sql, params, new DonationMapper());
+		} catch (EmptyResultDataAccessException e) {
+			// do nothing, return null
+		}
+
+		return result;
+
+	}
+	
+	@Override
+	public List<Donation> findByScheduledWeekOfMonth(Integer firstDay, Integer lastDay, Integer month, Integer year) {
+		
+		List<Donation> result = null;
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		
+		params.put("firstDay", firstDay);
+		params.put("lastDay", lastDay);
+		params.put("month", month);
+		params.put("year", year);
+		
+		String sql = "SELECT * FROM \"Donation\" WHERE Extract(month from \"ScheduledDate\")=:month "
+				+ "AND Extract(year from \"ScheduledDate\")=:year AND Extract(day from \"ScheduledDate\")>=:firstDay "
+				+ "AND Extract(day from \"ScheduledDate\")<=:lastDay ORDER BY \"ScheduledDate\" ASC";
+		
+		try {
+			result = namedParameterJdbcTemplate.query(sql, params, new DonationMapper());
+		} catch (EmptyResultDataAccessException e) {
+			// do nothing, return null
+		}
+
+		return result;
+
+	}
 
 	@Override
 	public void save(Donation donation) {

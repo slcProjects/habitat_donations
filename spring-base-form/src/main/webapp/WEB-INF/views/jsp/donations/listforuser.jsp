@@ -28,22 +28,22 @@
 					<p>No donations found</p>
 				</c:when>
 				<c:otherwise>
-					<table style='border: 2px solid black'>
+					<table>
 						<thead>
-							<tr style='border: 2px solid black'>
-								<th style='border: 2px solid black'>#ID</th>
-								<th style='border: 2px solid black'>Description</th>
-								<th style='border: 2px solid black'>Scheduled Date</th>
-								<th style='border: 2px solid black'>Actions</th>
+							<tr>
+								<th>#ID</th>
+								<th>Description</th>
+								<th>Scheduled Date</th>
+								<th>Actions</th>
 							</tr>
 						</thead>
 
 						<c:forEach var="donation" items="${donations}">
-							<tr style='border: 2px solid black'>
-								<td style='border: 2px solid black'>${donation.id}</td>
-								<td style='border: 2px solid black'>${donation.description}</td>
-								<td style='border: 2px solid black'>${donation.scheduledDate}</td>
-								<td style='border: 2px solid black'>
+							<tr>
+								<td>${donation.id}</td>
+								<td>${donation.description}</td>
+								<td>${donation.scheduledDate}</td>
+								<td>
 									<spring:url value="/donations/${donation.id}" var="donationUrl" />
 									<button onclick="location.href='${donationUrl}'">Donation Detail</button> 
 									<c:if test="${role == 'Staff'}">

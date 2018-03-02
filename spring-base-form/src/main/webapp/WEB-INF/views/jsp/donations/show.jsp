@@ -141,6 +141,8 @@
 					<button onclick="location.href='${updateUrl}'">Update Details</button>
 					<spring:url value="/donations" var="donationList" />
 					<button class="btn btn-info" onclick="location.href='${donationList}'">View all donations</button>
+					<spring:url value="/calendar/${month}/${year}/recent" var="donationList" />
+					<button class="btn btn-info" onclick="location.href='${donationList}'">View calendar of donation month</button>
 					<button class="btn btn-info" onclick="location.href='${dashboardUrl}'">Staff Dashboard</button>
 				</c:when>
 				<c:otherwise>

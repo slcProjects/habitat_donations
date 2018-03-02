@@ -28,34 +28,34 @@
 					<p>No users found</p>
 				</c:when>
 				<c:otherwise>
-					<table style='border: 2px solid black'>
+					<table>
 						<thead>
-							<tr style='border: 2px solid black'>
-								<th style='border: 2px solid black'>#ID</th>
-								<th style='border: 2px solid black'>LoginName</th>
-								<th style='border: 2px solid black'>Email</th>
-								<th style='border: 2px solid black'>Role</th>
-								<th style='border: 2px solid black'>Actions</th>
+							<tr>
+								<th>#ID</th>
+								<th>LoginName</th>
+								<th>Email</th>
+								<th>Role</th>
+								<th>Actions</th>
 							</tr>
 						</thead>
 
 						<c:forEach var="user" items="${users}">
-							<tr style='border: 2px solid black'>
-								<td style='border: 2px solid black'>${user.id}</td>
-								<td style='border: 2px solid black'>${user.loginName}</td>
-								<td style='border: 2px solid black'>${user.email}</td>
-								<td style='border: 2px solid black'>${user.role}</td>
-								<td style='border: 2px solid black'><spring:url
-										value="/users/${user.id}" var="userUrl" /> <spring:url
-										value="/users/${user.id}/delete" var="deleteUrl" /> <spring:url
-										value="/users/${user.id}/update" var="updateUrl" /> <spring:url
-										value="/donations/${user.id}/add" var="donateUrl" />
+							<tr>
+								<td>${user.id}</td>
+								<td>${user.loginName}</td>
+								<td>${user.email}</td>
+								<td>${user.role}</td>
+								<td><spring:url value="/users/${user.id}" var="userUrl" />
+									<spring:url value="/users/${user.id}/delete" var="deleteUrl" />
+									<spring:url value="/users/${user.id}/update" var="updateUrl" />
+									<spring:url value="/donations/${user.id}/add" var="donateUrl" />
 									<button onclick="location.href='${userUrl}'">View
 										Detail</button>
 									<button onclick="location.href='${updateUrl}'">Edit
 										User</button>
 									<button onclick="location.href='${deleteUrl}'">Delete</button>
-									<button onclick="location.href='${donateUrl}'">Donate</button></td>
+									<button onclick="location.href='${donateUrl}'">Donate</button>
+								</td>
 							</tr>
 						</c:forEach>
 					</table>

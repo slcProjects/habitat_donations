@@ -19,5 +19,9 @@ public interface DonationDao {
 	List<Donation> findByUserId(Integer id);
 
 	List<Donation> findByScheduledDate(String date);
+
+	List<Donation> findByScheduledMonth(Integer month, Integer year);
+
+	List<Donation> findByScheduledWeekOfMonth(Integer firstDay, Integer lastDay, Integer month, Integer year);
 	
 }

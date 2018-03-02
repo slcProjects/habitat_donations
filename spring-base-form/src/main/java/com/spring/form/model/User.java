@@ -153,7 +153,7 @@ public class User
 	}
 
 	public void setRole(String role) {
-		this.role = role;
+		this.role = role.substring(0, 1).toUpperCase() + role.substring(1);
 	}
 
 	public boolean isNotify() {

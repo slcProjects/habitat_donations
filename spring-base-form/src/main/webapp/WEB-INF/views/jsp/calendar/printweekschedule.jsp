@@ -6,11 +6,12 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <jsp:include page="../fragments/head.jsp" />
 <body>
 	<div style="margin-left: 20px">
 
-		<h4>Donation Schedule: ${date}</h4>
+		<h4>Donation Schedule: ${week}</h4>
 
 		<c:choose>
 			<c:when test="${empty donations}">
@@ -22,7 +23,7 @@
 						<tr>
 							<th>#ID</th>
 							<th>Description</th>
-							<th>Scheduled Time</th>
+							<th>Scheduled Date</th>
 							<th>Address</th>
 						</tr>
 					</thead>
@@ -31,7 +32,7 @@
 						<tr>
 							<td>${donation.id}</td>
 							<td>${donation.description}</td>
-							<td>${donation.time}</td>
+							<td>${donation.scheduledDate}</td>
 							<td>${donation.address} ${donation.city},
 								${donation.province}, ${donation.postalCode}</td>
 						</tr>
@@ -40,8 +41,10 @@
 				<input type="submit" value="Print" onClick="window.print()" />
 			</c:otherwise>
 		</c:choose>
-		<spring:url value="/schedule/${month}/${day}/${year}" var="schedule" />
-		<button onclick="location.href='${schedule}'">Back</button>
+
+		<spring:url value="/calendar/weekof/${day}/${month}/${year}"
+			var="weekschedule" />
+		<button onclick="location.href='${weekschedule}'">Back</button>
 	</div>
 </body>
 </html>
