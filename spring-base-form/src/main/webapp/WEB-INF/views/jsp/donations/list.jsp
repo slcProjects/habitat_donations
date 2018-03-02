@@ -35,6 +35,12 @@
 								<th>Description</th>
 								<th>Scheduled Date</th>
 								<th>Actions</th>
+							<tr style='border: 2px solid black'>
+								<th style='border: 2px solid black'>#ID</th>
+								<th style='border: 2px solid black'>Description</th>
+								<th style='border: 2px solid black'>Scheduled Date</th>
+								<th style='border: 2px solid black'>Actions</th>
+								<th style='border: 2px solid black'>Direction</th>
 							</tr>
 						</thead>
 
@@ -43,8 +49,8 @@
 								<td>${donation.id}</td>
 								<td>${donation.description}</td>
 								<td>${donation.scheduledDate}</td>
-								<td><spring:url
-										value="/donations/${donation.id}" var="donationUrl" /> <spring:url
+								<td><spring:url value="/donations/${donation.id}"
+										var="donationUrl" /> <spring:url
 										value="/donations/${donation.id}/delete" var="deleteUrl" /> <spring:url
 										value="/donations/${donation.id}/update" var="updateUrl" />
 
@@ -53,6 +59,11 @@
 									<button onclick="location.href='${updateUrl}'">Edit
 										Donation</button>
 									<button onclick="location.href='${deleteUrl}'">Delete</button></td>
+								<td style='border: 2px solid black'>
+									<button
+										onclick="location.href='http://www.google.ca/maps/place/'+'${donation.address},${donation.city},${donation.province},${donation.postalCode}'">view
+										on google map</button>
+								</td>
 							</tr>
 						</c:forEach>
 					</table>
