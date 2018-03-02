@@ -35,6 +35,8 @@
 								<th style='border: 2px solid black'>Description</th>
 								<th style='border: 2px solid black'>Scheduled Date</th>
 								<th style='border: 2px solid black'>Actions</th>
+								<th style='border: 2px solid black'> Direction</th>
+								
 							</tr>
 						</thead>
 
@@ -53,6 +55,9 @@
 									<button onclick="location.href='${updateUrl}'">Edit
 										Donation</button>
 									<button onclick="location.href='${deleteUrl}'">Delete</button></td>
+									<td style='border: 2px solid black'> 
+						<button onclick="location.href='http://www.google.ca/maps/place/'+'${donation.address},${donation.city},${donation.province},${donation.postalCode}'">view on google map</button>
+						</td>
 							</tr>
 						</c:forEach>
 					</table>

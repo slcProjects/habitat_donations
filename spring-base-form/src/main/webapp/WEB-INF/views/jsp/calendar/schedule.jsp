@@ -29,6 +29,7 @@
 								<th style='border: 2px solid black'>Description</th>
 								<th style='border: 2px solid black'>Scheduled Time</th>
 								<th style='border: 2px solid black'>Address</th>
+						<th style='border: 2px solid black'>Direction</th>
 							</tr>
 						</thead>
 
@@ -39,6 +40,9 @@
 								<td style='border: 2px solid black'>${donation.time}</td>
 								<td style='border: 2px solid black'>${donation.address} ${donation.city},
 									${donation.province}, ${donation.postalCode}</td>
+								<td style='border: 2px solid black'> 
+						<button onclick="location.href='http://www.google.ca/maps/place/'+'${donation.address},${donation.city},${donation.province},${donation.postalCode}'">Direction</button>
+						</td>
 							</tr>
 						</c:forEach>
 					</table>
