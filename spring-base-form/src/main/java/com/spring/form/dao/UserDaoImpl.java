@@ -96,7 +96,7 @@ public class UserDaoImpl implements UserDao {
 		
 		String sql = "INSERT INTO \"User\"(\"LoginName\", \"Password\", \"FirstName\", \"LastName\", \"Email\", \"Phone\", "
 				+ "\"Address\", \"City\", \"Province\", \"PostalCode\", \"Role\", \"Notify\") "
-				+ "VALUES (:loginName, :password, :firstName, :lastName, :email, :phone, :address, :city, :province, :postalCode, :role, :notify)";
+				+ "VALUES (:loginName, :password, :firstName, :lastName, :email, :phone, :address, :city, :province, :postalCode, CAST (:role AS \"UserRole\"), :notify)";
 		
 		namedParameterJdbcTemplate.update(sql, getUserSqlParameterByModel(user), keyHolder);
 		user.setId((toIntExact((long) keyHolder.getKeys().get("UserID"))));
@@ -108,7 +108,7 @@ public class UserDaoImpl implements UserDao {
 
 		String sql = "UPDATE \"User\" SET \"LoginName\"=:loginName, \"Password\"=:password, \"FirstName\"=:firstName, "
 				+ "\"LastName\"=:lastName, \"Email\"=:email, \"Phone\"=:phone, \"Address\"=:address, \"City\"=:city, "
-				+ "\"Province\"=:province, \"PostalCode\"=:postalCode, \"Role\"=:role, \"Notify\"=:notify WHERE \"UserID\"= :userID";
+				+ "\"Province\"=:province, \"PostalCode\"=:postalCode, \"Role\"=CAST (:role AS \"UserRole\"), \"Notify\"=:notify WHERE \"UserID\"= :userID";
 		
 		namedParameterJdbcTemplate.update(sql, getUserSqlParameterByModel(user));
 
