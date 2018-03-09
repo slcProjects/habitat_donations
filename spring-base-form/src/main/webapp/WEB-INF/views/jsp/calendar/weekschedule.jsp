@@ -28,6 +28,8 @@
 								<th>#ID</th>
 								<th>Description</th>
 								<th>Scheduled Date</th>
+								<th>Type</th>
+								<th>Status</th>
 								<th>Address</th>
 								<th>Actions</th>
 							</tr>
@@ -38,6 +40,21 @@
 								<td>${donation.id}</td>
 								<td>${donation.description}</td>
 								<td>${donation.scheduledDate}</td>
+								<td>${donation.type}</td>
+								<td>
+									<spring:url value="/statusupdate/${donation.id}" var="statusUrl" />
+									<form:form class="form-horizontal" method="post"
+										modelAttribute="statusForm${donation.id}" action="${statusUrl}">
+										<spring:bind path="status">
+											<form:select path="status" class="form-control">
+												<%-- <form:option value="NONE" label="--- Select ---" /> --%>
+												<form:options items="${statusList}" />
+											</form:select>
+											<form:errors path="status" class="control-label" />
+										</spring:bind>
+										<button type="submit">Update Status</button>
+									</form:form>
+								</td>
 								<td>${donation.address} ${donation.city},
 									${donation.province}, ${donation.postalCode}</td>
 								<td><spring:url value="/donations/${donation.id}"
@@ -52,7 +69,7 @@
 			</c:choose>
 			
 			<spring:url value="/weekof/print/${day}/${month}/${year}" var="printUrl" />
-			<button class="btn btn-info" onclick="location.href='${printUrl}'">Printer Friendly Version</button>
+			<button class="btn btn-info" onclick="window.open('${printUrl}')">Printer Friendly Version</button>
 
 			<spring:url value="/calendar/${month}/${year}/recent" var="calendar" />
 			<button class="btn btn-info" onclick="location.href='${calendar}'">View

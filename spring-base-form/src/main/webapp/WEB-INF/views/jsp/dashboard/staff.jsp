@@ -30,6 +30,9 @@
 			
 			<spring:url value="/donationsforuser" var="forUserUrl" />
 			<button onclick="location.href='${forUserUrl}'">View Your Donations</button>
+			
+			<spring:url value="/users/searchform" var="userSearch" />
+			<button class="btn btn-info" onclick="location.href='${userSearch}'">User Search</button>
 
 			<spring:url value="/users" var="users" />
 			<button class="btn btn-info" onclick="location.href='${users}'">View all users</button>

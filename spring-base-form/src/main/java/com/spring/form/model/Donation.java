@@ -47,9 +47,17 @@ public class Donation {
 	// form:checkbox - single checkbox
 	boolean receipts;
 	
+	// form:select - form:option - dropdown - single select
+	String type;
+	
+	// form:select - form:option - dropdown - single select
+	String status;
+	
 	Integer numImages;
 	
 	String time;
+	
+	String donorName;
 	
 	public String getTime() {
 		return time;
@@ -209,6 +217,22 @@ public class Donation {
 		this.receipts = receipts;
 	}
 	
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
 	public Integer getNumImages() {
 		return numImages;
 	}
@@ -221,12 +245,21 @@ public class Donation {
 		numImages -= num;
 	}
 	
+	public void setDonorName(String donorName) {
+		this.donorName = donorName;
+	}
+	
+	public String getDonorName() {
+		return donorName;
+	}
+	
 	@Override
 	public String toString() {
 		return "Donation [id=" + id + ", donor=" + donor + ", description=" + description + ", value=" + value
 				+ ", scheduledDate=" + scheduledDate + ", completedDate=" + completedDate + ", address=" + address
 				+ ", city=" + city + ", province=" + province + ", postalCode=" + postalCode + ", dropFee=" + dropFee
-				+ ", receiver=" + receiver + ", tacking=" + tacking + ", receipts=" + receipts + ", numImages=" + numImages + "]" + isNew();
+				+ ", status=" + status + ", receiver=" + receiver + ", tacking=" + tacking + ", receipts=" + receipts
+				+ ", numImages=" + numImages + "]" + isNew();
 	}
 
 }

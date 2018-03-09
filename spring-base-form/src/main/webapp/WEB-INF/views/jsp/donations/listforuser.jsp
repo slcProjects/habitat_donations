@@ -34,6 +34,8 @@
 								<th>#ID</th>
 								<th>Description</th>
 								<th>Scheduled Date</th>
+								<th>Type</th>
+								<th>Status</th>
 								<th>Actions</th>
 							</tr>
 						</thead>
@@ -43,6 +45,8 @@
 								<td>${donation.id}</td>
 								<td>${donation.description}</td>
 								<td>${donation.scheduledDate}</td>
+								<td>${donation.type}</td>
+								<td>${donation.status}</td>
 								<td>
 									<spring:url value="/donations/${donation.id}" var="donationUrl" />
 									<button onclick="location.href='${donationUrl}'">Donation Detail</button> 

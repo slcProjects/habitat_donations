@@ -16,7 +16,7 @@
 			<h1>Donation Schedule</h1>
 
 			<h3>${date}</h3>
-
+			
 			<c:choose>
 				<c:when test="${empty donations}">
 					<p>No donations found</p>
@@ -28,6 +28,8 @@
 								<th>#ID</th>
 								<th>Description</th>
 								<th>Scheduled Time</th>
+								<th>Type</th>
+								<th>Status</th>
 								<th>Address</th>
 								<th>Direction</th>
 							</tr>
@@ -38,11 +40,28 @@
 								<td>${donation.id}</td>
 								<td>${donation.description}</td>
 								<td>${donation.time}</td>
-								<td>${donation.address}${donation.city},
+								<td>${donation.type}</td>
+								<td>
+									<spring:url value="/statusupdate/${donation.id}" var="statusUrl" />
+									<form:form class="form-horizontal" method="post"
+										modelAttribute="statusForm${donation.id}" action="${statusUrl}">
+										<spring:bind path="status">
+											<form:select path="status" class="form-control">
+												<%-- <form:option value="NONE" label="--- Select ---" /> --%>
+												<form:options items="${statusList}" />
+											</form:select>
+											<form:errors path="status" class="control-label" />
+										</spring:bind>
+										<button type="submit">Update Status</button>
+									</form:form>
+								</td>
+								<td>${donation.address} ${donation.city},
 									${donation.province}, ${donation.postalCode}</td>
 								<td style='border: 2px solid black'>
+									<spring:url value="http://www.google.ca/maps/place/${donation.address},${donation.city},${donation.province},${donation.postalCode}"
+										var="mapUrl" />
 									<button
-										onclick="location.href='http://www.google.ca/maps/place/'+'${donation.address},${donation.city},${donation.province},${donation.postalCode}'">Direction</button>
+										onclick="window.open('${mapUrl}')">Direction</button>
 								</td>
 							</tr>
 						</c:forEach>
@@ -51,7 +70,7 @@
 						onClick="window.print()" />
 					<spring:url value="/schedule/print/${month}/${day}/${year}"
 						var="printUrl" />
-					<button class="btn btn-info" onclick="location.href='${printUrl}'">Printer
+					<button class="btn btn-info" onclick="window.open('${printUrl}')">Printer
 						Friendly Version</button>
 				</c:otherwise>
 			</c:choose>

@@ -23,6 +23,8 @@
 							<th>#ID</th>
 							<th>Description</th>
 							<th>Scheduled Time</th>
+							<th>Type</th>
+							<th>Status</th>
 							<th>Address</th>
 						</tr>
 					</thead>
@@ -32,16 +34,17 @@
 							<td>${donation.id}</td>
 							<td>${donation.description}</td>
 							<td>${donation.time}</td>
+							<td>${donation.type}</td>
+							<td>${donation.status}</td>
 							<td>${donation.address} ${donation.city},
 								${donation.province}, ${donation.postalCode}</td>
 						</tr>
 					</c:forEach>
 				</table>
+				</br>
 				<input type="submit" value="Print" onClick="window.print()" />
 			</c:otherwise>
 		</c:choose>
-		<spring:url value="/schedule/${month}/${day}/${year}" var="schedule" />
-		<button onclick="location.href='${schedule}'">Back</button>
 	</div>
 </body>
 </html>

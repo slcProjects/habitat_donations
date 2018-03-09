@@ -161,10 +161,10 @@ public class DonationDaoImpl implements DonationDao {
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 
-		String sql = "INSERT INTO \"Donation\"(\"DonorID\", \"Description\", \"Value\", \"ScheduledDate\", \"CompletedDate\", "
-				+ "\"Address\", \"City\", \"Province\", \"PostalCode\", \"DropFee\", \"ReceiverID\", \"Tacking\", \"Receipts\", \"NumImages\") "
+		String sql = "INSERT INTO \"Donation\"(\"DonorID\", \"Description\", \"Value\", \"ScheduledDate\", \"CompletedDate\", \"Address\", "
+				+ "\"City\", \"Province\", \"PostalCode\", \"DropFee\", \"ReceiverID\", \"Tacking\", \"Receipts\", \"NumImages\", \"Type\", \"Status\") "
 				+ "VALUES (:donor, :description, :value, :scheduledDate, :completedDate, :address, :city, :province, :postalCode, :dropFee, "
-				+ ":receiver, :tacking, :receipts, :numImages)";
+				+ ":receiver, :tacking, :receipts, :numImages, CAST(:type AS \"DonationType\"), CAST(:status AS \"DonationStatus\"))";
 				
 		try {
 			namedParameterJdbcTemplate.update(sql, getSqlParameterByModel(donation), keyHolder);
@@ -186,7 +186,8 @@ public class DonationDaoImpl implements DonationDao {
 		String sql = "UPDATE \"Donation\" SET \"DonorID\"=:donor, \"Description\"=:description, \"Value\"=:value, "
 				+ "\"ScheduledDate\"=:scheduledDate, \"CompletedDate\"=:completedDate, \"Address\"=:address, \"City\"=:city, "
 				+ "\"Province\"=:province, \"PostalCode\"=:postalCode, \"DropFee\"=:dropFee, "
-				+ "\"ReceiverID\"=:receiver, \"Tacking\"=:tacking, \"Receipts\"=:receipts, \"NumImages\"=:numImages WHERE \"DonationID\"=:id";
+				+ "\"ReceiverID\"=:receiver, \"Tacking\"=:tacking, \"Receipts\"=:receipts, \"NumImages\"=:numImages, "
+				+ "\"Type\"=CAST(:type AS \"DonationType\"), \"Status\"=CAST(:status AS \"DonationStatus\") WHERE \"DonationID\"=:id";
 
 		try {
 			namedParameterJdbcTemplate.update(sql, getSqlParameterByModel(donation));
@@ -203,6 +204,20 @@ public class DonationDaoImpl implements DonationDao {
 		String sql = "DELETE FROM \"Donation\" WHERE \"DonationID\"= :id";
 		namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource("id", id));
 
+	}
+	
+	@Override
+	public void updateStatus(Integer id, String status) {
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		
+		params.put("id", id);
+		params.put("status", status);
+		
+		String sql = "UPDATE \"Donation\" SET \"Status\"=CAST(:status AS \"DonationStatus\") WHERE \"DonationID\"=:id";
+		
+		namedParameterJdbcTemplate.update(sql, params);
+		
 	}
 
 	private SqlParameterSource getSqlParameterByModel(Donation donation)
@@ -232,7 +247,9 @@ public class DonationDaoImpl implements DonationDao {
 		paramSource.addValue("tacking", donation.getTacking());
 		paramSource.addValue("receipts", donation.isReceipts());
 		paramSource.addValue("numImages", donation.getNumImages());
-
+		paramSource.addValue("type", donation.getType());
+		paramSource.addValue("status", donation.getStatus());
+		
 		return paramSource;
 	}
 
@@ -255,6 +272,8 @@ public class DonationDaoImpl implements DonationDao {
 			donation.setTacking(rs.getTimestamp("Tacking"));
 			donation.setReceipts(rs.getBoolean("Receipts"));
 			donation.setNumImages(rs.getInt("NumImages"));
+			donation.setType(rs.getString("Type"));
+			donation.setStatus(rs.getString("Status"));
 
 			return donation;
 		}

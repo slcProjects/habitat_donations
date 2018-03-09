@@ -21,9 +21,6 @@ public class User
 	// form:input - textbox
 	String lastName;
 
-	// form:radiobutton - radio button
-	//String gender;
-
 	// form:input - textbox
 	String email;
 

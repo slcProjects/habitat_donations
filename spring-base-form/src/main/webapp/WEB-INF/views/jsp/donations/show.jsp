@@ -59,6 +59,11 @@
 					</c:choose>
 				</div>
 			</div>
+			
+			<div class="row">
+				<label class="col-sm-2">Type</label>
+				<div class="col-sm-10">${donation.type}</div>
+			</div>
 
 			<div class="row">
 				<label class="col-sm-2">Address</label>
@@ -92,6 +97,11 @@
 					</c:otherwise>
 					</c:choose>
 				</div>
+			</div>
+			
+			<div class="row">
+				<label class="col-sm-2">Status</label>
+				<div class="col-sm-10">${donation.status}</div>
 			</div>
 
 			<div class="row">

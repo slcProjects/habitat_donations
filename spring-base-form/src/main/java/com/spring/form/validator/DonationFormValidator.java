@@ -41,13 +41,22 @@ public class DonationFormValidator implements Validator {
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "NotEmpty.donationForm.description");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "value", "NotEmpty.donationForm.value");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "scheduledDate", "NotEmpty.donationForm.scheduledDate");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "type", "NotEmpty.donationForm.type");
 		
 		if (donation.getPostalCode() != "" && !postalCodeValidator.valid(donation.getPostalCode())){
-			errors.rejectValue("postalCode", "Pattern.userForm.postalCode");
+			errors.rejectValue("postalCode", "Pattern.donationForm.postalCode");
 		}
 		
 		if (donation.getScheduledDate() != null && !dateValidator.valid(format.format(donation.getScheduledDate()))) {
-			
+			errors.rejectValue("scheduledDate", "Pattern.donationForm.scheduledDate");
+		}
+		
+		if (donation.getType().equalsIgnoreCase("none")) {
+			errors.rejectValue("type", "NotEmpty.donationForm.type");
+		}
+		
+		if (donation.getStatus().equalsIgnoreCase("none")) {
+			errors.rejectValue("status", "NotEmpty.donationForm.status");
 		}
 		
 	}

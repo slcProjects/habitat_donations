@@ -32,6 +32,11 @@ public class UserServiceImpl implements UserService {
 	public User findByLoginName(String username) {
 		return userDao.findByLoginName(username);
 	}
+	
+	@Override
+	public List<User> search(String first, String last, String city, String code, String role) {
+		return userDao.search(first, last, city, code, role);
+	}
 
 	@Override
 	public void saveOrUpdate(User user) {

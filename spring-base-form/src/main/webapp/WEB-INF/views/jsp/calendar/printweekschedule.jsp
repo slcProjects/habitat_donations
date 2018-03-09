@@ -24,6 +24,8 @@
 							<th>#ID</th>
 							<th>Description</th>
 							<th>Scheduled Date</th>
+							<th>Type</th>
+							<th>Status</th>
 							<th>Address</th>
 						</tr>
 					</thead>
@@ -33,18 +35,17 @@
 							<td>${donation.id}</td>
 							<td>${donation.description}</td>
 							<td>${donation.scheduledDate}</td>
+							<td>${donation.type}</td>
+							<td>${donation.status}</td>
 							<td>${donation.address} ${donation.city},
 								${donation.province}, ${donation.postalCode}</td>
 						</tr>
 					</c:forEach>
 				</table>
+				</br>
 				<input type="submit" value="Print" onClick="window.print()" />
 			</c:otherwise>
 		</c:choose>
-
-		<spring:url value="/calendar/weekof/${day}/${month}/${year}"
-			var="weekschedule" />
-		<button onclick="location.href='${weekschedule}'">Back</button>
 	</div>
 </body>
 </html>

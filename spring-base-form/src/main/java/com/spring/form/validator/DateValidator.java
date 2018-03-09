@@ -10,7 +10,7 @@ public class DateValidator {
 
 	private Pattern pattern;
 	private Matcher matcher;
-	private static final String CODE_PATTERN = "^\\d\\d\\d\\d[-]\\d\\d[-]\\d\\d[ ]\\d[:]\\d\\d[:]\\d\\d$";
+	private static final String CODE_PATTERN = "^\\d\\d\\d\\d[-]\\d\\d[-]\\d\\d[ ]\\d{1,2}+[:]\\d\\d[:]\\d\\d$";
 
 	public DateValidator() {
 		pattern = Pattern.compile(CODE_PATTERN);

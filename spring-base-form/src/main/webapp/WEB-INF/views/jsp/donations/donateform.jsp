@@ -83,6 +83,19 @@
 						</div>
 					</div>
 				</spring:bind>
+				
+				<spring:bind path="type">
+					<div class="form-group ${status.error ? 'has-error' : ''}">
+						<label class="col-sm-2 control-label">Type</label>
+						<div class="col-sm-5">
+							<form:select path="type" class="form-control">
+								<form:options items="${typeList}" />
+							</form:select>
+							<form:errors path="type" class="control-label" />
+						</div>
+						<div class="col-sm-5"></div>
+					</div>
+				</spring:bind>
 
 				<spring:bind path="address">
 					<div class="form-group ${status.error ? 'has-error' : ''}">
@@ -152,6 +165,27 @@
 						</div>
 					</div>
 				</spring:bind>
+				
+				<c:choose>
+					<c:when test="${role == 'Staff'}">
+				    	<spring:bind path="status">
+							<div class="form-group ${status.error ? 'has-error' : ''}">
+								<label class="col-sm-2 control-label">Status</label>
+								<div class="col-sm-5">
+									<form:select path="status" class="form-control">
+										<form:option value="NONE" label="--- Select ---" />
+										<form:options items="${statusList}" />
+									</form:select>
+									<form:errors path="status" class="control-label" />
+								</div>
+								<div class="col-sm-5"></div>
+							</div>
+						</spring:bind>
+					</c:when>
+					<c:otherwise>
+						<form:hidden path="status" />
+					</c:otherwise>
+				</c:choose>
 
 				<spring:bind path="receipts">
 					<div class="form-group ${status.error ? 'has-error' : ''}">

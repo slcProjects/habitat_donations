@@ -16,7 +16,7 @@
 
 			<h1>Donation Calendar</h1>
 
-			<h3>${monthName}</h3>
+			<h3>${monthName} ${year}</h3>
 
 			<p>Number of donations this month: ${fn:length(donations)}</p>
 
@@ -62,11 +62,12 @@
 															pattern="d" var="scheduledDay" />
 														<c:if test="${scheduledDay == ctr}">
 															<fmt:formatDate value="${donation.scheduledDate}"
-																pattern="h:mm a" var="scheduledTime" />
+																pattern="h:mma" var="scheduledTime" />
 															<spring:url value="/donations/${donation.id}"
 																var="donationUrl" />
-															<a class="donlink" href="${donationUrl}">ID #${donation.id}:
-																${scheduledTime}</a>
+															<a class="donlink" href="${donationUrl}" 
+																title="${monthName} ${ctr} ${scheduledTime} ${donation.type} ${donation.donorName}, ${donation.description}, Status: ${donation.status}">
+																ID #${donation.id}: ${scheduledTime}</a>
 														</c:if>
 													</c:forEach>
 												</c:if></td>
@@ -82,11 +83,12 @@
 															pattern="d" var="scheduledDay" />
 														<c:if test="${scheduledDay == ctr}">
 															<fmt:formatDate value="${donation.scheduledDate}"
-																pattern="h:mm a" var="scheduledTime" />
+																pattern="h:mma" var="scheduledTime" />
 															<spring:url value="/donations/${donation.id}"
 																var="donationUrl" />
-															<a class="donlink" href="${donationUrl}">ID #${donation.id}:
-																${scheduledTime}</a>
+															<a class="donlink" href="${donationUrl}"
+																title="${monthName} ${ctr} ${scheduledTime} ${donation.type} ${donation.donorName}, ${donation.description}, Status: ${donation.status}">
+																ID #${donation.id}: ${scheduledTime}</a>
 														</c:if>
 													</c:forEach>
 												</c:if></td>

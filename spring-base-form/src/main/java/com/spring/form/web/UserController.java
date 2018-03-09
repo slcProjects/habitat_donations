@@ -41,11 +41,15 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import com.spring.form.model.Attachment;
 import com.spring.form.model.Donation;
 import com.spring.form.model.Login;
+import com.spring.form.model.Search;
+import com.spring.form.model.Status;
 import com.spring.form.model.User;
 import com.spring.form.service.AttachmentService;
 import com.spring.form.service.DonationService;
 import com.spring.form.service.UserService;
 import com.spring.form.validator.DonationFormValidator;
+import com.spring.form.validator.SearchFormValidator;
+import com.spring.form.validator.StatusValidator;
 import com.spring.form.validator.UserFormValidator;
 
 //http://www.tikalk.com/redirectattributes-new-feature-spring-mvc-31/
@@ -64,22 +68,40 @@ public class UserController {
 	private String months[] = { "January", "February", "March", "April", "May", "June", "July", "August", "September",
 			"October", "November", "December" };
 	GregorianCalendar today = null;
-	int month = 0, year = 0;
+	int month = 0, year = 0, statusDay = 0, statusMonth = 0, statusYear = 0;
+	String scheduleType = "";
+	private static final String STATUSFORM_PATTERN = "^statusForm\\d+$";
 
 	@Autowired
 	UserFormValidator userFormValidator;
 
 	@Autowired
+	SearchFormValidator searchFormValidator;
+
+	@Autowired
 	DonationFormValidator donationFormValidator;
+	
+	@Autowired
+	StatusValidator statusValidator;
 
 	@InitBinder("userForm")
 	protected void initUserBinder(WebDataBinder binder) {
 		binder.addValidators(userFormValidator);
 	}
 
+	@InitBinder("searchForm")
+	protected void initSearchBinder(WebDataBinder binder) {
+		binder.addValidators(searchFormValidator);
+	}
+
 	@InitBinder("donationForm")
 	protected void initDonationBinder(WebDataBinder binder) {
 		binder.addValidators(donationFormValidator);
+	}
+	
+	@InitBinder(STATUSFORM_PATTERN)
+	protected void initStatusBinder(WebDataBinder binder) {
+		binder.addValidators(statusValidator);
 	}
 
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws ServletException {
@@ -106,7 +128,6 @@ public class UserController {
 		this.attachmentService = attachmentService;
 	}
 
-	
 	// log in redirect or dashboard redirect
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(Model model) {
@@ -154,7 +175,6 @@ public class UserController {
 		} else {
 			currentRole = user.getRole();
 			currentId = user.getId();
-			today = new GregorianCalendar();
 			redirectAttributes.addFlashAttribute("css", "success");
 			redirectAttributes.addFlashAttribute("msg", currentRole + " logged in successfully!");
 			if (currentRole.equals("Donor")) {
@@ -189,6 +209,7 @@ public class UserController {
 			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
 			return "redirect:/main";
 		} else {
+			today = new GregorianCalendar();
 			model.addAttribute("userId", currentId);
 			if (currentRole.equals("Staff")) {
 				month = today.get(Calendar.MONTH);
@@ -234,6 +255,7 @@ public class UserController {
 
 		if (result.hasErrors()) {
 			populateProvinces(model);
+			model.addAttribute("role", currentRole);
 			return "users/userform";
 		} else {
 
@@ -278,7 +300,7 @@ public class UserController {
 		return "users/userform";
 
 	}
-	
+
 	// show register user form
 	@RequestMapping(value = "/users/register", method = RequestMethod.GET)
 	public String showRegisterUserForm(Model model, final RedirectAttributes redirectAttributes) {
@@ -368,6 +390,59 @@ public class UserController {
 
 	}
 
+	// user search form
+	@RequestMapping(value = "/users/searchform", method = RequestMethod.GET)
+	public String searchForm(Model model, final RedirectAttributes redirectAttributes) {
+
+		logger.debug("searchForm()");
+
+		if (currentRole.equals("") || currentId == 0) {
+			redirectAttributes.addFlashAttribute("css", "danger");
+			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
+			return "redirect:/main";
+		} else if (!currentRole.equals("Staff")) {
+			redirectAttributes.addFlashAttribute("css", "danger");
+			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
+			return "redirect:/dashboard";
+		} else {
+			model.addAttribute("searchForm", new Search());
+			return "users/searchform";
+		}
+
+	}
+
+	// user search result
+	@RequestMapping(value = "/users/searchresult", method = RequestMethod.POST)
+	public String searchUser(@ModelAttribute("searchForm") @Validated Search search, BindingResult result, Model model,
+			final RedirectAttributes redirectAttributes) {
+
+		logger.debug("searchUser() search : {}", search);
+
+		if (result.hasErrors()) {
+			return "users/searchform";
+		} else {
+
+			String first = search.getFirstName();
+			String last = search.getLastName();
+			String city = search.getCity();
+			String code = search.getPostalCode();
+			String role = search.getRole();
+			if (role == null) {
+				role = "";
+			}
+			List<User> users = userService.search(first, last, city, code, role);
+			if (users == null) {
+				model.addAttribute("css", "danger");
+				model.addAttribute("msg", "User not found");
+			}
+			model.addAttribute("users", users);
+
+			return "users/searchresult";
+
+		}
+
+	}
+
 	// donation list page
 	@RequestMapping(value = "/donations", method = RequestMethod.GET)
 	public String showAllDonations(Model model, final RedirectAttributes redirectAttributes) {
@@ -388,7 +463,7 @@ public class UserController {
 
 	}
 
-	// donation list page
+	// donation list page for user
 	@RequestMapping(value = "/donationsforuser", method = RequestMethod.GET)
 	public String showAllDonationsForUser(Model model, final RedirectAttributes redirectAttributes) {
 
@@ -415,6 +490,9 @@ public class UserController {
 
 		if (result.hasErrors()) {
 			populateProvinces(model);
+			populateDonationTypes(model);
+			populateDonationStatuses(model);
+			model.addAttribute("role", currentRole);
 			return "donations/donateform";
 		} else {
 
@@ -428,6 +506,7 @@ public class UserController {
 			}
 
 			donation.setTacking(new Timestamp(new java.util.Date().getTime()));
+			donation.setStatus(donation.getStatus().replace("_", " "));
 			donationService.saveOrUpdate(donation);
 
 			int numImages;
@@ -530,12 +609,15 @@ public class UserController {
 			donation.setCity(donor.getCity());
 			donation.setProvince(donor.getProvince());
 			donation.setPostalCode(donor.getPostalCode());
+			donation.setStatus("AWAITING APPROVAL");
 
 			model.addAttribute("donationForm", donation);
 			model.addAttribute("noImage", true);
 			model.addAttribute("role", currentRole);
 
 			populateProvinces(model);
+			populateDonationTypes(model);
+			populateDonationStatuses(model);
 
 			return "donations/donateform";
 		}
@@ -579,6 +661,8 @@ public class UserController {
 			model.addAttribute("role", currentRole);
 
 			populateProvinces(model);
+			populateDonationTypes(model);
+			populateDonationStatuses(model);
 
 			return "donations/donateform";
 		}
@@ -701,6 +785,10 @@ public class UserController {
 			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
 			return "redirect:/dashboard";
 		} else {
+			scheduleType = "day";
+			statusDay = day;
+			statusMonth = month;
+			statusYear = year;
 			return getSchedule(model, month, day, year) + "schedule";
 		}
 
@@ -734,9 +822,13 @@ public class UserController {
 		GregorianCalendar date = new GregorianCalendar(year, month, day);
 
 		List<Donation> donations = donationService.findByScheduledDate(sqlFormat.format(date.getTime()));
+		Status status;
 
 		for (int ctr = 0; ctr < donations.size(); ctr++) {
+			status = new Status();
 			donations.get(ctr).setTime(timeFormat.format(donations.get(ctr).getScheduledDate()));
+			status.setStatus(donations.get(ctr).getStatus().replaceAll(" ", "_"));
+			model.addAttribute("statusForm" + donations.get(ctr).getId(), status);
 		}
 
 		model.addAttribute("date", dayFormat.format(date.getTime()));
@@ -744,6 +836,8 @@ public class UserController {
 		model.addAttribute("month", month);
 		model.addAttribute("day", day);
 		model.addAttribute("year", year);
+		
+		populateDonationStatuses(model);
 
 		return "calendar/";
 	}
@@ -798,8 +892,12 @@ public class UserController {
 			int weeksInMonth = last.get(Calendar.WEEK_OF_MONTH);
 
 			List<Donation> donations = donationService.findByScheduledMonth(month + 1, year);
+			for (int ctr = 0; ctr < donations.size(); ctr++) {
+				User user = userService.findById(donations.get(ctr).getDonor());
+				donations.get(ctr).setDonorName(user.getFirstName() + " " + user.getLastName());
+			}
 
-			model.addAttribute("monthName", months[month] + " " + year);
+			model.addAttribute("monthName", months[month]);
 			model.addAttribute("month", month);
 			model.addAttribute("year", year);
 			model.addAttribute("daysInMonth", daysInMonth);
@@ -832,11 +930,15 @@ public class UserController {
 			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
 			return "redirect:/dashboard";
 		} else {
+			scheduleType = "week";
+			statusDay = day;
+			statusMonth = month;
+			statusYear = year;
 			return getWeekSchedule(model, day, month, year) + "weekschedule";
 		}
-		
+
 	}
-	
+
 	// printer friendly week schedule page
 	@RequestMapping(value = "/weekof/print/{day}/{month}/{year}", method = RequestMethod.GET)
 	private String scheduleWeekPrint(@PathVariable("day") int day, @PathVariable("month") int month,
@@ -856,45 +958,75 @@ public class UserController {
 		} else {
 			return getWeekSchedule(model, day, month, year) + "printweekschedule";
 		}
-		
+
 	}
-	
+
 	// process week schedule
 	private String getWeekSchedule(Model model, int day, int month, int year) {
-		
+
 		logger.debug("getWeekSchedule()");
-		
+
 		GregorianCalendar firstOfWeek = new GregorianCalendar(year, month, day);
 		int lastDayOfWeek = day;
 		switch (firstOfWeek.get(Calendar.DAY_OF_WEEK)) {
-			case 1:
-				lastDayOfWeek += 6;
-				break;
-			case 2:
-				lastDayOfWeek += 5;
-				break;
-			case 3:
-				lastDayOfWeek += 4;
-				break;
-			case 4:
-				lastDayOfWeek += 3;
-				break;
-			case 5:
-				lastDayOfWeek += 2;
-				break;
-			case 6:
-				lastDayOfWeek += 1;
+		case 1:
+			lastDayOfWeek += 6;
+			break;
+		case 2:
+			lastDayOfWeek += 5;
+			break;
+		case 3:
+			lastDayOfWeek += 4;
+			break;
+		case 4:
+			lastDayOfWeek += 3;
+			break;
+		case 5:
+			lastDayOfWeek += 2;
+			break;
+		case 6:
+			lastDayOfWeek += 1;
 		}
-		
+
 		List<Donation> donations = donationService.findByScheduledWeekOfMonth(day, lastDayOfWeek, month + 1, year);
-		
+		Status status;
+
+		for (int ctr = 0; ctr < donations.size(); ctr++) {
+			status = new Status();
+			donations.get(ctr).setTime(timeFormat.format(donations.get(ctr).getScheduledDate()));
+			status.setStatus(donations.get(ctr).getStatus().replaceAll(" ", "_"));
+			model.addAttribute("statusForm" + donations.get(ctr).getId(), status);
+		}
+
 		model.addAttribute("week", months[month] + " " + day + " - " + lastDayOfWeek + ", " + year);
 		model.addAttribute("day", day);
 		model.addAttribute("month", month);
 		model.addAttribute("year", year);
 		model.addAttribute("donations", donations);
 		
+		populateDonationStatuses(model);
+
 		return "calendar/";
+
+	}
+	
+	// update donation status
+	@RequestMapping(value = "/statusupdate/{id}", method = RequestMethod.POST)
+	private String updateStatus(@ModelAttribute(STATUSFORM_PATTERN) @Validated Status status, @PathVariable("id") int id, 
+			BindingResult result, Model model, final RedirectAttributes redirectAttributes) {
+		
+		logger.debug("updateStatus() id + status : {}", id + " " + status);
+			
+		donationService.updateStatus(id, status.getStatus().replaceAll("_", " "));
+		
+		redirectAttributes.addFlashAttribute("css", "success");
+		redirectAttributes.addFlashAttribute("msg", "Status updated successfully!");
+		
+		if (scheduleType.equals("week")) {
+			return "redirect:/calendar/weekof/" + statusDay + "/" + statusMonth + "/" + statusYear;
+		} else {
+			return "redirect:/schedule/" + statusMonth + "/" + statusDay + "/" + statusYear;
+		}
 		
 	}
 
@@ -969,6 +1101,27 @@ public class UserController {
 		province.put("NU", "Nunavut");
 		province.put("YU", "Yukon");
 		model.addAttribute("provinceList", province);
+
+	}
+	
+	private void populateDonationTypes(Model model) {
+
+		Map<String, String> types = new LinkedHashMap<String, String>();
+		types.put("DROPOFF", "DROPOFF");
+		types.put("PICKUP", "PICKUP");
+		model.addAttribute("typeList", types);
+
+	}
+	
+	private void populateDonationStatuses(Model model) {
+
+		Map<String, String> statuses = new LinkedHashMap<String, String>();
+		statuses.put("AWAITING_APPROVAL", "AWAITING APPROVAL");
+		statuses.put("AWAITING_PICKUP", "AWAITING PICKUP");
+		statuses.put("PICKUP_COMPLETE", "PICKUP COMPLETE");
+		statuses.put("RESCHEDULED", "RESCHEDULED");
+		statuses.put("RECEIVED", "RECEIVED");
+		model.addAttribute("statusList", statuses);
 
 	}
 

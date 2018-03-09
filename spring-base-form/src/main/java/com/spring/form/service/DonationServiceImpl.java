@@ -61,5 +61,10 @@ public class DonationServiceImpl implements DonationService {
 	public List<Donation> findByScheduledWeekOfMonth(Integer firstDay, Integer lastDay, Integer month, Integer year) {
 		return donationDao.findByScheduledWeekOfMonth(firstDay, lastDay, month, year);
 	}
+	
+	@Override
+	public void updateStatus(int id, String status) {
+		donationDao.updateStatus(id, status);
+	}
 
 }

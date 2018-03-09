@@ -75,6 +75,8 @@
 			<c:choose>
 				<c:when test="${role == 'Staff'}">
 					<spring:url value="/users" var="userList" />
+					<spring:url value="/users/searchform" var="userSearch" />
+					<button class="btn btn-info" onclick="location.href='${userSearch}'">User Search</button>
 					<button class="btn btn-info" onclick="location.href='${userList}'">View all users</button>
 					<button class="btn btn-info" onclick="location.href='${dashboardUrl}'">Staff Dashboard</button>
 				</c:when>

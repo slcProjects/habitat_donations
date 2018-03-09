@@ -88,6 +88,42 @@ public class UserDaoImpl implements UserDao {
 		return result;
 
 	}
+	
+	@Override
+	public List<User> search(String first, String last, String city, String code, String role) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		Boolean trim = true;
+		
+		String sql = "SELECT * FROM \"User\" WHERE ";
+		if (!first.equals("")) {
+			params.put("first", first);
+			sql += "\"FirstName\"=:first AND ";
+		}
+		if (!last.equals("")) {
+			params.put("last", last);
+			sql += "\"LastName\"=:last AND ";
+		}
+		if (!city.equals("")) {
+			params.put("city", city);
+			sql += "\"City\"=:city AND ";
+		}
+		if (!code.equals("")) {
+			params.put("code", code);
+			sql += "\"PostalCode\"=:code AND ";
+		}
+		if (!role.equals("")) {
+			params.put("role", role);
+			sql += "\"Role\"=CAST(:role AS \"UserRole\") ";
+			trim = false;
+		}
+		if (trim) {
+			sql = sql.substring(0, sql.length() - 4);
+		}
+		sql += "ORDER BY \"UserID\" ASC";
+		List<User> result = namedParameterJdbcTemplate.query(sql, params, new UserMapper());
+
+		return result;
+	}
 
 	@Override
 	public void save(User user) {
