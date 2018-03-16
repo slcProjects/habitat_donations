@@ -7,7 +7,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<jsp:include page="../fragments/head.jsp" />
+<jsp:include page="../fragments/formhead.jsp" />
 <body>
 	<jsp:include page="../fragments/header.jsp" />
 	<div class="content_body" style="margin-top: 156px">
@@ -23,199 +23,212 @@
 			</c:choose>
 			<br />
 
-			<spring:url value="/users" var="userActionUrl" />
+			<div class="gf_browser_chrome gform_wrapper" id="gform_wrapper_6">
+				<spring:url value="/users" var="userActionUrl" />
 
-			<form:form class="form-horizontal" method="post"
-				modelAttribute="userForm" action="${userActionUrl}">
-
-				<form:hidden path="id" />
-
-				<spring:bind path="loginName">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Login Name</label>
-						<div class="col-sm-10">
-							<form:input path="loginName" type="text" class="form-control "
-								id="loginName" placeholder="LoginName" />
-							<form:errors path="loginName" class="control-label" />
-						</div>
+				<form:form method="post" modelAttribute="userForm"
+					action="${userActionUrl}">
+					<form:hidden path="id" />
+					<div class="gform_heading">
+						<span class="gform_description"></span>
 					</div>
-				</spring:bind>
+					<div class="gform_body">
+						<ul id="gform_fields_6"
+							class="gform_fields top_label form_sublabel_below description_below">
 
-				<spring:bind path="password">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Password</label>
-						<div class="col-sm-10">
-							<form:password path="password" class="form-control" id="password"
-								placeholder="password" />
-							<form:errors path="password" class="control-label" />
-						</div>
+							<li id="field_6_0"
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield_label gfield_label_before_complex"
+								for="input_6_1_3">Login Name<span
+									class="gfield_required">*</span></label> <span
+								class="ginput_left address_zip" id="input_6_2_5_container"><spring:bind
+										path="loginName">
+										<form:input path="loginName" type="text" id="loginName" />
+										<form:errors path="loginName" class="control-label" />
+										<div class="gf_clear gf_clear_complex"></div>
+									</spring:bind> </span></li>
+
+							<li id="field_6_0.1"
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield_label gfield_label_before_complex"
+								for="input_6_1_3">New Password<span
+									class="gfield_required">*</span></label>
+								<div
+									class="ginput_complex ginput_container no_prefix has_first_name no_middle_name has_last_name no_suffix gf_name_has_2 ginput_container_name gfield_trigger_change"
+									id="input_6_1">
+									<span id="input_6_1_3_container" class="name_first"><spring:bind
+											path="password">
+											<form:password path="password" id="password" />
+											<label for="input_6_1_3">Password</label>
+											<form:errors path="password" />
+										</spring:bind> </span> <span id="input_6_1_6_container" class="name_last"><spring:bind
+											path="confirmPassword">
+											<form:password path="confirmPassword" id="confirmPassword" />
+											<label for="input_6_1_6">Confirm Password</label>
+											<form:errors path="confirmPassword" />
+										</spring:bind></span>
+								</div></li>
+
+							<li id="field_6_1"
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield_label gfield_label_before_complex"
+								for="input_6_1_3">Name<span class="gfield_required">*</span></label>
+								<div
+									class="ginput_complex ginput_container no_prefix has_first_name no_middle_name has_last_name no_suffix gf_name_has_2 ginput_container_name gfield_trigger_change"
+									id="input_6_1">
+									<span id="input_6_1_3_container" class="name_first"><spring:bind
+											path="firstName">
+											<form:input path="firstName" id="firstName" />
+											<label for="input_6_1_3">First</label>
+											<form:errors path="firstName" />
+										</spring:bind> </span> <span id="input_6_1_6_container" class="name_last"><spring:bind
+											path="lastName">
+											<form:input path="lastName" id="lastName" />
+											<label for="input_6_1_6">Last</label>
+											<form:errors path="lastName" />
+										</spring:bind></span>
+								</div></li>
+								
+							<li id="field_6_3"
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield_label gfield_label_before_complex" for="input_6_3">Contact
+									Info<span class="gfield_required">*</span>
+							</label>
+								<div
+									class="ginput_complex ginput_container ginput_container_email"
+									id="input_6_3_container">
+									<span id="input_6_3_1_container" class="ginput_left">
+									<spring:bind path="email">
+											<form:input path="email" id="email" />
+											<label for="input_6_3_2">Email Address</label>
+											<form:errors path="email" />
+										</spring:bind>
+									</span> <span id="input_6_3_2_container" class="ginput_right">
+										<spring:bind path="phone">
+											<form:input path="phone" id="phone" />
+											<label for="input_6_3_2">Phone Number</label>
+											<form:errors path="phone" />
+										</spring:bind>
+									</span>
+									<div class="gf_clear gf_clear_complex"></div>
+								</div></li>
+								
+							<li id="field_6_2"
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield_label gfield_label_before_complex"
+								for="input_6_2_1">Address<span class="gfield_required">*</span></label>
+								<div
+									class="ginput_complex ginput_container has_street has_street2 has_city has_state has_zip ginput_container_address gfield_trigger_change"
+									id="input_6_2">
+									<span class="ginput_full address_line_1"
+										id="input_6_2_1_container"> <spring:bind path="address">
+											<form:input class="textbox" path="address" id="address" />
+											<label for="input_6_2_1" id="input_6_2_1_label">Street
+												Address</label>
+											<form:errors path="address" />
+										</spring:bind>
+									</span><span class="ginput_left address_city"
+										id="input_6_2_3_container"> <spring:bind path="city">
+											<form:input path="city" id="city" />
+											<label for="input_6_2_3" id="input_6_2_3_label">City</label>
+											<form:errors path="city" />
+										</spring:bind>
+									</span><span class="ginput_right address_state"
+										id="input_6_2_4_container"> <spring:bind
+											path="province">
+											<form:select path="province">
+												<form:option value="NONE" label="" />
+												<form:options items="${provinceList}" />
+											</form:select>
+											<label for="input_6_2_4" id="input_6_2_4_label">Province</label>
+											<form:errors path="province" />
+										</spring:bind>
+									</span><span class="ginput_left address_zip"
+										id="input_6_2_5_container"><spring:bind
+											path="postalCode">
+											<form:input path="postalCode" id="postalCode" />
+											<label for="input_6_2_5" id="input_6_2_5_label">Postal
+												Code</label>
+											<form:errors path="postalCode" />
+										</spring:bind> </span>
+									<div class="gf_clear gf_clear_complex"></div>
+								</div></li>
+								
+							<c:choose>
+								<c:when test="${not empty role && role == 'Staff'}">
+									<li id="field_6_6"
+										class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+										class="gfield_label gfield_label_before_complex"
+										for="input_6_1_3">Role<span class="gfield_required">*</span></label>
+										<span class="ginput_left address_zip"><spring:bind
+												path="role">
+												<form:input path="role" type="text" id="role" />
+												<form:errors path="role" class="control-label" />
+												<div class="gf_clear gf_clear_complex"></div>
+											</spring:bind> </span></li>
+								</c:when>
+								<c:otherwise>
+									<form:hidden path="role" />
+								</c:otherwise>
+							</c:choose>
+
+							<li id="field_6_7"
+								class="gfield gfield_price gfield_price_6_7 gfield_product_6_7 field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield_label" for="input_6_7">Would you like to
+									receive ReStore Notifications? </label> <spring:bind path="notify">
+									<form:checkbox path="notify" id="notify" />
+									<form:errors path="notify" />
+								</spring:bind></li>
+								
+						</ul>
+						
 					</div>
-				</spring:bind>
-
-				<spring:bind path="confirmPassword">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Confirm Password</label>
-						<div class="col-sm-10">
-							<form:password path="confirmPassword" class="form-control"
-								id="password" placeholder="password" />
-							<form:errors path="confirmPassword" class="control-label" />
-						</div>
+					
+					<div class="gform_footer top_label">
+						<c:choose>
+							<c:when test="${userForm['new']}">
+								<button type="submit">Submit Detail</button>
+							</c:when>
+							<c:otherwise>
+								<button type="submit">Update</button>
+							</c:otherwise>
+						</c:choose>
 					</div>
-				</spring:bind>
+					
+				</form:form>
+				
+			</div>
 
-				<spring:bind path="firstName">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">First Name</label>
-						<div class="col-sm-10">
-							<form:input path="firstName" class="form-control" id="firstName"
-								placeholder="FirstName" />
-							<form:errors path="firstName" class="control-label" />
-						</div>
-					</div>
-				</spring:bind>
-
-				<spring:bind path="lastName">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Last Name</label>
-						<div class="col-sm-10">
-							<form:input path="lastName" class="form-control" id="lastName"
-								placeholder="LastName" />
-							<form:errors path="lastName" class="control-label" />
-						</div>
-					</div>
-				</spring:bind>
-
-				<spring:bind path="email">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Email</label>
-						<div class="col-sm-10">
-							<form:input path="email" class="form-control" id="email"
-								placeholder="Email" />
-							<form:errors path="email" class="control-label" />
-						</div>
-					</div>
-				</spring:bind>
-
-				<spring:bind path="phone">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Phone</label>
-						<div class="col-sm-10">
-							<form:input path="phone" class="form-control" id="phone"
-								placeholder="[1-]012-345-6789" />
-							<form:errors path="phone" class="control-label" />
-						</div>
-					</div>
-				</spring:bind>
-
-				<spring:bind path="address">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Address</label>
-						<div class="col-sm-10">
-							<form:input path="address" class="form-control" id="address"
-								placeholder="Address" />
-							<form:errors path="address" class="control-label" />
-						</div>
-					</div>
-				</spring:bind>
-
-				<spring:bind path="city">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">City</label>
-						<div class="col-sm-10">
-							<form:input path="city" class="form-control" id="city"
-								placeholder="City" />
-							<form:errors path="city" class="control-label" />
-						</div>
-					</div>
-				</spring:bind>
-
-				<spring:bind path="province">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Province</label>
-						<div class="col-sm-5">
-							<form:select path="province" class="form-control">
-								<form:option value="NONE" label="--- Select ---" />
-								<form:options items="${provinceList}" />
-							</form:select>
-							<form:errors path="province" class="control-label" />
-						</div>
-						<div class="col-sm-5"></div>
-					</div>
-				</spring:bind>
-
-				<spring:bind path="postalCode">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Postal Code</label>
-						<div class="col-sm-10">
-							<form:input path="postalCode" class="form-control"
-								id="postalCode" placeholder="A1A1A1" />
-							<form:errors path="postalCode" class="control-label" />
-						</div>
-					</div>
-				</spring:bind>
-
-				<spring:bind path="role">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Role</label>
-						<div class="col-sm-10">
-							<form:input path="role" class="form-control" id="role"
-								placeholder="Donor" />
-							<form:errors path="role" class="control-label" />
-						</div>
-					</div>
-				</spring:bind>
-
-				<spring:bind path="notify">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Would you like to
-							receive ReStore Notifications?</label>
-						<div class="col-sm-10">
-							<div class="checkbox">
-								<label> <form:checkbox path="notify" id="notify" />
-								</label>
-								<form:errors path="notify" class="control-label" />
-							</div>
-						</div>
-					</div>
-				</spring:bind>
-
-				<c:choose>
-					<c:when test="${userForm['new']}">
-						<button type="submit">Submit Detail</button>
-					</c:when>
-					<c:otherwise>
-						<button type="submit">Update</button>
-					</c:otherwise>
-				</c:choose>
-
-			</form:form>
-			
 			<spring:url value="/dashboard" var="dashboardUrl" />
-			
+
 			<c:choose>
-			<c:when test="${not empty role}">
-			<c:choose>
-				<c:when test="${role == 'Staff'}">
-					<spring:url value="/users" var="donationList" />
-					<button class="btn btn-info"
-						onclick="location.href='${donationList}'">View All Users</button>
-					<button class="btn btn-info" onclick="location.href='${dashboardUrl}'">Staff Dashboard</button>
+				<c:when test="${not empty role}">
+					<c:choose>
+						<c:when test="${role == 'Staff'}">
+							<spring:url value="/users" var="donationList" />
+							<button class="btn btn-info"
+								onclick="location.href='${donationList}'">View All
+								Users</button>
+							<button class="btn btn-info"
+								onclick="location.href='${dashboardUrl}'">Staff
+								Dashboard</button>
+						</c:when>
+						<c:otherwise>
+							<c:if test="${role != 'Staff' && not empty role}">
+								<button class="btn btn-info"
+									onclick="location.href='${dashboardUrl}'">User
+									Dashboard</button>
+							</c:if>
+						</c:otherwise>
+					</c:choose>
 				</c:when>
 				<c:otherwise>
-					<c:if test="${role != 'Staff' && not empty role}">
-						<button class="btn btn-info" onclick="location.href='${dashboardUrl}'">User Dashboard</button>
-					</c:if>
+					<p>Already registered? Log in below!</p>
+					<spring:url value="/main" var="loginUrl" />
+					<button class="btn btn-info" onclick="location.href='${loginUrl}'">Login</button>
 				</c:otherwise>
 			</c:choose>
-			</c:when>
-			<c:otherwise>
-				<p>Already registered? Log in below!</p>
-				<spring:url value="/main" var="loginUrl" />
-					<button class="btn btn-info"
-						onclick="location.href='${loginUrl}'">Login</button>
-			</c:otherwise>
-			</c:choose>
-			
+
 		</div>
 	</div>
 

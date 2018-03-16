@@ -7,7 +7,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<jsp:include page="../fragments/head.jsp" />
+<jsp:include page="../fragments/formhead.jsp" />
 <body>
 	<jsp:include page="../fragments/header.jsp" />
 	<div class="content_body" style="margin-top: 156px">
@@ -26,12 +26,6 @@
 			<c:choose>
 				<c:when test="${donationForm['new']}">
 					<h1>Donate</h1>
-					<c:choose>
-						<c:when test="${role != 'Staff'}">
-							<p>Details are final once you confirm donation.
-							Please contact us afterwards if you must make any changes or cancellations.</p>
-						</c:when>
-					</c:choose>
 				</c:when>
 				<c:otherwise>
 					<h1>Update Donation</h1>
@@ -39,272 +33,280 @@
 			</c:choose>
 			<br />
 
-			<spring:url value="/donations" var="donationActionUrl" />
+			<div class="gf_browser_chrome gform_wrapper" id="gform_wrapper_6">
+				<spring:url value="/donations" var="donationActionUrl" />
 
-			<form:form class="form-horizontal" method="post"
-				modelAttribute="donationForm" action="${donationActionUrl}"
-				enctype="multipart/form-data">
-
-				<form:hidden path="id" />
-
-				<form:hidden path="donor" />
-
-				<form:hidden path="numImages" />
-
-				<spring:bind path="description">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Item Description</label>
-						<div class="col-sm-10">
-							<form:input path="description" type="text" class="form-control "
-								id="description" placeholder="Description" />
-							<form:errors path="description" class="control-label" />
-						</div>
+				<form:form class="form-horizontal" method="post"
+					modelAttribute="donationForm" action="${donationActionUrl}"
+					enctype="multipart/form-data">
+					<form:hidden path="id" />
+					<form:hidden path="donor" />
+					<form:hidden path="numImages" />
+					<div class="gform_heading">
+						<span class="gform_description"></span>
 					</div>
-				</spring:bind>
+					<div class="gform_body">
+						<ul id="gform_fields_6"
+							class="gform_fields top_label form_sublabel_below description_below">
 
-				<spring:bind path="value">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Estimated Value</label>
-						<div class="col-sm-10">
-							<form:input path="value" class="form-control" id="value"
-								placeholder="123" />
-							<form:errors path="value" class="control-label" />
-						</div>
-					</div>
-				</spring:bind>
+							<li id="field_6_0"
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield_label gfield_label_before_complex"
+								for="input_6_1_3">Item Description<span
+									class="gfield_required">*</span></label> <span
+								class="ginput_full address_line_1" id="input_6_2_5_container"><spring:bind
+										path="description">
+										<form:input path="description" id="description" />
+										<form:errors path="description" />
+										<div class="gf_clear gf_clear_complex"></div>
+									</spring:bind> </span></li>
 
-				<spring:bind path="scheduledDate">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Scheduled Date (24 hour format)</label>
-						<div class="col-sm-10">
-							<form:input path="scheduledDate" class="form-control"
-								id="scheduledDate" placeholder="YYYY-MM-DD HH:MM:SS" />
-							<form:errors path="scheduledDate" class="control-label" />
-						</div>
-					</div>
-				</spring:bind>
-				
-				<spring:bind path="type">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Type</label>
-						<div class="col-sm-5">
-							<form:select path="type" class="form-control">
-								<form:options items="${typeList}" />
-							</form:select>
-							<form:errors path="type" class="control-label" />
-						</div>
-						<div class="col-sm-5"></div>
-					</div>
-				</spring:bind>
+							<li id="field_6_02"
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield_label gfield_label_before_complex"
+								for="input_6_1_3">Estimated Value<span
+									class="gfield_required">*</span></label> <span
+								class="ginput_left address_zip" id="input_6_2_5_container2"><spring:bind
+										path="value">
+										<form:input path="value" id="value" />
+										<form:errors path="value" />
+										<div class="gf_clear gf_clear_complex"></div>
+									</spring:bind> </span></li>
 
-				<spring:bind path="address">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Address</label>
-						<div class="col-sm-10">
-							<form:input path="address" class="form-control" id="address"
-								placeholder="123 abc street" />
-							<form:errors path="address" class="control-label" />
-						</div>
-					</div>
-				</spring:bind>
+							<li id="field_6_03"
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield_label gfield_label_before_complex"
+								for="input_6_1_3">Scheduled Date (24 hour format:
+									YYYY-MM-DD HH:MM:SS)<span class="gfield_required">*</span>
+							</label> <span class="ginput_left address_zip"
+								id="input_6_2_5_container3"><spring:bind
+										path="scheduledDate">
+										<form:input path="scheduledDate" id="scheduledDate" />
+										<form:errors path="scheduledDate" />
+										<div class="gf_clear gf_clear_complex"></div>
+									</spring:bind> </span></li>
 
-				<spring:bind path="city">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">City</label>
-						<div class="col-sm-10">
-							<form:input path="city" class="form-control" id="city"
-								placeholder="Smart City" />
-							<form:errors path="city" class="control-label" />
-						</div>
-					</div>
-				</spring:bind>
+							<li id="field_6_2"
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield_label gfield_label_before_complex"
+								for="input_6_2_1">Donation Type<span
+									class="gfield_required">*</span></label> <span
+								class="ginput_left address_zip"><spring:bind path="type">
+										<form:select path="type">
+											<form:option value="NONE" label="" />
+											<form:options items="${typeList}" />
+										</form:select>
+										<form:errors path="type" />
+									</spring:bind></span></li>
+								
+							<li id="field_6_2"
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield_label gfield_label_before_complex"
+								for="input_6_2_1">Address<span class="gfield_required">*</span></label>
+								<div
+									class="ginput_complex ginput_container has_street has_street2 has_city has_state has_zip ginput_container_address gfield_trigger_change"
+									id="input_6_2">
+									<span class="ginput_full address_line_1"
+										id="input_6_2_1_container"> <spring:bind path="address">
+											<form:input class="textbox" path="address" id="address" />
+											<label for="input_6_2_1" id="input_6_2_1_label">Street
+												Address</label>
+											<form:errors path="address" />
+										</spring:bind>
+									</span><span class="ginput_left address_city"
+										id="input_6_2_3_container"> <spring:bind path="city">
+											<form:input path="city" id="city" />
+											<label for="input_6_2_3" id="input_6_2_3_label">City</label>
+											<form:errors path="city" />
+										</spring:bind>
+									</span><span class="ginput_right address_state"
+										id="input_6_2_4_container"> <spring:bind
+											path="province">
+											<form:select path="province">
+												<form:option value="NONE" label="" />
+												<form:options items="${provinceList}" />
+											</form:select>
+											<label for="input_6_2_4" id="input_6_2_4_label">Province</label>
+											<form:errors path="province" />
+										</spring:bind>
+									</span><span class="ginput_left address_zip"
+										id="input_6_2_5_container"><spring:bind
+											path="postalCode">
+											<form:input path="postalCode" id="postalCode" />
+											<label for="input_6_2_5" id="input_6_2_5_label">Postal
+												Code</label>
+											<form:errors path="postalCode" />
+										</spring:bind> </span>
+									<div class="gf_clear gf_clear_complex"></div>
+								</div></li>
 
-				<spring:bind path="province">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Province</label>
-						<div class="col-sm-5">
-							<form:select path="province" class="form-control">
-								<form:option value="NONE" label="--- Select ---" />
-								<form:options items="${provinceList}" />
-							</form:select>
-							<form:errors path="province" class="control-label" />
-						</div>
-						<div class="col-sm-5"></div>
-					</div>
-				</spring:bind>
+							<li id="field_6_04"
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield_label gfield_label_before_complex"
+								for="input_6_1_3">Drop Fee</label> <span
+								class="ginput_left address_zip" id="input_6_2_5_container4"><spring:bind
+										path="dropFee">
+										<form:input path="dropFee" id="dropFee" />
+										<form:errors path="dropFee" />
+									</spring:bind></span></li>
 
-				<spring:bind path="postalCode">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Postal Code</label>
-						<div class="col-sm-10">
-							<form:input path="postalCode" class="form-control"
-								id="postalCode" placeholder="A1A1A1" />
-							<form:errors path="postalCode" class="control-label" />
-						</div>
-					</div>
-				</spring:bind>
+							<li id="field_6_05"
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield_label gfield_label_before_complex"
+								for="input_6_1_3">Receiver ID</label> <span
+								class="ginput_left address_zip" id="input_6_2_5_container5"><spring:bind
+										path="receiver">
+										<form:input path="receiver" id="receiver" />
+										<form:errors path="receiver" />
+									</spring:bind></span></li>
 
-				<spring:bind path="dropFee">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Drop Fee</label>
-						<div class="col-sm-10">
-							<form:input path="dropFee" class="form-control" id="dropFee"
-								placeholder="123.45" />
-							<form:errors path="dropFee" class="control-label" />
-						</div>
-					</div>
-				</spring:bind>
+							<c:choose>
+								<c:when test="${role == 'Staff'}">
+									<li id="field_6_6"
+										class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+										class="gfield_label gfield_label_before_complex"
+										for="input_6_1_3">Donation Status<span
+											class="gfield_required">*</span></label> <span
+										class="ginput_left address_zip"><spring:bind
+												path="status">
+												<form:select path="status">
+													<form:option value="NONE" label="" />
+													<form:options items="${statusList}" />
+												</form:select>
+												<form:errors path="status" />
+											</spring:bind> </span></li>
+								</c:when>
+								<c:otherwise>
+									<form:hidden path="status" />
+								</c:otherwise>
+							</c:choose>
 
-				<spring:bind path="receiver">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Receiver ID</label>
-						<div class="col-sm-10">
-							<form:input path="receiver" class="form-control" id="receiver"
-								placeholder="1" />
-							<form:errors path="receiver" class="control-label" />
-						</div>
-					</div>
-				</spring:bind>
-				
-				<c:choose>
-					<c:when test="${role == 'Staff'}">
-				    	<spring:bind path="status">
-							<div class="form-group ${status.error ? 'has-error' : ''}">
-								<label class="col-sm-2 control-label">Status</label>
-								<div class="col-sm-5">
-									<form:select path="status" class="form-control">
-										<form:option value="NONE" label="--- Select ---" />
-										<form:options items="${statusList}" />
-									</form:select>
-									<form:errors path="status" class="control-label" />
-								</div>
-								<div class="col-sm-5"></div>
-							</div>
-						</spring:bind>
-					</c:when>
-					<c:otherwise>
-						<form:hidden path="status" />
-					</c:otherwise>
-				</c:choose>
+							<li id="field_6_7"
+								class="gfield gfield_price gfield_price_6_7 gfield_product_6_7 field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield_label" for="input_6_7">Would you like to
+									receive a tax receipt for you donation? </label> <spring:bind
+									path="receipts">
+									<form:checkbox path="receipts" id="receipts" />
+									<form:errors path="receipts" class="control-label" />
+								</spring:bind></li>
 
-				<spring:bind path="receipts">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Send Tax Receipts?</label>
-						<div class="col-sm-10">
-							<div class="checkbox">
-								<label> <form:checkbox path="receipts" id="receipts" />
-								</label>
-								<form:errors path="receipts" class="control-label" />
-							</div>
-						</div>
-					</div>
-				</spring:bind>
+						</ul>
 
-				<div class="row">
-					<label class="col-sm-2">Item Images</label>
-					<div class="col-sm-10">
-						<c:choose>
-							<c:when test="${noImage == true}">
+						<div class="row">
+							<label class="col-sm-2">Item Images</label>
+							<div class="col-sm-10">
+								<c:choose>
+									<c:when test="${noImage == true}">
 							No images
 						</c:when>
+									<c:otherwise>
+										<c:forEach var="imageIds" items="${imageIds}">
+											<spring:url value="/images/${imageIds}" var="imageUrl" />
+											<img src="${imageUrl}" />
+											<spring:url value="/images/${imageIds}/delete"
+												var="deleteUrl" />
+											<button formaction="${deleteUrl}">Delete Image</button>
+										</c:forEach>
+									</c:otherwise>
+								</c:choose>
+							</div>
+						</div>
+
+						<spring:bind path="file1">
+							<div class="form-group ${status.error ? 'has-error' : ''}">
+								<label class="col-sm-2 control-label">Upload a file</label>
+								<div class="col-sm-10">
+									<div class="checkbox">
+										<label> <form:input type="file" path="file1"
+												id="file1" class="form-control input-sm" />
+										</label>
+										<form:errors path="file1" class="control-label" />
+									</div>
+								</div>
+							</div>
+						</spring:bind>
+
+						<spring:bind path="file2">
+							<div class="form-group ${status.error ? 'has-error' : ''}">
+								<label class="col-sm-2 control-label">Upload a file</label>
+								<div class="col-sm-10">
+									<div class="checkbox">
+										<label> <form:input type="file" path="file2"
+												id="file2" class="form-control input-sm" />
+										</label>
+										<form:errors path="file2" class="control-label" />
+									</div>
+								</div>
+							</div>
+						</spring:bind>
+
+						<spring:bind path="file3">
+							<div class="form-group ${status.error ? 'has-error' : ''}">
+								<label class="col-sm-2 control-label">Upload a file</label>
+								<div class="col-sm-10">
+									<div class="checkbox">
+										<label> <form:input type="file" path="file3"
+												id="file3" class="form-control input-sm" />
+										</label>
+										<form:errors path="file3" class="control-label" />
+									</div>
+								</div>
+							</div>
+						</spring:bind>
+
+						<spring:bind path="file4">
+							<div class="form-group ${status.error ? 'has-error' : ''}">
+								<label class="col-sm-2 control-label">Upload a file</label>
+								<div class="col-sm-10">
+									<div class="checkbox">
+										<label> <form:input type="file" path="file4"
+												id="file4" class="form-control input-sm" />
+										</label>
+										<form:errors path="file4" class="control-label" />
+									</div>
+								</div>
+							</div>
+						</spring:bind>
+
+					</div>
+
+					<div class="gform_footer top_label">
+						<c:choose>
+							<c:when test="${donationForm['new']}">
+								<button type="submit">Submit Donation</button>
+							</c:when>
 							<c:otherwise>
-								<c:forEach var="imageIds" items="${imageIds}">
-									<spring:url value="/images/${imageIds}" var="imageUrl" />
-									<img src="${imageUrl}" />
-									<spring:url value="/images/${imageIds}/delete" var="deleteUrl" />
-									<button formaction="${deleteUrl}">Delete Image</button>
-								</c:forEach>
+								<button type="submit">Update</button>
 							</c:otherwise>
 						</c:choose>
 					</div>
-				</div>
 
-				<spring:bind path="file1">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Upload a file</label>
-						<div class="col-sm-10">
-							<div class="checkbox">
-								<label> <form:input type="file" path="file1" id="file1"
-										class="form-control input-sm" />
-								</label>
-								<form:errors path="file1" class="control-label" />
-							</div>
-						</div>
-					</div>
-				</spring:bind>
+				</form:form>
 
-				<spring:bind path="file2">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Upload a file</label>
-						<div class="col-sm-10">
-							<div class="checkbox">
-								<label> <form:input type="file" path="file2" id="file2"
-										class="form-control input-sm" />
-								</label>
-								<form:errors path="file2" class="control-label" />
-							</div>
-						</div>
-					</div>
-				</spring:bind>
+			</div>
 
-				<spring:bind path="file3">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Upload a file</label>
-						<div class="col-sm-10">
-							<div class="checkbox">
-								<label> <form:input type="file" path="file3" id="file3"
-										class="form-control input-sm" />
-								</label>
-								<form:errors path="file3" class="control-label" />
-							</div>
-						</div>
-					</div>
-				</spring:bind>
-
-				<spring:bind path="file4">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Upload a file</label>
-						<div class="col-sm-10">
-							<div class="checkbox">
-								<label> <form:input type="file" path="file4" id="file4"
-										class="form-control input-sm" />
-								</label>
-								<form:errors path="file4" class="control-label" />
-							</div>
-						</div>
-					</div>
-				</spring:bind>
-
-				<c:choose>
-					<c:when test="${donationForm['new']}">
-						<button type="submit">Submit Donation</button>
-					</c:when>
-					<c:otherwise>
-						<button type="submit">Update</button>
-					</c:otherwise>
-				</c:choose>
-
-			</form:form>
-			
 			<spring:url value="/donationsforuser" var="forUserUrl" />
-			<button onclick="location.href='${forUserUrl}'">View Your Donations</button>
-			
+			<button onclick="location.href='${forUserUrl}'">View Your
+				Donations</button>
+
 			<spring:url value="/dashboard" var="dashboardUrl" />
-			
+
 			<c:choose>
 				<c:when test="${role == 'Staff'}">
-				
+
 					<spring:url value="/donations" var="donationList" />
 					<button class="btn btn-info"
 						onclick="location.href='${donationList}'">Received
 						Donations</button>
-					<button class="btn btn-info" onclick="location.href='${dashboardUrl}'">Staff Dashboard</button>
+					<button class="btn btn-info"
+						onclick="location.href='${dashboardUrl}'">Staff Dashboard</button>
 				</c:when>
 				<c:otherwise>
-					<button class="btn btn-info" onclick="location.href='${dashboardUrl}'">User Dashboard</button>
+					<button class="btn btn-info"
+						onclick="location.href='${dashboardUrl}'">User Dashboard</button>
 				</c:otherwise>
 			</c:choose>
-			
+
 		</div>
 	</div>
 

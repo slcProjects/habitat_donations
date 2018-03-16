@@ -5,6 +5,7 @@ import static java.lang.Math.toIntExact;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -214,7 +215,13 @@ public class DonationDaoImpl implements DonationDao {
 		params.put("id", id);
 		params.put("status", status);
 		
-		String sql = "UPDATE \"Donation\" SET \"Status\"=CAST(:status AS \"DonationStatus\") WHERE \"DonationID\"=:id";
+		if (status.equals("RECEIVED") || status.equals("PICKUP COMPLETE")) {
+			params.put("completed", new Timestamp(new java.util.Date().getTime()));
+		} else {
+			params.put("completed", null);
+		}
+		
+		String sql = "UPDATE \"Donation\" SET \"CompletedDate\"=CAST(:completed AS \"timestamp\"), \"Status\"=CAST(:status AS \"DonationStatus\") WHERE \"DonationID\"=:id";
 		
 		namedParameterJdbcTemplate.update(sql, params);
 		

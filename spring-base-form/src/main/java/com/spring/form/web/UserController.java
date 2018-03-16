@@ -291,6 +291,7 @@ public class UserController {
 		logger.debug("showAddUserForm()");
 
 		User user = new User();
+		user.setProvince("ON");
 
 		model.addAttribute("userForm", user);
 		model.addAttribute("role", currentRole);
@@ -308,9 +309,10 @@ public class UserController {
 		logger.debug("showAddRegisterForm()");
 
 		User user = new User();
+		user.setProvince("ON");
+		user.setRole("Donor");
 
 		model.addAttribute("userForm", user);
-		model.addAttribute("register", true);
 
 		populateProvinces(model);
 

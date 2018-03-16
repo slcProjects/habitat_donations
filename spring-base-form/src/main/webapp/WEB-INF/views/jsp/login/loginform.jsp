@@ -7,7 +7,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<jsp:include page="../fragments/head.jsp" />
+<jsp:include page="../fragments/formhead.jsp" />
 <body>
 	<jsp:include page="../fragments/header.jsp" />
 	<div class="content_body" style="margin-top: 156px">
@@ -25,42 +25,54 @@
 
 			<h1>Log In Page</h1>
 
-			<spring:url value="/login" var="login" />
-			
-			<form:form class="form-horizontal" method="post"
-			modelAttribute="loginForm" action="${login}">
+			<div class="gf_browser_chrome gform_wrapper" id="gform_wrapper_6">
 
-				<spring:bind path="username">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Username</label>
-						<div class="col-sm-10">
-							<form:input path="username" type="text" class="form-control "
-								id="username"/>
-							<form:errors path="username" class="control-label" />
-						</div>
+				<spring:url value="/login" var="login" />
+
+				<form:form class="form-horizontal" method="post"
+					modelAttribute="loginForm" action="${login}">
+
+					<div class="gform_heading">
+						<span class="gform_description"></span>
 					</div>
-				</spring:bind>
-				
-				<spring:bind path="password">
-					<div class="form-group ${status.error ? 'has-error' : ''}">
-						<label class="col-sm-2 control-label">Password</label>
-						<div class="col-sm-10">
-							<form:password path="password" class="form-control "
-								id="password"/>
-							<form:errors path="password" class="control-label" />
-						</div>
+					<div class="gform_body">
+						<ul id="gform_fields_6"
+							class="gform_fields top_label form_sublabel_below description_below">
+
+							<li id="field_6_0"
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield_label gfield_label_before_complex"
+								for="input_6_1_3">Username</label> <span
+								class="ginput_full address_line_1" id="input_6_2_5_container"><spring:bind
+										path="username">
+										<form:input path="username" id="username" />
+										<form:errors path="username" />
+										<div class="gf_clear gf_clear_complex"></div>
+									</spring:bind> </span></li>
+
+							<li id="field_6_02"
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield_label gfield_label_before_complex"
+								for="input_6_1_3">Password</label> <span
+								class="ginput_left address_zip" id="input_6_2_5_container2"><spring:bind
+										path="password">
+										<form:password path="password" id="password" />
+										<form:errors path="password" />
+										<div class="gf_clear gf_clear_complex"></div>
+									</spring:bind> </span></li>
+						</ul>
+
+						<button type="submit">Log In</button>
 					</div>
-				</spring:bind>
 
-				<button type="submit">Log In</button>
+				</form:form>
 
-			</form:form>
-			
-			<p>New donor? Register today!</p>
-			<spring:url value="/users/register" var="registerUrl" />
-			<button class="btn btn-info" onclick="location.href='${registerUrl}'">Register</button>
-			
+				<p>New donor? Register today!</p>
+				<spring:url value="/users/register" var="registerUrl" />
+				<button class="btn btn-info"
+					onclick="location.href='${registerUrl}'">Register</button>
 
+			</div>
 		</div>
 	</div>
 

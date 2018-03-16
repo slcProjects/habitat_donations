@@ -40,6 +40,11 @@
 				<label class="col-sm-2">Item Description</label>
 				<div class="col-sm-10">${donation.description}</div>
 			</div>
+			
+			<div class="row">
+				<label class="col-sm-2">Item Value</label>
+				<div class="col-sm-10">${donation.value}</div>
+			</div>
 
 			<div class="row">
 				<label class="col-sm-2">Scheduled Date</label>
