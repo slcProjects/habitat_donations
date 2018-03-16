@@ -26,13 +26,21 @@ public class SearchFormValidator implements Validator {
 
 		Search search = (Search) target;
 
-		if (search.getPostalCode() != "" && !postalCodeValidator.valid(search.getPostalCode())) {
-			errors.rejectValue("postalCode", "Pattern.searchForm.postalCode");
-		}
-		
-		if (search.getRole() != null && !search.getRole().equals("Donor") 
-				&& !search.getRole().equals("Volunteer") && !search.getRole().equals("Staff")) {
-			errors.rejectValue("role", "Invalid.searchForm.role");
+		if (search.getFirstName().equals("") && search.getLastName().equals("") && search.getCity().equals("")
+				&& search.getPostalCode().equals("") && search.getRole() == null) {
+			search.setEmptyError("gfield_error");
+			errors.rejectValue("role", "NotEmpty.searchForm");
+		} else {
+			search.setEmptyError("");
+			if (search.getPostalCode() != "" && !postalCodeValidator.valid(search.getPostalCode())) {
+				search.setCodeError("gfield_error");
+				errors.rejectValue("postalCode", "Pattern.searchForm.postalCode");
+			}
+			if (search.getRole() != null && !search.getRole().equals("Donor") && !search.getRole().equals("Volunteer")
+					&& !search.getRole().equals("Staff")) {
+				search.setRoleError("gfield_error");
+				errors.rejectValue("role", "Invalid.searchForm.role");
+			}
 		}
 
 	}

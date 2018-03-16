@@ -40,24 +40,24 @@
 							class="gform_fields top_label form_sublabel_below description_below">
 
 							<li id="field_6_0"
-								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${loginForm.usernameError}"><label
 								class="gfield_label gfield_label_before_complex"
 								for="input_6_1_3">Username</label> <span
 								class="ginput_full address_line_1" id="input_6_2_5_container"><spring:bind
 										path="username">
 										<form:input path="username" id="username" />
-										<form:errors path="username" />
+										<form:errors class="gfield_description validation_message" path="username" />
 										<div class="gf_clear gf_clear_complex"></div>
 									</spring:bind> </span></li>
 
 							<li id="field_6_02"
-								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${loginForm.passwordError}"><label
 								class="gfield_label gfield_label_before_complex"
 								for="input_6_1_3">Password</label> <span
 								class="ginput_left address_zip" id="input_6_2_5_container2"><spring:bind
 										path="password">
 										<form:password path="password" id="password" />
-										<form:errors path="password" />
+										<form:errors class="gfield_description validation_message" path="password" />
 										<div class="gf_clear gf_clear_complex"></div>
 									</spring:bind> </span></li>
 						</ul>

@@ -48,6 +48,7 @@ import com.spring.form.service.AttachmentService;
 import com.spring.form.service.DonationService;
 import com.spring.form.service.UserService;
 import com.spring.form.validator.DonationFormValidator;
+import com.spring.form.validator.LoginFormValidator;
 import com.spring.form.validator.SearchFormValidator;
 import com.spring.form.validator.StatusValidator;
 import com.spring.form.validator.UserFormValidator;
@@ -73,6 +74,9 @@ public class UserController {
 	private static final String STATUSFORM_PATTERN = "^statusForm\\d+$";
 
 	@Autowired
+	LoginFormValidator loginFormValidator;
+
+	@Autowired
 	UserFormValidator userFormValidator;
 
 	@Autowired
@@ -80,9 +84,14 @@ public class UserController {
 
 	@Autowired
 	DonationFormValidator donationFormValidator;
-	
+
 	@Autowired
 	StatusValidator statusValidator;
+
+	@InitBinder("loginForm")
+	protected void initLoginBinder(WebDataBinder binder) {
+		binder.addValidators(loginFormValidator);
+	}
 
 	@InitBinder("userForm")
 	protected void initUserBinder(WebDataBinder binder) {
@@ -98,7 +107,7 @@ public class UserController {
 	protected void initDonationBinder(WebDataBinder binder) {
 		binder.addValidators(donationFormValidator);
 	}
-	
+
 	@InitBinder(STATUSFORM_PATTERN)
 	protected void initStatusBinder(WebDataBinder binder) {
 		binder.addValidators(statusValidator);
@@ -151,6 +160,8 @@ public class UserController {
 			return "redirect:/dashboard";
 		} else {
 			Login login = new Login();
+			login.setUsernameError("");
+			login.setPasswordError("");
 			model.addAttribute("loginForm", login);
 			return "login/loginform";
 		}
@@ -159,28 +170,32 @@ public class UserController {
 
 	// checks username and password
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public String login(@ModelAttribute("loginForm") Login login, BindingResult result, Model model,
+	public String login(@ModelAttribute("loginForm") @Validated Login login, BindingResult result, Model model,
 			final RedirectAttributes redirectAttributes) {
 
 		logger.debug("login()");
 
-		String username = login.getUsername();
-		String password = login.getPassword();
-		User user = userService.findByLoginName(username);
-
-		if (user == null || !user.getPassword().equals(password)) {
-			redirectAttributes.addFlashAttribute("css", "danger");
-			redirectAttributes.addFlashAttribute("msg", "The username or password is incorrect.");
-			return "redirect:/main";
+		if (result.hasErrors()) {
+			return "login/loginform";
 		} else {
-			currentRole = user.getRole();
-			currentId = user.getId();
-			redirectAttributes.addFlashAttribute("css", "success");
-			redirectAttributes.addFlashAttribute("msg", currentRole + " logged in successfully!");
-			if (currentRole.equals("Donor")) {
-				redirectAttributes.addFlashAttribute("role", currentRole);
+			String username = login.getUsername();
+			String password = login.getPassword();
+			User user = userService.findByLoginName(username);
+
+			if (user == null || !user.getPassword().equals(password)) {
+				redirectAttributes.addFlashAttribute("css", "danger");
+				redirectAttributes.addFlashAttribute("msg", "The username or password is incorrect.");
+				return "redirect:/main";
+			} else {
+				currentRole = user.getRole();
+				currentId = user.getId();
+				redirectAttributes.addFlashAttribute("css", "success");
+				redirectAttributes.addFlashAttribute("msg", currentRole + " logged in successfully!");
+				if (currentRole.equals("Donor")) {
+					redirectAttributes.addFlashAttribute("role", currentRole);
+				}
+				return "redirect:/dashboard";
 			}
-			return "redirect:/dashboard";
 		}
 
 	}
@@ -306,7 +321,7 @@ public class UserController {
 	@RequestMapping(value = "/users/register", method = RequestMethod.GET)
 	public String showRegisterUserForm(Model model, final RedirectAttributes redirectAttributes) {
 
-		logger.debug("showAddRegisterForm()");
+		logger.debug("showRegisterUserForm()");
 
 		User user = new User();
 		user.setProvince("ON");
@@ -508,7 +523,14 @@ public class UserController {
 			}
 
 			donation.setTacking(new Timestamp(new java.util.Date().getTime()));
-			donation.setStatus(donation.getStatus().replace("_", " "));
+			if (donation.getStatus().equals("RECEIVED") || donation.getStatus().equals("PICKUP COMPLETE")) {
+				donation.setCompletedDate(new Timestamp(new java.util.Date().getTime()));
+			} else {
+				donation.setCompletedDate(null);
+			}
+			if (donation.getReceiver() == 0) {
+				donation.setReceiver(null);
+			}
 			donationService.saveOrUpdate(donation);
 
 			int numImages;
@@ -838,7 +860,7 @@ public class UserController {
 		model.addAttribute("month", month);
 		model.addAttribute("day", day);
 		model.addAttribute("year", year);
-		
+
 		populateDonationStatuses(model);
 
 		return "calendar/";
@@ -1005,31 +1027,32 @@ public class UserController {
 		model.addAttribute("month", month);
 		model.addAttribute("year", year);
 		model.addAttribute("donations", donations);
-		
+
 		populateDonationStatuses(model);
 
 		return "calendar/";
 
 	}
-	
+
 	// update donation status
 	@RequestMapping(value = "/statusupdate/{id}", method = RequestMethod.POST)
-	private String updateStatus(@ModelAttribute(STATUSFORM_PATTERN) @Validated Status status, @PathVariable("id") int id, 
-			BindingResult result, Model model, final RedirectAttributes redirectAttributes) {
-		
+	private String updateStatus(@ModelAttribute(STATUSFORM_PATTERN) @Validated Status status,
+			@PathVariable("id") int id, BindingResult result, Model model,
+			final RedirectAttributes redirectAttributes) {
+
 		logger.debug("updateStatus() id + status : {}", id + " " + status);
-			
-		donationService.updateStatus(id, status.getStatus().replaceAll("_", " "));
-		
+
+		donationService.updateStatus(id, status.getStatus());
+
 		redirectAttributes.addFlashAttribute("css", "success");
 		redirectAttributes.addFlashAttribute("msg", "Status updated successfully!");
-		
+
 		if (scheduleType.equals("week")) {
 			return "redirect:/calendar/weekof/" + statusDay + "/" + statusMonth + "/" + statusYear;
 		} else {
 			return "redirect:/schedule/" + statusMonth + "/" + statusDay + "/" + statusYear;
 		}
-		
+
 	}
 
 	// display image
@@ -1105,7 +1128,7 @@ public class UserController {
 		model.addAttribute("provinceList", province);
 
 	}
-	
+
 	private void populateDonationTypes(Model model) {
 
 		Map<String, String> types = new LinkedHashMap<String, String>();
@@ -1114,13 +1137,13 @@ public class UserController {
 		model.addAttribute("typeList", types);
 
 	}
-	
+
 	private void populateDonationStatuses(Model model) {
 
 		Map<String, String> statuses = new LinkedHashMap<String, String>();
-		statuses.put("AWAITING_APPROVAL", "AWAITING APPROVAL");
-		statuses.put("AWAITING_PICKUP", "AWAITING PICKUP");
-		statuses.put("PICKUP_COMPLETE", "PICKUP COMPLETE");
+		statuses.put("AWAITING APPROVAL", "AWAITING APPROVAL");
+		statuses.put("AWAITING PICKUP", "AWAITING PICKUP");
+		statuses.put("PICKUP COMPLETE", "PICKUP COMPLETE");
 		statuses.put("RESCHEDULED", "RESCHEDULED");
 		statuses.put("RECEIVED", "RECEIVED");
 		model.addAttribute("statusList", statuses);

@@ -17,6 +17,12 @@ public class Search {
 	// form:input - textbox
 	String role;
 	
+	String emptyError;
+	
+	String codeError;
+	
+	String roleError;
+	
 	public String getFirstName() {
 		return firstName;
 	}
@@ -57,6 +63,30 @@ public class Search {
 		if (role.length() != 0) {
 			this.role = role.substring(0, 1).toUpperCase() + role.substring(1);
 		}
+	}
+	
+	public String getEmptyError() {
+		return emptyError;
+	}
+
+	public void setEmptyError(String emptyError) {
+		this.emptyError = emptyError;
+	}
+	
+	public String getCodeError() {
+		return codeError;
+	}
+
+	public void setCodeError(String codeError) {
+		this.codeError = codeError;
+	}
+	
+	public String getRoleError() {
+		return roleError;
+	}
+	
+	public void setRoleError(String roleError) {
+		this.roleError = roleError;
 	}
 	
 	@Override

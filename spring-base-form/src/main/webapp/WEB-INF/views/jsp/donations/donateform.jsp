@@ -22,7 +22,7 @@
 					<strong>${msg}</strong>
 				</div>
 			</c:if>
-
+			
 			<c:choose>
 				<c:when test="${donationForm['new']}">
 					<h1>Donate</h1>
@@ -42,6 +42,7 @@
 					<form:hidden path="id" />
 					<form:hidden path="donor" />
 					<form:hidden path="numImages" />
+					<form:hidden path="completedDate" />
 					<div class="gform_heading">
 						<span class="gform_description"></span>
 					</div>
@@ -50,31 +51,31 @@
 							class="gform_fields top_label form_sublabel_below description_below">
 
 							<li id="field_6_0"
-								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.descError}"><label
 								class="gfield_label gfield_label_before_complex"
 								for="input_6_1_3">Item Description<span
 									class="gfield_required">*</span></label> <span
 								class="ginput_full address_line_1" id="input_6_2_5_container"><spring:bind
 										path="description">
 										<form:input path="description" id="description" />
-										<form:errors path="description" />
+										<form:errors class="gfield_description validation_message" path="description" />
 										<div class="gf_clear gf_clear_complex"></div>
 									</spring:bind> </span></li>
 
 							<li id="field_6_02"
-								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.valueError}"><label
 								class="gfield_label gfield_label_before_complex"
 								for="input_6_1_3">Estimated Value<span
 									class="gfield_required">*</span></label> <span
 								class="ginput_left address_zip" id="input_6_2_5_container2"><spring:bind
 										path="value">
 										<form:input path="value" id="value" />
-										<form:errors path="value" />
+										<form:errors class="gfield_description validation_message" path="value" />
 										<div class="gf_clear gf_clear_complex"></div>
 									</spring:bind> </span></li>
 
 							<li id="field_6_03"
-								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.dateError}"><label
 								class="gfield_label gfield_label_before_complex"
 								for="input_6_1_3">Scheduled Date (24 hour format:
 									YYYY-MM-DD HH:MM:SS)<span class="gfield_required">*</span>
@@ -82,12 +83,12 @@
 								id="input_6_2_5_container3"><spring:bind
 										path="scheduledDate">
 										<form:input path="scheduledDate" id="scheduledDate" />
-										<form:errors path="scheduledDate" />
+										<form:errors class="gfield_description validation_message" path="scheduledDate" />
 										<div class="gf_clear gf_clear_complex"></div>
 									</spring:bind> </span></li>
 
 							<li id="field_6_2"
-								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.typeError}"><label
 								class="gfield_label gfield_label_before_complex"
 								for="input_6_2_1">Donation Type<span
 									class="gfield_required">*</span></label> <span
@@ -96,11 +97,11 @@
 											<form:option value="NONE" label="" />
 											<form:options items="${typeList}" />
 										</form:select>
-										<form:errors path="type" />
+										<form:errors class="gfield_description validation_message" path="type" />
 									</spring:bind></span></li>
 								
 							<li id="field_6_2"
-								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.addrError}"><label
 								class="gfield_label gfield_label_before_complex"
 								for="input_6_2_1">Address<span class="gfield_required">*</span></label>
 								<div
@@ -111,13 +112,11 @@
 											<form:input class="textbox" path="address" id="address" />
 											<label for="input_6_2_1" id="input_6_2_1_label">Street
 												Address</label>
-											<form:errors path="address" />
 										</spring:bind>
 									</span><span class="ginput_left address_city"
 										id="input_6_2_3_container"> <spring:bind path="city">
 											<form:input path="city" id="city" />
 											<label for="input_6_2_3" id="input_6_2_3_label">City</label>
-											<form:errors path="city" />
 										</spring:bind>
 									</span><span class="ginput_right address_state"
 										id="input_6_2_4_container"> <spring:bind
@@ -127,7 +126,6 @@
 												<form:options items="${provinceList}" />
 											</form:select>
 											<label for="input_6_2_4" id="input_6_2_4_label">Province</label>
-											<form:errors path="province" />
 										</spring:bind>
 									</span><span class="ginput_left address_zip"
 										id="input_6_2_5_container"><spring:bind
@@ -135,35 +133,36 @@
 											<form:input path="postalCode" id="postalCode" />
 											<label for="input_6_2_5" id="input_6_2_5_label">Postal
 												Code</label>
-											<form:errors path="postalCode" />
+											<form:errors class="gfield_description validation_message" path="postalCode" />
 										</spring:bind> </span>
 									<div class="gf_clear gf_clear_complex"></div>
-								</div></li>
+								</div>
+								<form:errors class="gfield_description validation_message" path="address" /></li>
 
 							<li id="field_6_04"
-								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.dropError}"><label
 								class="gfield_label gfield_label_before_complex"
 								for="input_6_1_3">Drop Fee</label> <span
 								class="ginput_left address_zip" id="input_6_2_5_container4"><spring:bind
 										path="dropFee">
 										<form:input path="dropFee" id="dropFee" />
-										<form:errors path="dropFee" />
+										<form:errors class="gfield_description validation_message" path="dropFee" />
 									</spring:bind></span></li>
 
 							<li id="field_6_05"
-								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.receiverError}"><label
 								class="gfield_label gfield_label_before_complex"
 								for="input_6_1_3">Receiver ID</label> <span
 								class="ginput_left address_zip" id="input_6_2_5_container5"><spring:bind
 										path="receiver">
 										<form:input path="receiver" id="receiver" />
-										<form:errors path="receiver" />
+										<form:errors class="gfield_description validation_message" path="receiver" />
 									</spring:bind></span></li>
 
 							<c:choose>
 								<c:when test="${role == 'Staff'}">
 									<li id="field_6_6"
-										class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+										class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.statusError}"><label
 										class="gfield_label gfield_label_before_complex"
 										for="input_6_1_3">Donation Status<span
 											class="gfield_required">*</span></label> <span
@@ -173,7 +172,7 @@
 													<form:option value="NONE" label="" />
 													<form:options items="${statusList}" />
 												</form:select>
-												<form:errors path="status" />
+												<form:errors class="gfield_description validation_message" path="status" />
 											</spring:bind> </span></li>
 								</c:when>
 								<c:otherwise>
@@ -187,7 +186,6 @@
 									receive a tax receipt for you donation? </label> <spring:bind
 									path="receipts">
 									<form:checkbox path="receipts" id="receipts" />
-									<form:errors path="receipts" class="control-label" />
 								</spring:bind></li>
 
 						</ul>
@@ -197,8 +195,8 @@
 							<div class="col-sm-10">
 								<c:choose>
 									<c:when test="${noImage == true}">
-							No images
-						</c:when>
+										No images
+									</c:when>
 									<c:otherwise>
 										<c:forEach var="imageIds" items="${imageIds}">
 											<spring:url value="/images/${imageIds}" var="imageUrl" />
@@ -220,7 +218,7 @@
 										<label> <form:input type="file" path="file1"
 												id="file1" class="form-control input-sm" />
 										</label>
-										<form:errors path="file1" class="control-label" />
+										<form:errors class="gfield_description validation_message" path="file1"/>
 									</div>
 								</div>
 							</div>
@@ -234,7 +232,7 @@
 										<label> <form:input type="file" path="file2"
 												id="file2" class="form-control input-sm" />
 										</label>
-										<form:errors path="file2" class="control-label" />
+										<form:errors class="gfield_description validation_message" path="file2"/>
 									</div>
 								</div>
 							</div>
@@ -248,7 +246,7 @@
 										<label> <form:input type="file" path="file3"
 												id="file3" class="form-control input-sm" />
 										</label>
-										<form:errors path="file3" class="control-label" />
+										<form:errors class="gfield_description validation_message" path="file3" />
 									</div>
 								</div>
 							</div>
@@ -262,7 +260,7 @@
 										<label> <form:input type="file" path="file4"
 												id="file4" class="form-control input-sm" />
 										</label>
-										<form:errors path="file4" class="control-label" />
+										<form:errors class="gfield_description validation_message" path="file4"/>
 									</div>
 								</div>
 							</div>

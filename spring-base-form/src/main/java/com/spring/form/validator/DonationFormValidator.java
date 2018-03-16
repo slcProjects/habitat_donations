@@ -18,14 +18,14 @@ public class DonationFormValidator implements Validator {
 	@Autowired
 	@Qualifier("postalCodeValidator")
 	PostalCodeValidator postalCodeValidator;
-	
+
 	@Autowired
 	@Qualifier("dateValidator")
 	DateValidator dateValidator;
-	
+
 	@Autowired
 	DonationService donationService;
-	
+
 	@Override
 	public boolean supports(Class<?> clazz) {
 		return Donation.class.equals(clazz);
@@ -33,32 +33,65 @@ public class DonationFormValidator implements Validator {
 
 	@Override
 	public void validate(Object target, Errors errors) {
-		
+
 		Donation donation = (Donation) target;
-		
+
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
+
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "NotEmpty.donationForm");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "value", "NotEmpty.donationForm");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "scheduledDate", "NotEmpty.donationForm");
 		
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "NotEmpty.donationForm.description");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "value", "NotEmpty.donationForm.value");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "scheduledDate", "NotEmpty.donationForm.scheduledDate");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "type", "NotEmpty.donationForm.type");
-		
-		if (donation.getPostalCode() != "" && !postalCodeValidator.valid(donation.getPostalCode())){
-			errors.rejectValue("postalCode", "Pattern.donationForm.postalCode");
+		if (donation.getDescription().equals("")) {
+			donation.setDescError("gfield_error");
+		} else {
+			donation.setDescError("");
 		}
 		
+		if (donation.getValue() == null) {
+			donation.setValueError("gfield_error");
+		} else {
+			donation.setValueError("");
+		}
+		
+		if (donation.getScheduledDate() == null) {
+			donation.setDateError("gfield_error");
+		} else {
+			donation.setDateError("");
+		}
+		
+		if (!donation.getPostalCode().equals("") && !postalCodeValidator.valid(donation.getPostalCode())) {
+			donation.setAddrError("gfield_error");
+			errors.rejectValue("postalCode", "Pattern.donationForm.postalCode");
+		} else {
+			donation.setAddrError("");
+		}
+
 		if (donation.getScheduledDate() != null && !dateValidator.valid(format.format(donation.getScheduledDate()))) {
 			errors.rejectValue("scheduledDate", "Pattern.donationForm.scheduledDate");
+			donation.setDateError("gfield_error");
+		} else {
+			donation.setDateError("");
 		}
-		
+
 		if (donation.getType().equalsIgnoreCase("none")) {
-			errors.rejectValue("type", "NotEmpty.donationForm.type");
+			donation.setTypeError("gfield_error");
+			errors.rejectValue("type", "NotEmpty.donationForm");
+		} else if (donation.getType().equalsIgnoreCase("pickup") && (donation.getAddress().equals("")
+				|| donation.getCity().equals("") || donation.getProvince().equalsIgnoreCase("none")
+				|| donation.getPostalCode().equals(""))) {
+			errors.rejectValue("address", "NotEmpty.donationForm.address");
+			donation.setAddrError("gfield_error");
+			donation.setTypeError("");
 		}
-		
+
 		if (donation.getStatus().equalsIgnoreCase("none")) {
-			errors.rejectValue("status", "NotEmpty.donationForm.status");
+			donation.setStatusError("gfield_error");
+			errors.rejectValue("status", "NotEmpty.donationForm");
+		} else {
+			donation.setStatusError("");
 		}
-		
+
 	}
 
 }

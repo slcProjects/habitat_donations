@@ -124,7 +124,7 @@
 			</div>
 
 			<div class="row">
-				<label class="col-sm-2">Would you like to have Tax Receipts?</label>
+				<label class="col-sm-2">Receives Tax Receipt</label>
 				<div class="col-sm-10">${donation.receipts}</div>
 			</div>
 

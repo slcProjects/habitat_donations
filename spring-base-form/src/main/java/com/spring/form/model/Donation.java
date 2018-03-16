@@ -59,6 +59,22 @@ public class Donation {
 	
 	String donorName;
 	
+	String descError;
+	
+	String valueError;
+	
+	String dateError;
+	
+	String typeError;
+	
+	String addrError;
+	
+	String dropError;
+	
+	String receiverError;
+	
+	String statusError;
+	
 	public String getTime() {
 		return time;
 	}
@@ -251,6 +267,70 @@ public class Donation {
 	
 	public String getDonorName() {
 		return donorName;
+	}
+	
+	public String getDescError() {
+		return descError;
+	}
+	
+	public void setDescError(String descError) {
+		this.descError = descError;
+	}
+	
+	public String getValueError() {
+		return valueError;
+	}
+	
+	public void setValueError(String valueError) {
+		this.valueError = valueError;
+	}
+	
+	public String getDateError() {
+		return dateError;
+	}
+	
+	public void setDateError(String dateError) {
+		this.dateError = dateError;
+	}
+	
+	public String getTypeError() {
+		return typeError;
+	}
+	
+	public void setTypeError(String typeError) {
+		this.typeError = typeError;
+	}
+	
+	public String getAddrError() {
+		return addrError;
+	}
+	
+	public void setAddrError(String addrError) {
+		this.addrError = addrError;
+	}
+	
+	public String getDropError() {
+		return dropError;
+	}
+	
+	public void setDropError(String dropError) {
+		this.dropError = dropError;
+	}
+	
+	public String getReceiverError() {
+		return receiverError;
+	}
+	
+	public void setReceiverError(String receiverError) {
+		this.receiverError = receiverError;
+	}
+	
+	public String getStatusError() {
+		return statusError;
+	}
+	
+	public void setStatusError(String statusError) {
+		this.statusError = statusError;
 	}
 	
 	@Override

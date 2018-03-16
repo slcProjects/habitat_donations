@@ -44,6 +44,18 @@ public class User
 
 	// form:checkbox - single checkbox
 	boolean notify;
+	
+	String loginError;
+	
+	String passError;
+	
+	String nameError;
+	
+	String contactError;
+	
+	String addrError;
+	
+	String roleError;
 
 	public boolean isNew() {
 		return (this.id == null);
@@ -159,6 +171,54 @@ public class User
 
 	public void setNotify(boolean notify) {
 		this.notify = notify;
+	}
+	
+	public String getLoginError() {
+		return loginError;
+	}
+	
+	public void setLoginError(String loginError) {
+		this.loginError = loginError;
+	}
+	
+	public String getPassError() {
+		return passError;
+	}
+	
+	public void setPassError(String passError) {
+		this.passError = passError;
+	}
+	
+	public String getNameError() {
+		return nameError;
+	}
+	
+	public void setNameError(String nameError) {
+		this.nameError = nameError;
+	}
+	
+	public String getContactError() {
+		return contactError;
+	}
+	
+	public void setContactError(String contactError) {
+		this.contactError = contactError;
+	}
+	
+	public String getAddrError() {
+		return addrError;
+	}
+	
+	public void setAddrError(String addrError) {
+		this.addrError = addrError;
+	}
+	
+	public String getRoleError() {
+		return roleError;
+	}
+	
+	public void setRoleError(String roleError) {
+		this.roleError = roleError;
 	}
 	
 	@Override

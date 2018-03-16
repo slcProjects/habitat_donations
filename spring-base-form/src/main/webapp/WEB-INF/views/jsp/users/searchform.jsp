@@ -29,7 +29,7 @@
 							class="gform_fields top_label form_sublabel_below description_below">
 
 							<li id="field_6_1"
-								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${searchForm.emptyError}"><label
 								class="gfield_label gfield_label_before_complex"
 								for="input_6_1_3">Name</label>
 								<div
@@ -39,17 +39,15 @@
 											path="firstName">
 											<form:input path="firstName" id="firstName" />
 											<label for="input_6_1_3">First</label>
-											<form:errors path="firstName" />
 										</spring:bind> </span> <span id="input_6_1_6_container" class="name_last"><spring:bind
 											path="lastName">
 											<form:input path="lastName" id="lastName" />
 											<label for="input_6_1_6">Last</label>
-											<form:errors path="lastName" />
 										</spring:bind></span>
 								</div></li>
 
 							<li id="field_6_2"
-								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${searchForm.emptyError} ${searchForm.codeError}"><label
 								class="gfield_label gfield_label_before_complex"
 								for="input_6_2_1">Location</label>
 								<div
@@ -59,7 +57,6 @@
 										id="input_6_2_3_container"> <spring:bind path="city">
 											<form:input path="city" id="city" />
 											<label for="input_6_2_3" id="input_6_2_3_label">City</label>
-											<form:errors path="city" />
 										</spring:bind>
 									</span><span class="ginput_right address_zip"
 										id="input_6_2_5_container"><spring:bind
@@ -67,18 +64,18 @@
 											<form:input path="postalCode" id="postalCode" />
 											<label for="input_6_2_5" id="input_6_2_5_label">Postal
 												Code</label>
-											<form:errors path="postalCode" />
+											<form:errors class="gfield_description validation_message" path="postalCode" />
 										</spring:bind> </span>
 									<div class="gf_clear gf_clear_complex"></div>
 								</div></li>
 
 							<li id="field_6_6"
-								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${searchForm.emptyError} ${searchForm.roleError}"><label
 								class="gfield_label gfield_label_before_complex"
 								for="input_6_1_3">Role</label> <span
 								class="ginput_left address_zip"><spring:bind path="role">
-										<form:input path="role" type="text" id="role" />
-										<form:errors path="role" class="control-label" />
+										<form:input path="role" id="role" />
+										<form:errors class="gfield_description validation_message" path="role" />
 										<div class="gf_clear gf_clear_complex"></div>
 									</spring:bind> </span></li>
 

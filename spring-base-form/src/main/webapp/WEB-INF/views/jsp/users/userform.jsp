@@ -12,7 +12,7 @@
 	<jsp:include page="../fragments/header.jsp" />
 	<div class="content_body" style="margin-top: 156px">
 		<div class="container">
-
+		
 			<c:choose>
 				<c:when test="${userForm['new']}">
 					<h1>Register User</h1>
@@ -37,19 +37,19 @@
 							class="gform_fields top_label form_sublabel_below description_below">
 
 							<li id="field_6_0"
-								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${userForm.loginError}"><label
 								class="gfield_label gfield_label_before_complex"
 								for="input_6_1_3">Login Name<span
 									class="gfield_required">*</span></label> <span
 								class="ginput_left address_zip" id="input_6_2_5_container"><spring:bind
 										path="loginName">
 										<form:input path="loginName" type="text" id="loginName" />
-										<form:errors path="loginName" class="control-label" />
+										<form:errors class="gfield_description validation_message" path="loginName" />
 										<div class="gf_clear gf_clear_complex"></div>
 									</spring:bind> </span></li>
 
 							<li id="field_6_0.1"
-								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${userForm.passError}"><label
 								class="gfield_label gfield_label_before_complex"
 								for="input_6_1_3">New Password<span
 									class="gfield_required">*</span></label>
@@ -60,17 +60,16 @@
 											path="password">
 											<form:password path="password" id="password" />
 											<label for="input_6_1_3">Password</label>
-											<form:errors path="password" />
 										</spring:bind> </span> <span id="input_6_1_6_container" class="name_last"><spring:bind
 											path="confirmPassword">
 											<form:password path="confirmPassword" id="confirmPassword" />
 											<label for="input_6_1_6">Confirm Password</label>
-											<form:errors path="confirmPassword" />
 										</spring:bind></span>
-								</div></li>
+								</div>
+								<form:errors class="gfield_description validation_message" path="password" /></li>
 
 							<li id="field_6_1"
-								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${userForm.nameError}"><label
 								class="gfield_label gfield_label_before_complex"
 								for="input_6_1_3">Name<span class="gfield_required">*</span></label>
 								<div
@@ -80,41 +79,42 @@
 											path="firstName">
 											<form:input path="firstName" id="firstName" />
 											<label for="input_6_1_3">First</label>
-											<form:errors path="firstName" />
 										</spring:bind> </span> <span id="input_6_1_6_container" class="name_last"><spring:bind
 											path="lastName">
 											<form:input path="lastName" id="lastName" />
 											<label for="input_6_1_6">Last</label>
-											<form:errors path="lastName" />
 										</spring:bind></span>
-								</div></li>
-								
+								</div>
+								<form:errors class="gfield_description validation_message" path="firstName" /></li> 
+
 							<li id="field_6_3"
-								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${userForm.contactError}"><label
 								class="gfield_label gfield_label_before_complex" for="input_6_3">Contact
 									Info<span class="gfield_required">*</span>
 							</label>
 								<div
 									class="ginput_complex ginput_container ginput_container_email"
 									id="input_6_3_container">
-									<span id="input_6_3_1_container" class="ginput_left">
-									<spring:bind path="email">
+									<span id="input_6_3_1_container" class="ginput_left"> <spring:bind
+											path="email">
 											<form:input path="email" id="email" />
 											<label for="input_6_3_2">Email Address</label>
-											<form:errors path="email" />
+											<form:errors class="gfield_description validation_message"
+												path="email" />
 										</spring:bind>
 									</span> <span id="input_6_3_2_container" class="ginput_right">
 										<spring:bind path="phone">
 											<form:input path="phone" id="phone" />
 											<label for="input_6_3_2">Phone Number</label>
-											<form:errors path="phone" />
+											<form:errors class="gfield_description validation_message"
+												path="phone" />
 										</spring:bind>
 									</span>
 									<div class="gf_clear gf_clear_complex"></div>
 								</div></li>
-								
-							<li id="field_6_2"
-								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+
+							 <li id="field_6_2"
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${userForm.addrError}"><label
 								class="gfield_label gfield_label_before_complex"
 								for="input_6_2_1">Address<span class="gfield_required">*</span></label>
 								<div
@@ -125,13 +125,11 @@
 											<form:input class="textbox" path="address" id="address" />
 											<label for="input_6_2_1" id="input_6_2_1_label">Street
 												Address</label>
-											<form:errors path="address" />
 										</spring:bind>
 									</span><span class="ginput_left address_city"
 										id="input_6_2_3_container"> <spring:bind path="city">
 											<form:input path="city" id="city" />
 											<label for="input_6_2_3" id="input_6_2_3_label">City</label>
-											<form:errors path="city" />
 										</spring:bind>
 									</span><span class="ginput_right address_state"
 										id="input_6_2_4_container"> <spring:bind
@@ -141,7 +139,6 @@
 												<form:options items="${provinceList}" />
 											</form:select>
 											<label for="input_6_2_4" id="input_6_2_4_label">Province</label>
-											<form:errors path="province" />
 										</spring:bind>
 									</span><span class="ginput_left address_zip"
 										id="input_6_2_5_container"><spring:bind
@@ -149,21 +146,21 @@
 											<form:input path="postalCode" id="postalCode" />
 											<label for="input_6_2_5" id="input_6_2_5_label">Postal
 												Code</label>
-											<form:errors path="postalCode" />
 										</spring:bind> </span>
 									<div class="gf_clear gf_clear_complex"></div>
-								</div></li>
+								</div>
+								<form:errors class="gfield_description validation_message" path="address" /></li>
 								
 							<c:choose>
 								<c:when test="${not empty role && role == 'Staff'}">
 									<li id="field_6_6"
-										class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
+										class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${userForm.roleError}"><label
 										class="gfield_label gfield_label_before_complex"
 										for="input_6_1_3">Role<span class="gfield_required">*</span></label>
 										<span class="ginput_left address_zip"><spring:bind
 												path="role">
 												<form:input path="role" type="text" id="role" />
-												<form:errors path="role" class="control-label" />
+												<form:errors class="gfield_description validation_message" path="role" />
 												<div class="gf_clear gf_clear_complex"></div>
 											</spring:bind> </span></li>
 								</c:when>
@@ -177,7 +174,6 @@
 								class="gfield_label" for="input_6_7">Would you like to
 									receive ReStore Notifications? </label> <spring:bind path="notify">
 									<form:checkbox path="notify" id="notify" />
-									<form:errors path="notify" />
 								</spring:bind></li>
 								
 						</ul>

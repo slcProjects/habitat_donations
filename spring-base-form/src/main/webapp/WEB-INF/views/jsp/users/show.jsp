@@ -63,7 +63,7 @@
 			</div>
 
 			<div class="row">
-				<label class="col-sm-2">Notifications?</label>
+				<label class="col-sm-2">Receives Notifications</label>
 				<div class="col-sm-10">${user.notify}</div>
 			</div>
 			

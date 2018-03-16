@@ -39,43 +39,76 @@ public class UserFormValidator implements Validator {
 
 		User user = (User) target;
 
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "loginName", "NotEmpty.userForm.loginName");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotEmpty.userForm.password");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "confirmPassword", "NotEmpty.userForm.confirmPassword");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", "NotEmpty.userForm.firstName");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName", "NotEmpty.userForm.lastName");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "NotEmpty.userForm.email");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "phone", "NotEmpty.userForm.phone");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "address", "NotEmpty.userForm.address");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "city", "NotEmpty.userForm.city");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "province", "NotEmpty.userForm.province");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "postalCode", "NotEmpty.userForm.postalCode");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "role", "NotEmpty.userForm.role");
-
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "loginName", "NotEmpty.userForm");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotEmpty.userForm");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "NotEmpty.userForm");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "phone", "NotEmpty.userForm");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "role", "NotEmpty.userForm");
+		
+		if (!user.getLoginName().equals("") && userService.findByLoginName(user.getLoginName()) != null) {
+			user.setLoginError("gfield_error");
+			errors.rejectValue("loginName", "Taken.userForm.loginName");
+		} else if (user.getLoginName().equals("")) {
+			user.setLoginError("gfield_error");
+		} else {
+			user.setLoginError("");
+		}
+		
+		if (user.getFirstName() == "" && user.getLastName() == "") {
+			user.setNameError("gfield_error");
+			errors.rejectValue("firstName", "NotEmpty.userForm");
+		} else if (user.getFirstName() == "" || user.getLastName() == "") {
+			user.setNameError("gfield_error");
+			errors.rejectValue("firstName", "NotEmpty.userForm.name");
+		} else {
+			user.setNameError("");
+		}
+		
+		user.setContactError("");
+		
 		if (user.getEmail() != "" && !emailValidator.valid(user.getEmail())) {
+			user.setContactError("gfield_error");
 			errors.rejectValue("email", "Pattern.userForm.email");
+		} else if (user.getEmail() == "") {
+			user.setContactError("gfield_error");
 		}
 
 		if (user.getPhone() != "" && !phoneValidator.valid(user.getPhone())) {
+			user.setContactError("gfield_error");
 			errors.rejectValue("phone", "Pattern.userForm.phone");
+		} else if (user.getPhone() == "") {
+			user.setContactError("gfield_error");
 		}
+		
+		user.setAddrError("");
 
-		if (user.getProvince().equalsIgnoreCase("none")) {
-			errors.rejectValue("province", "NotEmpty.userForm.province");
+		if (user.getAddress() == "" || user.getCity() == "" || user.getProvince().equalsIgnoreCase("none") || user.getPostalCode() == "") {
+			user.setAddrError("gfield_error");
+			errors.rejectValue("address", "NotEmpty.userForm");
 		}
 
 		if (user.getPostalCode() != "" && !postalCodeValidator.valid(user.getPostalCode())) {
+			user.setAddrError("gfield_error");
 			errors.rejectValue("postalCode", "Pattern.userForm.postalCode");
 		}
 
-		if (user.getPassword() != "" && user.getConfirmPassword() != ""
-				&& !user.getPassword().equals(user.getConfirmPassword())) {
-			errors.rejectValue("confirmPassword", "Diff.userform.confirmPassword");
+		if (user.getPassword() != "" && !user.getPassword().equals(user.getConfirmPassword())) {
+			user.setPassError("gfield_error");
+			errors.rejectValue("password", "Diff.userForm.confirmPassword");
+		} else if (user.getPassword() == "" || user.getConfirmPassword() == "") {
+			user.setPassError("gfield_error");
+		} else {
+			user.setPassError("");
 		}
 
 		if (!user.getRole().equals("") && !user.getRole().equals("Donor") && !user.getRole().equals("Volunteer")
 				&& !user.getRole().equals("Staff")) {
+			user.setRoleError("gfield_error");
 			errors.rejectValue("role", "Invalid.userForm.role");
+		} else if (user.getRole() == "") {
+			user.setRoleError("gfield_error");
+		} else {
+			user.setRoleError("");
 		}
 
 	}

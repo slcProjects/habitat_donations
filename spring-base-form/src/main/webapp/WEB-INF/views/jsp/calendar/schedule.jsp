@@ -47,7 +47,7 @@
 										modelAttribute="statusForm${donation.id}" action="${statusUrl}">
 										<spring:bind path="status">
 											<form:select path="status" class="form-control">
-												<%-- <form:option value="NONE" label="--- Select ---" /> --%>
+												<%-- <form:option value="NONE" label="" /> --%>
 												<form:options items="${statusList}" />
 											</form:select>
 											<form:errors path="status" class="control-label" />
