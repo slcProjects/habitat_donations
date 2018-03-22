@@ -75,6 +75,8 @@ public class Donation {
 	
 	String statusError;
 	
+	String fileError;
+	
 	public String getTime() {
 		return time;
 	}
@@ -333,12 +335,21 @@ public class Donation {
 		this.statusError = statusError;
 	}
 	
+	public String getFileError() {
+		return fileError;
+	}
+	
+	public void setFileError(String fileError) {
+		this.fileError = fileError;
+	}
+	
 	@Override
 	public String toString() {
 		return "Donation [id=" + id + ", donor=" + donor + ", description=" + description + ", value=" + value
 				+ ", scheduledDate=" + scheduledDate + ", completedDate=" + completedDate + ", address=" + address
 				+ ", city=" + city + ", province=" + province + ", postalCode=" + postalCode + ", dropFee=" + dropFee
 				+ ", status=" + status + ", receiver=" + receiver + ", tacking=" + tacking + ", receipts=" + receipts
+				+ ", file1=" + file1 + ", file2=" + file2 + ", file3=" + file3 + ", file4=" + file4 
 				+ ", numImages=" + numImages + "]" + isNew();
 	}
 

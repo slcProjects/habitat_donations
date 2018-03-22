@@ -22,10 +22,14 @@
 					<strong>${msg}</strong>
 				</div>
 			</c:if>
-			
+
 			<c:choose>
 				<c:when test="${donationForm['new']}">
 					<h1>Donate</h1>
+					<c:if test="${role == 'Donor'}">
+						<p>Donations cannot be edited once submitted. Please contact
+							the Habitat ReStore if you require any changes.</p>
+					</c:if>
 				</c:when>
 				<c:otherwise>
 					<h1>Update Donation</h1>
@@ -42,7 +46,6 @@
 					<form:hidden path="id" />
 					<form:hidden path="donor" />
 					<form:hidden path="numImages" />
-					<form:hidden path="completedDate" />
 					<div class="gform_heading">
 						<span class="gform_description"></span>
 					</div>
@@ -58,7 +61,8 @@
 								class="ginput_full address_line_1" id="input_6_2_5_container"><spring:bind
 										path="description">
 										<form:input path="description" id="description" />
-										<form:errors class="gfield_description validation_message" path="description" />
+										<form:errors class="gfield_description validation_message"
+											path="description" />
 										<div class="gf_clear gf_clear_complex"></div>
 									</spring:bind> </span></li>
 
@@ -70,7 +74,8 @@
 								class="ginput_left address_zip" id="input_6_2_5_container2"><spring:bind
 										path="value">
 										<form:input path="value" id="value" />
-										<form:errors class="gfield_description validation_message" path="value" />
+										<form:errors class="gfield_description validation_message"
+											path="value" />
 										<div class="gf_clear gf_clear_complex"></div>
 									</spring:bind> </span></li>
 
@@ -83,7 +88,8 @@
 								id="input_6_2_5_container3"><spring:bind
 										path="scheduledDate">
 										<form:input path="scheduledDate" id="scheduledDate" />
-										<form:errors class="gfield_description validation_message" path="scheduledDate" />
+										<form:errors class="gfield_description validation_message"
+											path="scheduledDate" />
 										<div class="gf_clear gf_clear_complex"></div>
 									</spring:bind> </span></li>
 
@@ -97,9 +103,10 @@
 											<form:option value="NONE" label="" />
 											<form:options items="${typeList}" />
 										</form:select>
-										<form:errors class="gfield_description validation_message" path="type" />
+										<form:errors class="gfield_description validation_message"
+											path="type" />
 									</spring:bind></span></li>
-								
+
 							<li id="field_6_2"
 								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.addrError}"><label
 								class="gfield_label gfield_label_before_complex"
@@ -133,34 +140,37 @@
 											<form:input path="postalCode" id="postalCode" />
 											<label for="input_6_2_5" id="input_6_2_5_label">Postal
 												Code</label>
-											<form:errors class="gfield_description validation_message" path="postalCode" />
+											<form:errors class="gfield_description validation_message"
+												path="postalCode" />
 										</spring:bind> </span>
 									<div class="gf_clear gf_clear_complex"></div>
-								</div>
-								<form:errors class="gfield_description validation_message" path="address" /></li>
-
-							<li id="field_6_04"
-								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.dropError}"><label
-								class="gfield_label gfield_label_before_complex"
-								for="input_6_1_3">Drop Fee</label> <span
-								class="ginput_left address_zip" id="input_6_2_5_container4"><spring:bind
-										path="dropFee">
-										<form:input path="dropFee" id="dropFee" />
-										<form:errors class="gfield_description validation_message" path="dropFee" />
-									</spring:bind></span></li>
-
-							<li id="field_6_05"
-								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.receiverError}"><label
-								class="gfield_label gfield_label_before_complex"
-								for="input_6_1_3">Receiver ID</label> <span
-								class="ginput_left address_zip" id="input_6_2_5_container5"><spring:bind
-										path="receiver">
-										<form:input path="receiver" id="receiver" />
-										<form:errors class="gfield_description validation_message" path="receiver" />
-									</spring:bind></span></li>
+								</div> <form:errors class="gfield_description validation_message"
+									path="address" /></li>
 
 							<c:choose>
 								<c:when test="${role == 'Staff'}">
+									<li id="field_6_04"
+										class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.dropError}"><label
+										class="gfield_label gfield_label_before_complex"
+										for="input_6_1_3">Drop Fee</label> <span
+										class="ginput_left address_zip" id="input_6_2_5_container4"><spring:bind
+												path="dropFee">
+												<form:input path="dropFee" id="dropFee" />
+												<form:errors class="gfield_description validation_message"
+													path="dropFee" />
+											</spring:bind></span></li>
+
+									<li id="field_6_05"
+										class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.receiverError}"><label
+										class="gfield_label gfield_label_before_complex"
+										for="input_6_1_3">Receiver ID</label> <span
+										class="ginput_left address_zip" id="input_6_2_5_container5"><spring:bind
+												path="receiver">
+												<form:input path="receiver" id="receiver" />
+												<form:errors class="gfield_description validation_message"
+													path="receiver" />
+											</spring:bind></span></li>
+
 									<li id="field_6_6"
 										class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.statusError}"><label
 										class="gfield_label gfield_label_before_complex"
@@ -172,10 +182,13 @@
 													<form:option value="NONE" label="" />
 													<form:options items="${statusList}" />
 												</form:select>
-												<form:errors class="gfield_description validation_message" path="status" />
+												<form:errors class="gfield_description validation_message"
+													path="status" />
 											</spring:bind> </span></li>
 								</c:when>
 								<c:otherwise>
+									<form:hidden path="dropFee" />
+									<form:hidden path="receiver" />
 									<form:hidden path="status" />
 								</c:otherwise>
 							</c:choose>
@@ -183,88 +196,89 @@
 							<li id="field_6_7"
 								class="gfield gfield_price gfield_price_6_7 gfield_product_6_7 field_sublabel_below field_description_below gfield_visibility_visible"><label
 								class="gfield_label" for="input_6_7">Would you like to
-									receive a tax receipt for you donation? </label> <spring:bind
+									receive a tax receipt for your donation? </label> <spring:bind
 									path="receipts">
 									<form:checkbox path="receipts" id="receipts" />
 								</spring:bind></li>
 
-						</ul>
-
-						<div class="row">
-							<label class="col-sm-2">Item Images</label>
-							<div class="col-sm-10">
-								<c:choose>
+							<li id="field_6_8"
+								class="gfield gfield_price gfield_price_6_7 gfield_product_6_7 field_sublabel_below field_description_below gfield_visibility_visible"><label
+								class="gfield_label" for="input_6_7">Item Images</label>
+								<div class="gf_clear gf_clear_complex"></div> <c:choose>
 									<c:when test="${noImage == true}">
-										No images
+										<p>No images</p>
 									</c:when>
 									<c:otherwise>
+										<c:set var="imagediv" value="${1}" />
 										<c:forEach var="imageIds" items="${imageIds}">
-											<spring:url value="/images/${imageIds}" var="imageUrl" />
-											<img src="${imageUrl}" />
-											<spring:url value="/images/${imageIds}/delete"
-												var="deleteUrl" />
-											<button formaction="${deleteUrl}">Delete Image</button>
+											<div class="imagediv${imagediv}">
+												<spring:url value="/images/${imageIds}" var="imageUrl" />
+												<img src="${imageUrl}" /><br />
+												<spring:url value="/images/${imageIds}/delete"
+													var="deleteUrl" />
+												<button formaction="${deleteUrl}">Delete Image</button>
+											</div>
+											<c:choose>
+												<c:when test="${imagediv == 1}">
+													<c:set var="imagediv" value="${2}" />
+												</c:when>
+												<c:otherwise>
+													<c:set var="imagediv" value="${1}" />
+												</c:otherwise>
+											</c:choose>
 										</c:forEach>
 									</c:otherwise>
-								</c:choose>
-							</div>
-						</div>
+								</c:choose></li>
 
-						<spring:bind path="file1">
-							<div class="form-group ${status.error ? 'has-error' : ''}">
-								<label class="col-sm-2 control-label">Upload a file</label>
-								<div class="col-sm-10">
-									<div class="checkbox">
-										<label> <form:input type="file" path="file1"
-												id="file1" class="form-control input-sm" />
-										</label>
-										<form:errors class="gfield_description validation_message" path="file1"/>
-									</div>
-								</div>
-							</div>
-						</spring:bind>
+							<li id="field_6_9"
+								class="gfield gfield_price gfield_price_6_7 gfield_product_6_7 field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.fileError}">
+								<c:if
+									test="${donationForm.numImages >= 0 && donationForm.numImages <= 3}">
+									<span id="fileUp1" style="display: block"> <label
+										class="gfield_label" for="input_6_7">Upload an image:</label> <spring:bind
+											path="file1">
+											<form:input type="file" path="file1" id="file1" onchange="showFile2()"/>
+											<form:errors class="gfield_description validation_message"
+												path="file1" />
+											<br />
+										</spring:bind>
+									</span>
+								</c:if> <c:if
+									test="${donationForm.numImages >= 0 && donationForm.numImages <= 2}">
+									<span id="fileUp2" style="display: none"> <label
+										class="gfield_label" for="input_6_7">Upload an image:</label> <spring:bind
+											path="file2">
+											<form:input type="file" path="file2" id="file2" onchange="showFile3()" />
+											<form:errors class="gfield_description validation_message"
+												path="file2" />
+											<br />
+										</spring:bind>
+									</span>
+								</c:if> <c:if
+									test="${donationForm.numImages == 0 || donationForm.numImages == 1}">
+									<span id="fileUp3" style="display: none"> <label
+										class="gfield_label" for="input_6_7">Upload an image:</label> <spring:bind
+											path="file3">
+											<form:input type="file" path="file3" id="file3" onchange="showFile4()" />
+											<form:errors class="gfield_description validation_message"
+												path="file3" />
+											<br />
+										</spring:bind>
+									</span>
+								</c:if> <c:if test="${donationForm.numImages == 0}">
+									<span id="fileUp4" style="display: none"> <label
+										class="gfield_label" for="input_6_7">Upload an image:</label> <spring:bind
+											path="file4">
+											<form:input type="file" path="file4" id="file4" />
+											<form:errors class="gfield_description validation_message"
+												path="file4" />
+											<br />
+										</spring:bind>
+									</span>
+								</c:if>
+							</li>
 
-						<spring:bind path="file2">
-							<div class="form-group ${status.error ? 'has-error' : ''}">
-								<label class="col-sm-2 control-label">Upload a file</label>
-								<div class="col-sm-10">
-									<div class="checkbox">
-										<label> <form:input type="file" path="file2"
-												id="file2" class="form-control input-sm" />
-										</label>
-										<form:errors class="gfield_description validation_message" path="file2"/>
-									</div>
-								</div>
-							</div>
-						</spring:bind>
-
-						<spring:bind path="file3">
-							<div class="form-group ${status.error ? 'has-error' : ''}">
-								<label class="col-sm-2 control-label">Upload a file</label>
-								<div class="col-sm-10">
-									<div class="checkbox">
-										<label> <form:input type="file" path="file3"
-												id="file3" class="form-control input-sm" />
-										</label>
-										<form:errors class="gfield_description validation_message" path="file3" />
-									</div>
-								</div>
-							</div>
-						</spring:bind>
-
-						<spring:bind path="file4">
-							<div class="form-group ${status.error ? 'has-error' : ''}">
-								<label class="col-sm-2 control-label">Upload a file</label>
-								<div class="col-sm-10">
-									<div class="checkbox">
-										<label> <form:input type="file" path="file4"
-												id="file4" class="form-control input-sm" />
-										</label>
-										<form:errors class="gfield_description validation_message" path="file4"/>
-									</div>
-								</div>
-							</div>
-						</spring:bind>
+						</ul>
 
 					</div>
 
@@ -307,8 +321,26 @@
 
 		</div>
 	</div>
-
+	
 	<jsp:include page="../fragments/footer.jsp" />
 
 </body>
+
+<script type="text/javascript">
+
+	function showFile2() {
+		document.getElementById("fileUp2").style.display = 'block';
+	}
+	
+	function showFile3() {
+		document.getElementById("fileUp3").style.display = 'block';
+	}
+	
+	function showFile4() {
+		document.getElementById("fileUp4").style.display = 'block';
+	}
+	
+</script>
+
 </html>
+

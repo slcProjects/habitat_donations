@@ -72,6 +72,7 @@ public class UserController {
 	int month = 0, year = 0, statusDay = 0, statusMonth = 0, statusYear = 0;
 	String scheduleType = "";
 	private static final String STATUSFORM_PATTERN = "^statusForm\\d+$";
+	List<Attachment> images = null;
 
 	@Autowired
 	LoginFormValidator loginFormValidator;
@@ -506,6 +507,25 @@ public class UserController {
 		logger.debug("saveOrUpdateDonation() : {}", donation);
 
 		if (result.hasErrors()) {
+			if (!donation.isNew()) {
+				images = attachmentService.findByDonation(donation.getId());
+				Boolean noImage = false;
+				List<Integer> imageIds = new ArrayList<>();
+				for (int ctr = 0; ctr < images.size(); ctr++) {
+					Attachment attach = images.get(ctr);
+					if (attach.getImage() != null) {
+						imageIds.add(attach.getId());
+					}
+				}
+				if (imageIds.size() == 0) {
+					noImage = true;
+				} else {
+					model.addAttribute("imageIds", imageIds);
+				}
+				model.addAttribute("noImage", noImage);
+			} else {
+				model.addAttribute("noImage", true);
+			}
 			populateProvinces(model);
 			populateDonationTypes(model);
 			populateDonationStatuses(model);
@@ -513,37 +533,27 @@ public class UserController {
 			return "donations/donateform";
 		} else {
 
-			redirectAttributes.addFlashAttribute("css", "success");
-			if (donation.isNew()) {
-				donation.setNumImages(0);
-				// redirectAttributes.addFlashAttribute("msg", "Donation ID " + donation.getId()
-				// + " added successfully!");
-			} else {
-				redirectAttributes.addFlashAttribute("msg", "Donation updated successfully!");
-			}
-
 			donation.setTacking(new Timestamp(new java.util.Date().getTime()));
 			if (donation.getStatus().equals("RECEIVED") || donation.getStatus().equals("PICKUP COMPLETE")) {
 				donation.setCompletedDate(new Timestamp(new java.util.Date().getTime()));
 			} else {
 				donation.setCompletedDate(null);
 			}
-			if (donation.getReceiver() == 0) {
-				donation.setReceiver(null);
-			}
 			donationService.saveOrUpdate(donation);
-
-			int numImages;
-			if (donation.getNumImages() == null) {
-				numImages = 0;
+			
+			redirectAttributes.addFlashAttribute("css", "success");
+			if (donation.isNew()) {
+				donation.setNumImages(0);
+				redirectAttributes.addFlashAttribute("msg", "Donation ID " + donation.getId() + " added successfully!");
 			} else {
-				numImages = donation.getNumImages();
+				redirectAttributes.addFlashAttribute("msg", "Donation updated successfully!");
 			}
 
-			if (numImages == 4) {
-				redirectAttributes.addFlashAttribute("max", "Max number of images reached; images were not uploaded");
-			} else {
-				int id = donation.getId();
+			int numImages = donation.getNumImages();
+
+			int id = donation.getId();
+			if (!donation.getFile1().getContentType().contains("application/octet-stream")
+					|| donation.getFile1() == null) {
 				try {
 					InputStream input = donation.getFile1().getInputStream();
 					ImageIO.read(input).toString();
@@ -551,49 +561,43 @@ public class UserController {
 					numImages++;
 					redirectAttributes.addFlashAttribute("file1", "File 1: Image uploaded");
 				} catch (Exception e) {
-					redirectAttributes.addFlashAttribute("file1", "File 1: No image detected");
+					redirectAttributes.addFlashAttribute("file1", "File 1: Upload failed");
 				}
-				if (numImages == 4) {
-					redirectAttributes.addFlashAttribute("max",
-							"Max number of images reached; rest of images were not uploaded");
-				} else {
-					try {
-						InputStream input = donation.getFile2().getInputStream();
-						ImageIO.read(input).toString();
-						saveAttachment(donation.getFile2(), id);
-						numImages++;
-						redirectAttributes.addFlashAttribute("file2", "File 2: Image uploaded");
-					} catch (Exception e) {
-						redirectAttributes.addFlashAttribute("file2", "File 2: No image detected");
-					}
-					if (numImages == 4) {
-						redirectAttributes.addFlashAttribute("max",
-								"Max number of images reached; rest of images were not uploaded");
-					} else {
-						try {
-							InputStream input = donation.getFile3().getInputStream();
-							ImageIO.read(input).toString();
-							saveAttachment(donation.getFile3(), id);
-							numImages++;
-							redirectAttributes.addFlashAttribute("file3", "File 3: Image uploaded");
-						} catch (Exception e) {
-							redirectAttributes.addFlashAttribute("file3", "File 3: No image detected");
-						}
-						if (numImages == 4) {
-							redirectAttributes.addFlashAttribute("max",
-									"Max number of images reached; rest of images were not uploaded");
-						} else {
-							try {
-								InputStream input = donation.getFile4().getInputStream();
-								ImageIO.read(input).toString();
-								saveAttachment(donation.getFile4(), id);
-								numImages++;
-								redirectAttributes.addFlashAttribute("file4", "File 4: Image uploaded");
-							} catch (Exception e) {
-								redirectAttributes.addFlashAttribute("file4", "File 4: No image detected");
-							}
-						}
-					}
+			}
+			if (!donation.getFile2().getContentType().contains("application/octet-stream")
+					|| donation.getFile2() == null) {
+				try {
+					InputStream input = donation.getFile2().getInputStream();
+					ImageIO.read(input).toString();
+					saveAttachment(donation.getFile2(), id);
+					numImages++;
+					redirectAttributes.addFlashAttribute("file2", "File 2: Image uploaded");
+				} catch (Exception e) {
+					redirectAttributes.addFlashAttribute("file2", "File 2: Upload failed");
+				}
+			}
+			if (!donation.getFile3().getContentType().contains("application/octet-stream")
+					|| donation.getFile3() == null) {
+				try {
+					InputStream input = donation.getFile3().getInputStream();
+					ImageIO.read(input).toString();
+					saveAttachment(donation.getFile3(), id);
+					numImages++;
+					redirectAttributes.addFlashAttribute("file3", "File 3: Image uploaded");
+				} catch (Exception e) {
+					redirectAttributes.addFlashAttribute("file3", "File 3: Upload failed");
+				}
+			}
+			if (!donation.getFile4().getContentType().contains("application/octet-stream")
+					|| donation.getFile4() == null) {
+				try {
+					InputStream input = donation.getFile4().getInputStream();
+					ImageIO.read(input).toString();
+					saveAttachment(donation.getFile4(), id);
+					numImages++;
+					redirectAttributes.addFlashAttribute("file4", "File 4: Image uploaded");
+				} catch (Exception e) {
+					redirectAttributes.addFlashAttribute("file4", "File 4: Upload failed");
 				}
 			}
 
@@ -634,6 +638,7 @@ public class UserController {
 			donation.setProvince(donor.getProvince());
 			donation.setPostalCode(donor.getPostalCode());
 			donation.setStatus("AWAITING APPROVAL");
+			donation.setNumImages(0);
 
 			model.addAttribute("donationForm", donation);
 			model.addAttribute("noImage", true);
@@ -665,7 +670,7 @@ public class UserController {
 			return "redirect:/dashboard";
 		} else {
 			Donation donation = donationService.findById(id);
-			List<Attachment> images = attachmentService.findByDonation(id);
+			images = attachmentService.findByDonation(id);
 			model.addAttribute("donationForm", donation);
 
 			Boolean noImage = false;

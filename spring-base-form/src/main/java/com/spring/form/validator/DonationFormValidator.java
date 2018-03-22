@@ -84,12 +84,49 @@ public class DonationFormValidator implements Validator {
 			donation.setAddrError("gfield_error");
 			donation.setTypeError("");
 		}
+		
+		if (donation.getReceiver() != null && donation.getReceiver() == 0) {
+			donation.setReceiverError("gfield_error");
+			errors.rejectValue("receiver", "NotZero.donationForm.receiver");
+		} else {
+			donation.setReceiverError("");
+		}
 
 		if (donation.getStatus().equalsIgnoreCase("none")) {
 			donation.setStatusError("gfield_error");
 			errors.rejectValue("status", "NotEmpty.donationForm");
 		} else {
 			donation.setStatusError("");
+		}
+		
+		donation.setFileError("");
+
+		if (!donation.getFile1().getContentType().contains("application/octet-stream")
+				&& !donation.getFile1().getContentType().contains("image/png")
+				&& !donation.getFile1().getContentType().contains("image/jpeg")) {
+			donation.setFileError("gfield_error");
+			errors.rejectValue("file1", "Invalid.donationForm.file");
+		}
+
+		if (!donation.getFile2().getContentType().contains("application/octet-stream")
+				&& !donation.getFile2().getContentType().contains("image/png")
+				&& !donation.getFile2().getContentType().contains("image/jpeg")) {
+			donation.setFileError("gfield_error");
+			errors.rejectValue("file2", "Invalid.donationForm.file");
+		}
+
+		if (!donation.getFile3().getContentType().contains("application/octet-stream")
+				&& !donation.getFile3().getContentType().contains("image/png")
+				&& !donation.getFile3().getContentType().contains("image/jpeg")) {
+			donation.setFileError("gfield_error");
+			errors.rejectValue("file3", "Invalid.donationForm.file");
+		}
+
+		if (!donation.getFile4().getContentType().contains("application/octet-stream")
+				&& !donation.getFile4().getContentType().contains("image/png")
+				&& !donation.getFile4().getContentType().contains("image/jpeg")) {
+			donation.setFileError("gfield_error");
+			errors.rejectValue("file4", "Invalid.donationForm.file");
 		}
 
 	}

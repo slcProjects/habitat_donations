@@ -42,7 +42,7 @@
 						</tr>
 					</c:forEach>
 				</table>
-				</br>
+				<br />
 				<input type="submit" value="Print" onClick="window.print()" />
 			</c:otherwise>
 		</c:choose>

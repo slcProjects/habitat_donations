@@ -49,3 +49,17 @@ button {
 .week {
 	vertical-align: middle;
 }
+
+.imagediv1, .imagediv2 {
+	width: 592px;
+	height: 600px;
+	text-align: center;
+}
+
+.imagediv1 {
+	float: left;
+}
+
+.imagediv2 {
+	float: right;
+}
