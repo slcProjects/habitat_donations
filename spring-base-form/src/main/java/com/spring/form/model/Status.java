@@ -2,7 +2,7 @@ package com.spring.form.model;
 
 public class Status {
 
-	String status;
+	String status, statusChange;
 	
 	public String getStatus() {
 		return status;
@@ -10,6 +10,14 @@ public class Status {
 	
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	
+	public String getStatusChange() {
+		return statusChange;
+	}
+	
+	public void setStatusChange(String statusChange) {
+		this.statusChange = statusChange;
 	}
 	
 	@Override

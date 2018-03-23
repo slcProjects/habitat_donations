@@ -4,6 +4,8 @@ import static java.lang.Math.toIntExact;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +29,8 @@ public class UserDaoImpl implements UserDao {
 	NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 	@Autowired
-	public void setNamedParameterJdbcTemplate(NamedParameterJdbcTemplate namedParameterJdbcTemplate) throws DataAccessException {
+	public void setNamedParameterJdbcTemplate(NamedParameterJdbcTemplate namedParameterJdbcTemplate)
+			throws DataAccessException {
 		this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
 	}
 
@@ -47,8 +50,8 @@ public class UserDaoImpl implements UserDao {
 		}
 
 		/*
-		 * User result = namedParameterJdbcTemplate.queryForObject( sql, params,
-		 * new BeanPropertyRowMapper<User>());
+		 * User result = namedParameterJdbcTemplate.queryForObject( sql, params, new
+		 * BeanPropertyRowMapper<User>());
 		 */
 
 		return result;
@@ -64,7 +67,7 @@ public class UserDaoImpl implements UserDao {
 		return result;
 
 	}
-	
+
 	@Override
 	public User findByLoginName(String username) {
 
@@ -81,20 +84,23 @@ public class UserDaoImpl implements UserDao {
 		}
 
 		/*
-		 * User result = namedParameterJdbcTemplate.queryForObject( sql, params,
-		 * new BeanPropertyRowMapper<User>());
+		 * User result = namedParameterJdbcTemplate.queryForObject( sql, params, new
+		 * BeanPropertyRowMapper<User>());
 		 */
 
 		return result;
 
 	}
-	
+
 	@Override
-	public List<User> search(String first, String last, String city, String code, String role) {
+	public List<User> search(String first, String last, String city, String code, String role, String startMonth,
+			String endMonth, String startYear, String endYear) {
 		Map<String, Object> params = new HashMap<String, Object>();
+
+		params.put("format", "YYYY-MM-DD");
 		Boolean trim = true;
-		
-		String sql = "SELECT * FROM \"User\" WHERE ";
+
+		String sql = "SELECT DISTINCT ON(\"UserID\") * FROM \"User\" LEFT JOIN \"Donation\" ON \"Donation\".\"DonorID\" = \"User\".\"UserID\" WHERE ";
 		if (!first.equals("")) {
 			params.put("first", first);
 			sql += "\"FirstName\"=:first AND ";
@@ -113,9 +119,218 @@ public class UserDaoImpl implements UserDao {
 		}
 		if (!role.equals("")) {
 			params.put("role", role);
-			sql += "\"Role\"=CAST(:role AS \"UserRole\") ";
+			sql += "\"Role\"=CAST(:role AS \"UserRole\") AND ";
+		}
+
+		int currentYear = new GregorianCalendar().get(Calendar.YEAR);
+		GregorianCalendar startCalendar = null;
+		GregorianCalendar endCalendar = null;
+		int lastDay = 28;
+		
+		if (!endMonth.equalsIgnoreCase("none")) {
+			switch (endMonth) {
+			case "1":
+			case "3":
+			case "5":
+			case "7":
+			case "8":
+			case "10":
+			case "12":
+				lastDay = 31;
+				break;
+			case "4":
+			case "6":
+			case "9":
+			case "11":
+				lastDay = 30;
+				break;
+			case "2":
+				lastDay = 28;
+			}
+		}
+
+		if (!startMonth.equalsIgnoreCase("none")) {
+			
+			if (!endMonth.equalsIgnoreCase("none")) {
+				
+				if (!startYear.equals("")) {
+					
+					if (!endYear.equals("")) {
+						
+						startCalendar = new GregorianCalendar(Integer.parseInt(startYear), Integer.parseInt(startMonth) - 1, 1);
+						endCalendar = new GregorianCalendar(Integer.parseInt(endYear), Integer.parseInt(endMonth) - 1, lastDay);
+						if (Integer.parseInt(endMonth) == 2 && endCalendar.getActualMaximum(Calendar.DAY_OF_YEAR) > 365) {
+							endCalendar.set(Calendar.DAY_OF_MONTH, 29);
+						}
+						
+					} else {
+					
+						if (Integer.parseInt(startYear) > currentYear) {
+						
+							startCalendar = new GregorianCalendar(Integer.parseInt(startYear), Integer.parseInt(startMonth) - 1, 1);
+							endCalendar = new GregorianCalendar(Integer.parseInt(startYear), Integer.parseInt(endMonth) - 1, lastDay);
+							if (Integer.parseInt(endMonth) == 2 && endCalendar.getActualMaximum(Calendar.DAY_OF_YEAR) > 365) {
+								endCalendar.set(Calendar.DAY_OF_MONTH, 29);
+							}
+						
+						} else {
+					
+							startCalendar = new GregorianCalendar(Integer.parseInt(startYear), Integer.parseInt(startMonth) - 1, 1);
+							endCalendar = new GregorianCalendar(currentYear, Integer.parseInt(endMonth) - 1, lastDay);
+							if (Integer.parseInt(endMonth) == 2 && endCalendar.getActualMaximum(Calendar.DAY_OF_YEAR) > 365) {
+								endCalendar.set(Calendar.DAY_OF_MONTH, 29);
+							}
+					
+						}
+					
+					}
+					
+				} else if (!endYear.equals("")) {
+					
+					if (Integer.parseInt(endYear) < currentYear) {
+						
+						startCalendar = new GregorianCalendar(Integer.parseInt(endYear), Integer.parseInt(startMonth) - 1, 1);
+						endCalendar = new GregorianCalendar(Integer.parseInt(endYear), Integer.parseInt(endMonth) - 1, lastDay);
+						if (Integer.parseInt(endMonth) == 2 && endCalendar.getActualMaximum(Calendar.DAY_OF_YEAR) > 365) {
+							endCalendar.set(Calendar.DAY_OF_MONTH, 29);
+						}
+						
+					} else {
+						
+						startCalendar = new GregorianCalendar(currentYear, Integer.parseInt(startMonth) - 1, 1);
+						endCalendar = new GregorianCalendar(Integer.parseInt(endYear), Integer.parseInt(endMonth) - 1, lastDay);
+						if (Integer.parseInt(endMonth) == 2 && endCalendar.getActualMaximum(Calendar.DAY_OF_YEAR) > 365) {
+							endCalendar.set(Calendar.DAY_OF_MONTH, 29);
+						}
+						
+					}
+					
+				} else {
+				
+					startCalendar = new GregorianCalendar(currentYear, Integer.parseInt(startMonth) - 1, 1);
+					endCalendar = new GregorianCalendar(currentYear, Integer.parseInt(endMonth) - 1, lastDay);
+					if (Integer.parseInt(endMonth) == 2 && endCalendar.getActualMaximum(Calendar.DAY_OF_YEAR) > 365) {
+						endCalendar.set(Calendar.DAY_OF_MONTH, 29);
+					}
+				
+				}
+				
+			} else if (!startYear.equals("")) {
+				
+				if (!endYear.equals("")) {
+					
+					startCalendar = new GregorianCalendar(Integer.parseInt(startYear), Integer.parseInt(startMonth) - 1, 1);
+					endCalendar = new GregorianCalendar(Integer.parseInt(endYear), 11, 31);
+					
+				} else {
+				
+					startCalendar = new GregorianCalendar(Integer.parseInt(startYear), Integer.parseInt(startMonth) - 1, 1);
+				
+				}
+				
+			} else if (!endYear.equals("")) {
+				
+				if (Integer.parseInt(endYear) < currentYear) {
+					
+					startCalendar = new GregorianCalendar(Integer.parseInt(endYear), Integer.parseInt(startMonth) - 1, 1);
+					endCalendar = new GregorianCalendar(Integer.parseInt(endYear), 11, 31);
+					
+				} else {
+					
+					startCalendar = new GregorianCalendar(currentYear, Integer.parseInt(startMonth) - 1, 1);
+					endCalendar = new GregorianCalendar(Integer.parseInt(endYear), 11, 31);
+					
+				}
+				
+			} else {
+				
+				startCalendar = new GregorianCalendar(currentYear, Integer.parseInt(startMonth) - 1, 1);
+				endCalendar = new GregorianCalendar(currentYear, 11, 31);
+				
+			}
+			
+		} else if (!endMonth.equalsIgnoreCase("none")) {
+			
+			if (!startYear.equals("")) {
+				
+				if (!endYear.equals("")) {
+					
+					startCalendar = new GregorianCalendar(Integer.parseInt(startYear), 0, 1);
+					endCalendar = new GregorianCalendar(Integer.parseInt(endYear), Integer.parseInt(endMonth) - 1, lastDay);
+					if (Integer.parseInt(endMonth) == 2 && endCalendar.getActualMaximum(Calendar.DAY_OF_YEAR) > 365) {
+						endCalendar.set(Calendar.DAY_OF_MONTH, 29);
+					}
+					
+				} else {
+				
+					if (Integer.parseInt(startYear) < currentYear) {
+					
+						startCalendar = new GregorianCalendar(Integer.parseInt(startYear), 0, 1);
+						endCalendar = new GregorianCalendar(Integer.parseInt(startYear), Integer.parseInt(endMonth) - 1, lastDay);
+						if (Integer.parseInt(endMonth) == 2 && endCalendar.getActualMaximum(Calendar.DAY_OF_YEAR) > 365) {
+							endCalendar.set(Calendar.DAY_OF_MONTH, 29);
+						}
+					
+					} else {
+					
+						startCalendar = new GregorianCalendar(Integer.parseInt(startYear), 0, 1);
+						endCalendar = new GregorianCalendar(currentYear, Integer.parseInt(endMonth) - 1, lastDay);
+						if (Integer.parseInt(endMonth) == 2 && endCalendar.getActualMaximum(Calendar.DAY_OF_YEAR) > 365) {
+							endCalendar.set(Calendar.DAY_OF_MONTH, 29);
+						}
+					
+					}
+				
+				}
+				
+			} else if (!endYear.equals("")) {
+				
+				endCalendar = new GregorianCalendar(Integer.parseInt(endYear), Integer.parseInt(endMonth) - 1, lastDay);
+				if (Integer.parseInt(endMonth) == 2 && endCalendar.getActualMaximum(Calendar.DAY_OF_YEAR) > 365) {
+					endCalendar.set(Calendar.DAY_OF_MONTH, 29);
+				}
+				
+			} else {
+			
+				startCalendar = new GregorianCalendar(currentYear, 0, 1);
+				endCalendar = new GregorianCalendar(currentYear, Integer.parseInt(endMonth) - 1, lastDay);
+				if (Integer.parseInt(endMonth) == 2 && endCalendar.getActualMaximum(Calendar.DAY_OF_YEAR) > 365) {
+					endCalendar.set(Calendar.DAY_OF_MONTH, 29);
+				}
+			
+			}
+			
+		} else if (!startYear.equals("")) {
+			
+			if (!endYear.equals("")) {
+				
+				startCalendar = new GregorianCalendar(Integer.parseInt(startYear), 0, 1);
+				endCalendar = new GregorianCalendar(Integer.parseInt(endYear), 11, 31);
+				
+			} else {
+			
+				startCalendar = new GregorianCalendar(Integer.parseInt(startYear), 0, 1);
+			
+			}
+			
+		} else if (!endYear.equals("")) {
+			
+			endCalendar = new GregorianCalendar(Integer.parseInt(endYear), 11, 31);
+			
+		}
+		
+		if (startCalendar != null) {
+			java.util.Date startDate = startCalendar.getTime();
+			params.put("startDate", startDate);
+			sql += "\"ScheduledDate\">=CAST(:startDate AS \"timestamp\") AND ";
+		}
+		if (endCalendar != null) {
+			java.util.Date endDate = endCalendar.getTime();
+			params.put("endDate", endDate);
+			sql += "\"ScheduledDate\"<=CAST(:endDate AS \"timestamp\") ";
 			trim = false;
 		}
+		
 		if (trim) {
 			sql = sql.substring(0, sql.length() - 4);
 		}
@@ -129,14 +344,14 @@ public class UserDaoImpl implements UserDao {
 	public void save(User user) {
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-		
+
 		String sql = "INSERT INTO \"User\"(\"LoginName\", \"Password\", \"FirstName\", \"LastName\", \"Email\", \"Phone\", "
 				+ "\"Address\", \"City\", \"Province\", \"PostalCode\", \"Role\", \"Notify\") "
 				+ "VALUES (:loginName, :password, :firstName, :lastName, :email, :phone, :address, :city, :province, :postalCode, CAST (:role AS \"UserRole\"), :notify)";
-		
+
 		namedParameterJdbcTemplate.update(sql, getUserSqlParameterByModel(user), keyHolder);
 		user.setId((toIntExact((long) keyHolder.getKeys().get("UserID"))));
-		
+
 	}
 
 	@Override
@@ -145,7 +360,7 @@ public class UserDaoImpl implements UserDao {
 		String sql = "UPDATE \"User\" SET \"LoginName\"=:loginName, \"Password\"=:password, \"FirstName\"=:firstName, "
 				+ "\"LastName\"=:lastName, \"Email\"=:email, \"Phone\"=:phone, \"Address\"=:address, \"City\"=:city, "
 				+ "\"Province\"=:province, \"PostalCode\"=:postalCode, \"Role\"=CAST (:role AS \"UserRole\"), \"Notify\"=:notify WHERE \"UserID\"= :userID";
-		
+
 		namedParameterJdbcTemplate.update(sql, getUserSqlParameterByModel(user));
 
 	}
@@ -177,7 +392,7 @@ public class UserDaoImpl implements UserDao {
 		paramSource.addValue("postalCode", user.getPostalCode());
 		paramSource.addValue("role", user.getRole());
 		paramSource.addValue("notify", user.isNotify());
-		
+
 		return paramSource;
 	}
 
@@ -198,30 +413,29 @@ public class UserDaoImpl implements UserDao {
 			user.setPostalCode(rs.getString("PostalCode"));
 			user.setRole(rs.getString("Role"));
 			user.setNotify(rs.getBoolean("Notify"));
-			
+
 			return user;
 		}
 	}
 
-	/*private static List<String> convertDelimitedStringToList(String delimitedString) {
-
-		List<String> result = new ArrayList<String>();
-
-		if (!StringUtils.isEmpty(delimitedString)) {
-			result = Arrays.asList(StringUtils.delimitedListToStringArray(delimitedString, ","));
-		}
-		return result;
-
-	}
-
-	private String convertListToDelimitedString(List<String> list) {
-
-		String result = "";
-		if (list != null) {
-			result = StringUtils.arrayToCommaDelimitedString(list.toArray());
-		}
-		return result;
-
-	}*/
+	/*
+	 * private static List<String> convertDelimitedStringToList(String
+	 * delimitedString) {
+	 * 
+	 * List<String> result = new ArrayList<String>();
+	 * 
+	 * if (!StringUtils.isEmpty(delimitedString)) { result =
+	 * Arrays.asList(StringUtils.delimitedListToStringArray(delimitedString, ","));
+	 * } return result;
+	 * 
+	 * }
+	 * 
+	 * private String convertListToDelimitedString(List<String> list) {
+	 * 
+	 * String result = ""; if (list != null) { result =
+	 * StringUtils.arrayToCommaDelimitedString(list.toArray()); } return result;
+	 * 
+	 * }
+	 */
 
 }

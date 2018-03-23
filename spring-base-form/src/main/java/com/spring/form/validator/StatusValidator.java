@@ -20,7 +20,7 @@ public class StatusValidator implements Validator {
 		Status status = (Status) target;
 		
 		if (status.getStatus().equalsIgnoreCase("none")) {
-			//errors.rejectValue("status", "NotEmpty.statusForm.status");
+			errors.rejectValue("statusChange", "NotEmpty.statusForm");
 		}
 		
 	}

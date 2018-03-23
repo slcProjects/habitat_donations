@@ -16,6 +16,6 @@ public interface UserService {
 	
 	void delete(int id);
 
-	List<User> search(String first, String last, String city, String code, String role);
+	List<User> search(String first, String last, String city, String code, String role, String startMonth, String endMonth, String startYear, String endYear);
 	
 }

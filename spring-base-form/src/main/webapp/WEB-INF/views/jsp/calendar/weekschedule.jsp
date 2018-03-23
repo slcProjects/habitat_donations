@@ -42,15 +42,14 @@
 								<td>${donation.scheduledDate}</td>
 								<td>${donation.type}</td>
 								<td>
-									<spring:url value="/statusupdate/${donation.id}" var="statusUrl" />
+									<spring:url value="/statusupdate/${donation.id}/week/${day}/${month}/${year}" var="statusUrl" />
 									<form:form class="form-horizontal" method="post"
 										modelAttribute="statusForm${donation.id}" action="${statusUrl}">
 										<spring:bind path="status">
 											<form:select path="status" class="form-control">
-												<%-- <form:option value="NONE" label="" /> --%>
+												<form:option value="NONE" label="" />
 												<form:options items="${statusList}" />
 											</form:select>
-											<form:errors path="status" class="control-label" />
 										</spring:bind>
 										<button type="submit">Update Status</button>
 									</form:form>
@@ -64,6 +63,7 @@
 							</tr>
 						</c:forEach>
 					</table>
+					<form:errors path="statusChange" class="control-label" />
 					<input type="submit" value="Print" onClick="window.print()"/>
 				</c:otherwise>
 			</c:choose>

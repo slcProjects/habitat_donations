@@ -424,6 +424,7 @@ public class UserController {
 			return "redirect:/dashboard";
 		} else {
 			model.addAttribute("searchForm", new Search());
+			populateMonths(model);
 			return "users/searchform";
 		}
 
@@ -437,6 +438,7 @@ public class UserController {
 		logger.debug("searchUser() search : {}", search);
 
 		if (result.hasErrors()) {
+			populateMonths(model);
 			return "users/searchform";
 		} else {
 
@@ -448,7 +450,12 @@ public class UserController {
 			if (role == null) {
 				role = "";
 			}
-			List<User> users = userService.search(first, last, city, code, role);
+			String startMonth = search.getStartMonth();
+			String endMonth = search.getEndMonth();
+			String startYear = search.getStartYear();
+			String endYear = search.getEndYear();
+			List<User> users = userService.search(first, last, city, code, role, startMonth, endMonth, startYear,
+					endYear);
 			if (users == null) {
 				model.addAttribute("css", "danger");
 				model.addAttribute("msg", "User not found");
@@ -540,7 +547,7 @@ public class UserController {
 				donation.setCompletedDate(null);
 			}
 			donationService.saveOrUpdate(donation);
-			
+
 			redirectAttributes.addFlashAttribute("css", "success");
 			if (donation.isNew()) {
 				donation.setNumImages(0);
@@ -553,7 +560,7 @@ public class UserController {
 
 			int id = donation.getId();
 			if (!donation.getFile1().getContentType().contains("application/octet-stream")
-					|| donation.getFile1() == null) {
+					|| donation.getFile1() != null) {
 				try {
 					InputStream input = donation.getFile1().getInputStream();
 					ImageIO.read(input).toString();
@@ -565,7 +572,7 @@ public class UserController {
 				}
 			}
 			if (!donation.getFile2().getContentType().contains("application/octet-stream")
-					|| donation.getFile2() == null) {
+					|| donation.getFile2() != null) {
 				try {
 					InputStream input = donation.getFile2().getInputStream();
 					ImageIO.read(input).toString();
@@ -577,7 +584,7 @@ public class UserController {
 				}
 			}
 			if (!donation.getFile3().getContentType().contains("application/octet-stream")
-					|| donation.getFile3() == null) {
+					|| donation.getFile3() != null) {
 				try {
 					InputStream input = donation.getFile3().getInputStream();
 					ImageIO.read(input).toString();
@@ -589,7 +596,7 @@ public class UserController {
 				}
 			}
 			if (!donation.getFile4().getContentType().contains("application/octet-stream")
-					|| donation.getFile4() == null) {
+					|| donation.getFile4() != null) {
 				try {
 					InputStream input = donation.getFile4().getInputStream();
 					ImageIO.read(input).toString();
@@ -1040,22 +1047,34 @@ public class UserController {
 	}
 
 	// update donation status
-	@RequestMapping(value = "/statusupdate/{id}", method = RequestMethod.POST)
+	@RequestMapping(value = "/statusupdate/{id}/{type}/{day}/{month}/{year}", method = RequestMethod.POST)
 	private String updateStatus(@ModelAttribute(STATUSFORM_PATTERN) @Validated Status status,
-			@PathVariable("id") int id, BindingResult result, Model model,
+			@PathVariable("id") int id, @PathVariable("type") String type, @PathVariable("day") int day,
+			@PathVariable("month") int month, @PathVariable("year") int year, BindingResult result, Model model,
 			final RedirectAttributes redirectAttributes) {
 
 		logger.debug("updateStatus() id + status : {}", id + " " + status);
 
-		donationService.updateStatus(id, status.getStatus());
-
-		redirectAttributes.addFlashAttribute("css", "success");
-		redirectAttributes.addFlashAttribute("msg", "Status updated successfully!");
-
-		if (scheduleType.equals("week")) {
-			return "redirect:/calendar/weekof/" + statusDay + "/" + statusMonth + "/" + statusYear;
+		if (result.hasErrors()) {
+			logger.debug("updateStatus() errors : {}", result.getAllErrors());
+			if (type.equals("week")) {
+				return "calendar/weekof/" + day + "/" + month + "/" + year;
+			} else {
+				return "/schedule/" + month + "/" + day + "/" + year;
+			}
 		} else {
-			return "redirect:/schedule/" + statusMonth + "/" + statusDay + "/" + statusYear;
+
+			donationService.updateStatus(id, status.getStatus());
+
+			redirectAttributes.addFlashAttribute("css", "success");
+			redirectAttributes.addFlashAttribute("msg", "Status updated successfully!");
+
+			if (scheduleType.equals("week")) {
+				return "redirect:/calendar/weekof/" + statusDay + "/" + statusMonth + "/" + statusYear;
+			} else {
+				return "redirect:/schedule/" + statusMonth + "/" + statusDay + "/" + statusYear;
+			}
+
 		}
 
 	}
@@ -1153,6 +1172,23 @@ public class UserController {
 		statuses.put("RECEIVED", "RECEIVED");
 		model.addAttribute("statusList", statuses);
 
+	}
+
+	private void populateMonths(Model model) {
+		Map<String, String> months = new LinkedHashMap<String, String>();
+		months.put("1", "January");
+		months.put("2", "February");
+		months.put("3", "March");
+		months.put("4", "April");
+		months.put("5", "May");
+		months.put("6", "June");
+		months.put("7", "July");
+		months.put("8", "August");
+		months.put("9", "September");
+		months.put("10", "October");
+		months.put("11", "November");
+		months.put("12", "December");
+		model.addAttribute("months", months);
 	}
 
 	@ExceptionHandler(EmptyResultDataAccessException.class)

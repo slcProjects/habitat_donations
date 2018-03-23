@@ -27,10 +27,13 @@ public class SearchFormValidator implements Validator {
 		Search search = (Search) target;
 
 		if (search.getFirstName().equals("") && search.getLastName().equals("") && search.getCity().equals("")
-				&& search.getPostalCode().equals("") && search.getRole() == null) {
+				&& search.getPostalCode().equals("") && search.getRole() == null
+				&& search.getStartMonth().equalsIgnoreCase("none") && search.getEndMonth().equalsIgnoreCase("none")
+				&& search.getStartYear().equals("") && search.getEndYear().equals("")) {
 			search.setEmptyError("gfield_error");
-			errors.rejectValue("role", "NotEmpty.searchForm");
+			errors.rejectValue("startYear", "NotEmpty.searchForm");
 		} else {
+			
 			search.setEmptyError("");
 			if (search.getPostalCode() != "" && !postalCodeValidator.valid(search.getPostalCode())) {
 				search.setCodeError("gfield_error");
@@ -41,6 +44,45 @@ public class SearchFormValidator implements Validator {
 				search.setRoleError("gfield_error");
 				errors.rejectValue("role", "Invalid.searchForm.role");
 			}
+
+			search.setTimeError("");
+			boolean error = false;
+			try {
+				if (!search.getStartYear().equals("")) {
+					Integer.parseInt(search.getStartYear());
+				}
+			} catch (Exception e) {
+				search.setTimeError("gfield_error");
+				errors.rejectValue("startYear", "Invalid.searchForm.year");
+				error = true;
+			}
+			try {
+				if (!search.getEndYear().equals("")) {
+					Integer.parseInt(search.getEndYear());
+				}
+			} catch (Exception e) {
+				search.setTimeError("gfield_error");
+				errors.rejectValue("endYear", "Invalid.searchForm.year");
+				error = true;
+			}
+
+			if (!error) {
+				if (!search.getStartYear().equals("") && !search.getEndYear().equals("")) {
+					if (Integer.parseInt(search.getStartYear()) > Integer.parseInt(search.getEndYear())) {
+						search.setTimeError("gfield_error");
+						errors.rejectValue("endYear", "Invalid.searchForm.endYear");
+					}
+				} else if (search.getStartYear().equals(search.getEndYear())) {
+					if (!search.getStartMonth().equalsIgnoreCase("none")
+							&& !search.getEndMonth().equalsIgnoreCase("none")) {
+						if (Integer.parseInt(search.getStartMonth()) > Integer.parseInt(search.getEndMonth())) {
+							search.setTimeError("gfield_error");
+							errors.rejectValue("endMonth", "Invalid.searchForm.endMonth");
+						}
+					}
+				}
+			}
+			
 		}
 
 	}

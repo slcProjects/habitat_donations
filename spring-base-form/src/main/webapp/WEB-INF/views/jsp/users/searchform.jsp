@@ -64,7 +64,8 @@
 											<form:input path="postalCode" id="postalCode" />
 											<label for="input_6_2_5" id="input_6_2_5_label">Postal
 												Code</label>
-											<form:errors class="gfield_description validation_message" path="postalCode" />
+											<form:errors class="gfield_description validation_message"
+												path="postalCode" />
 										</spring:bind> </span>
 									<div class="gf_clear gf_clear_complex"></div>
 								</div></li>
@@ -75,9 +76,53 @@
 								for="input_6_1_3">Role</label> <span
 								class="ginput_left address_zip"><spring:bind path="role">
 										<form:input path="role" id="role" />
-										<form:errors class="gfield_description validation_message" path="role" />
+										<form:errors class="gfield_description validation_message"
+											path="role" />
 										<div class="gf_clear gf_clear_complex"></div>
 									</spring:bind> </span></li>
+
+							<li
+								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${searchForm.emptyError} ${searchForm.timeError}"><label
+								class="gfield_label gfield_label_before_complex">Donation
+									Timeframe</label>
+								<div
+									class="ginput_complex ginput_container has_street has_street2 has_city has_state has_zip ginput_container_address gfield_trigger_change">
+									<span class="ginput_left address_city"> <spring:bind
+											path="startMonth">
+											<form:select path="startMonth">
+												<form:option value="NONE" label="" />
+												<form:options items="${months}" />
+											</form:select>
+											<label>Start Month</label>
+										</spring:bind>
+									</span><span class="ginput_right address_state"> <spring:bind
+											path="endMonth">
+											<form:select path="endMonth">
+												<form:option value="NONE" label="" />
+												<form:options items="${months}" />
+											</form:select>
+											<label>End Month</label>
+											<form:errors class="gfield_description validation_message"
+												path="endMonth" />
+										</spring:bind>
+									</span>
+									<div class="gf_clear gf_clear_complex"></div>
+									<span class="ginput_left address_city"> <spring:bind
+											path="startYear">
+											<form:input path="startYear" id="startYear" />
+											<label>Start Year</label>
+											<form:errors class="gfield_description validation_message"
+												path="startYear" />
+										</spring:bind>
+									</span><span class="ginput_right address_zip"><spring:bind
+											path="endYear">
+											<form:input path="endYear" id="endYear" />
+											<label>End Year</label>
+											<form:errors class="gfield_description validation_message"
+												path="endYear" />
+										</spring:bind> </span>
+									<div class="gf_clear gf_clear_complex"></div>
+								</div></li>
 
 						</ul>
 
