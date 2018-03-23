@@ -7,7 +7,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<jsp:include page="../fragments/head.jsp" />
+<jsp:include page="../fragments/formhead.jsp" />
 <body>
 	<jsp:include page="../fragments/header.jsp" />
 	<div class="content_body" style="margin-top: 156px">
@@ -42,9 +42,14 @@
 								<td>${donation.scheduledDate}</td>
 								<td>${donation.type}</td>
 								<td>
-									<spring:url value="/statusupdate/${donation.id}/week/${day}/${month}/${year}" var="statusUrl" />
+									<spring:url value="/statusupdate" var="statusUrl" />
 									<form:form class="form-horizontal" method="post"
 										modelAttribute="statusForm${donation.id}" action="${statusUrl}">
+										<form:hidden path="id" />
+										<form:hidden path="day" />
+										<form:hidden path="month" />
+										<form:hidden path="year" />
+										<form:hidden path="type" />
 										<spring:bind path="status">
 											<form:select path="status" class="form-control">
 												<form:option value="NONE" label="" />
@@ -52,6 +57,7 @@
 											</form:select>
 										</spring:bind>
 										<button type="submit">Update Status</button>
+										<form:errors path="status" class="gfield_description validation_message" />
 									</form:form>
 								</td>
 								<td>${donation.address} ${donation.city},
@@ -63,7 +69,6 @@
 							</tr>
 						</c:forEach>
 					</table>
-					<form:errors path="statusChange" class="control-label" />
 					<input type="submit" value="Print" onClick="window.print()"/>
 				</c:otherwise>
 			</c:choose>

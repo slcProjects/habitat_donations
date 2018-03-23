@@ -69,8 +69,7 @@ public class UserController {
 	private String months[] = { "January", "February", "March", "April", "May", "June", "July", "August", "September",
 			"October", "November", "December" };
 	GregorianCalendar today = null;
-	int month = 0, year = 0, statusDay = 0, statusMonth = 0, statusYear = 0;
-	String scheduleType = "";
+	int month = 0, year = 0;
 	private static final String STATUSFORM_PATTERN = "^statusForm\\d+$";
 	List<Attachment> images = null;
 
@@ -821,10 +820,6 @@ public class UserController {
 			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
 			return "redirect:/dashboard";
 		} else {
-			scheduleType = "day";
-			statusDay = day;
-			statusMonth = month;
-			statusYear = year;
 			return getSchedule(model, month, day, year) + "schedule";
 		}
 
@@ -863,7 +858,12 @@ public class UserController {
 		for (int ctr = 0; ctr < donations.size(); ctr++) {
 			status = new Status();
 			donations.get(ctr).setTime(timeFormat.format(donations.get(ctr).getScheduledDate()));
+			status.setId(donations.get(ctr).getId());
 			status.setStatus(donations.get(ctr).getStatus().replaceAll(" ", "_"));
+			status.setDay(day);
+			status.setMonth(month);
+			status.setYear(year);
+			status.setType("day");
 			model.addAttribute("statusForm" + donations.get(ctr).getId(), status);
 		}
 
@@ -966,10 +966,6 @@ public class UserController {
 			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
 			return "redirect:/dashboard";
 		} else {
-			scheduleType = "week";
-			statusDay = day;
-			statusMonth = month;
-			statusYear = year;
 			return getWeekSchedule(model, day, month, year) + "weekschedule";
 		}
 
@@ -1029,8 +1025,13 @@ public class UserController {
 
 		for (int ctr = 0; ctr < donations.size(); ctr++) {
 			status = new Status();
+			status.setId(donations.get(ctr).getId());
 			donations.get(ctr).setTime(timeFormat.format(donations.get(ctr).getScheduledDate()));
 			status.setStatus(donations.get(ctr).getStatus().replaceAll(" ", "_"));
+			status.setDay(day);
+			status.setMonth(month);
+			status.setYear(year);
+			status.setType("week");
 			model.addAttribute("statusForm" + donations.get(ctr).getId(), status);
 		}
 
@@ -1047,33 +1048,38 @@ public class UserController {
 	}
 
 	// update donation status
-	@RequestMapping(value = "/statusupdate/{id}/{type}/{day}/{month}/{year}", method = RequestMethod.POST)
-	private String updateStatus(@ModelAttribute(STATUSFORM_PATTERN) @Validated Status status,
-			@PathVariable("id") int id, @PathVariable("type") String type, @PathVariable("day") int day,
-			@PathVariable("month") int month, @PathVariable("year") int year, BindingResult result, Model model,
-			final RedirectAttributes redirectAttributes) {
+	@RequestMapping(value = "/statusupdate", method = RequestMethod.POST)
+	public String updateStatus(@ModelAttribute(STATUSFORM_PATTERN) @Validated Status status, BindingResult result, Model model,
+			final RedirectAttributes redirectAttributes, HttpServletResponse response, HttpServletRequest request) {
 
-		logger.debug("updateStatus() id + status : {}", id + " " + status);
+		logger.debug("updateStatus() status : {}", status);
+		
+		populateDonationStatuses(model);
 
 		if (result.hasErrors()) {
-			logger.debug("updateStatus() errors : {}", result.getAllErrors());
-			if (type.equals("week")) {
-				return "calendar/weekof/" + day + "/" + month + "/" + year;
+			if (status.getType().equals("week")) {
+				return getWeekSchedule(model, status.getDay(), status.getMonth(), status.getYear()) + "/weekschedule";
 			} else {
-				return "/schedule/" + month + "/" + day + "/" + year;
+				return getSchedule(model, status.getMonth(), status.getDay(), status.getYear()) + "/schedule";
 			}
 		} else {
 
-			donationService.updateStatus(id, status.getStatus());
+			donationService.updateStatus(status.getId(), status.getStatus());
 
 			redirectAttributes.addFlashAttribute("css", "success");
 			redirectAttributes.addFlashAttribute("msg", "Status updated successfully!");
 
-			if (scheduleType.equals("week")) {
-				return "redirect:/calendar/weekof/" + statusDay + "/" + statusMonth + "/" + statusYear;
+			if (status.getType().equals("week")) {
+				return getWeekSchedule(model, status.getDay(), status.getMonth(), status.getYear()) + "/weekschedule";
 			} else {
-				return "redirect:/schedule/" + statusMonth + "/" + statusDay + "/" + statusYear;
+				return getSchedule(model, status.getMonth(), status.getDay(), status.getYear()) + "/schedule";
 			}
+			
+			/*if (status.getType().equals("week")) {
+				return "calendar/weekof/" + status.getDay() + "/" + status.getMonth() + "/" + status.getYear();
+			} else {
+				return "schedule/" + status.getMonth() + "/" + status.getDay() + "/" + status.getYear();
+			}*/
 
 		}
 

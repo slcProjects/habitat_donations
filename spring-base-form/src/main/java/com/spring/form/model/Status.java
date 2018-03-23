@@ -1,8 +1,42 @@
 package com.spring.form.model;
 
 public class Status {
+	
+	int id, day, month, year;
 
-	String status, statusChange;
+	String status, type;
+	
+	public int getId() {
+		return id;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	public int getDay() {
+		return day;
+	}
+	
+	public void setDay(int day) {
+		this.day = day;
+	}
+	
+	public int getMonth() {
+		return month;
+	}
+	
+	public void setMonth(int month) {
+		this.month = month;
+	}
+	
+	public int getYear() {
+		return year;
+	}
+	
+	public void setYear(int year) {
+		this.year = year;
+	}
 	
 	public String getStatus() {
 		return status;
@@ -12,17 +46,17 @@ public class Status {
 		this.status = status;
 	}
 	
-	public String getStatusChange() {
-		return statusChange;
+	public String getType() {
+		return type;
 	}
 	
-	public void setStatusChange(String statusChange) {
-		this.statusChange = statusChange;
+	public void setType(String type) {
+		this.type = type;
 	}
 	
 	@Override
 	public String toString() {
-		return "Status [status=" + status + "]";
+		return "Status [id=" + id + ", status=" + status + ", day=" + day + ", month=" + month + ", year=" + year + ", type=" + type + "]";
 	}
 	
 }
