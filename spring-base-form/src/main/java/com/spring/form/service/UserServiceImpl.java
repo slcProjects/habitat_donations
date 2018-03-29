@@ -34,8 +34,8 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	@Override
-	public List<User> search(String first, String last, String city, String code, String role) {
-		return userDao.search(first, last, city, code, role);
+	public List<User> search(String first, String last, String city, String code, String role, String startMonth, String endMonth, String startYear, String endYear) {
+		return userDao.search(first, last, city, code, role, startMonth, endMonth, startYear, endYear);
 	}
 
 	@Override

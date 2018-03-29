@@ -91,7 +91,51 @@
 										<form:errors class="gfield_description validation_message"
 											path="scheduledDate" />
 										<div class="gf_clear gf_clear_complex"></div>
-									</spring:bind> </span></li>
+									</spring:bind> </span> <br /> <c:set var="ctr" value="${1}" />
+
+								<table>
+									<thead>
+										<tr>
+											<th>Sun</th>
+											<th>Mon</th>
+											<th>Tue</th>
+											<th>Wed</th>
+											<th>Thu</th>
+											<th>Fri</th>
+											<th>Sat</th>
+										</tr>
+									</thead>
+									<c:forEach begin="1" end="${weeksInMonth}" step="1" var="week">
+										<tr id="week${week}">
+											<c:forEach begin="1" end="7" step="1" var="dayInWeek">
+												<c:choose>
+													<c:when
+														test="${ctr > daysInMonth || week == 1 && first > dayInWeek && dayInWeek != 0}">
+														<td class='calendar-day-np-form'></td>
+													</c:when>
+													<c:otherwise>
+														<c:choose>
+															<c:when test="${ctr < day}">
+																<td id="day${ctr}" class='calendar-day-np-form'>${ctr}</td>
+															</c:when>
+															<c:when test="${ctr == day}">
+																<td id="day${ctr}" class='calendar-day-form today'><div>${ctr}</div>
+																<div>AM<input type="checkbox" name="am" value="${ctr}"/>
+																PM<input type="checkbox" name="pm" value="${ctr}"/></div></td>
+															</c:when>
+															<c:otherwise>
+																<td id="day${ctr}" class='calendar-day-form'><div>${ctr}</div>
+																<div>AM<input type="checkbox" name="am" value="${ctr}"/>
+																PM<input type="checkbox" name="pm" value="${ctr}"/></div></td>
+															</c:otherwise>
+														</c:choose>
+														<c:set var="ctr" value="${ctr + 1}" />
+													</c:otherwise>
+												</c:choose>
+											</c:forEach>
+										</tr>
+									</c:forEach>
+								</table></li>
 
 							<li id="field_6_2"
 								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.typeError}"><label
@@ -235,9 +279,10 @@
 								<c:if
 									test="${donationForm.numImages >= 0 && donationForm.numImages <= 3}">
 									<span id="fileUp1" style="display: block"> <label
-										class="gfield_label" for="input_6_7">Upload an image:</label> <spring:bind
-											path="file1">
-											<form:input type="file" path="file1" id="file1" onchange="showFile2()"/>
+										class="gfield_label" for="input_6_7">Upload an image:</label>
+										<spring:bind path="file1">
+											<form:input type="file" path="file1" id="file1"
+												onchange="showFile2()" />
 											<form:errors class="gfield_description validation_message"
 												path="file1" />
 											<br />
@@ -246,9 +291,10 @@
 								</c:if> <c:if
 									test="${donationForm.numImages >= 0 && donationForm.numImages <= 2}">
 									<span id="fileUp2" style="display: none"> <label
-										class="gfield_label" for="input_6_7">Upload an image:</label> <spring:bind
-											path="file2">
-											<form:input type="file" path="file2" id="file2" onchange="showFile3()" />
+										class="gfield_label" for="input_6_7">Upload an image:</label>
+										<spring:bind path="file2">
+											<form:input type="file" path="file2" id="file2"
+												onchange="showFile3()" />
 											<form:errors class="gfield_description validation_message"
 												path="file2" />
 											<br />
@@ -257,9 +303,10 @@
 								</c:if> <c:if
 									test="${donationForm.numImages == 0 || donationForm.numImages == 1}">
 									<span id="fileUp3" style="display: none"> <label
-										class="gfield_label" for="input_6_7">Upload an image:</label> <spring:bind
-											path="file3">
-											<form:input type="file" path="file3" id="file3" onchange="showFile4()" />
+										class="gfield_label" for="input_6_7">Upload an image:</label>
+										<spring:bind path="file3">
+											<form:input type="file" path="file3" id="file3"
+												onchange="showFile4()" />
 											<form:errors class="gfield_description validation_message"
 												path="file3" />
 											<br />
@@ -267,8 +314,8 @@
 									</span>
 								</c:if> <c:if test="${donationForm.numImages == 0}">
 									<span id="fileUp4" style="display: none"> <label
-										class="gfield_label" for="input_6_7">Upload an image:</label> <spring:bind
-											path="file4">
+										class="gfield_label" for="input_6_7">Upload an image:</label>
+										<spring:bind path="file4">
 											<form:input type="file" path="file4" id="file4" />
 											<form:errors class="gfield_description validation_message"
 												path="file4" />
@@ -321,25 +368,23 @@
 
 		</div>
 	</div>
-	
+
 	<jsp:include page="../fragments/footer.jsp" />
 
 </body>
 
 <script type="text/javascript">
-
 	function showFile2() {
 		document.getElementById("fileUp2").style.display = 'block';
 	}
-	
+
 	function showFile3() {
 		document.getElementById("fileUp3").style.display = 'block';
 	}
-	
+
 	function showFile4() {
 		document.getElementById("fileUp4").style.display = 'block';
 	}
-	
 </script>
 
 </html>

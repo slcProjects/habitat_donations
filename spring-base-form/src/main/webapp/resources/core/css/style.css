@@ -37,13 +37,22 @@ button {
 	min-height: 100px;
 }
 
+.calendar-day-form, .calendar-day-np-form {
+	width: 30px;
+	padding: 5px;
+}
+
 .calendar-day, .calendar-day-np {
 	width: 180px;
 	padding: 5px;
 }
 
-.calendar-day-np {
+.calendar-day-np, .calendar-day-np-form {
 	background: #eee;
+}
+
+.calendar-day-form, .calendar-day-np-form {
+	width: 65px;
 }
 
 .week {

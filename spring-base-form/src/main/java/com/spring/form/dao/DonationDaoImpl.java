@@ -3,15 +3,22 @@ package com.spring.form.dao;
 import static java.lang.Math.toIntExact;
 
 import java.io.IOException;
+import java.sql.Array;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.sql.rowset.serial.SerialException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -24,9 +31,12 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.spring.form.model.Donation;
+import com.spring.form.web.UserController;
 
 @Repository
 public class DonationDaoImpl implements DonationDao {
+	
+	private final static Logger logger = LoggerFactory.getLogger(UserController.class);
 
 	NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -257,6 +267,20 @@ public class DonationDaoImpl implements DonationDao {
 		paramSource.addValue("type", donation.getType());
 		paramSource.addValue("status", donation.getStatus());
 		
+		List<Date> dates = donation.getDates();
+		List<String> meridians = donation.getMeridian();
+		int size = dates.size();
+		Date[] dateArray = new Date[size];
+		String[] meridianArray = new String[size];
+		
+		for (int ctr = 0; ctr < size; ctr++) {
+			dateArray[ctr] = dates.get(ctr);
+			meridianArray[ctr] = meridians.get(ctr);
+		}
+		
+		/*paramSource.addValue("dates", dateArray);
+		paramSource.addValue("meridian", meridianArray);*/
+		
 		return paramSource;
 	}
 
@@ -281,6 +305,22 @@ public class DonationDaoImpl implements DonationDao {
 			donation.setNumImages(rs.getInt("NumImages"));
 			donation.setType(rs.getString("Type"));
 			donation.setStatus(rs.getString("Status"));
+			
+			ResultSet set1 = rs.getArray("Dates").getResultSet();
+			ResultSet set2 = rs.getArray("Meridian").getResultSet();
+			
+			List<Date> dateList = new ArrayList<>();
+			List<String> meridianList = new ArrayList<>();
+			
+			while (!set1.isLast() && !set2.isLast()) {
+				set1.next();
+				set2.next();
+				dateList.add(set1.getDate("VALUE"));
+				meridianList.add(set2.getString("VALUE"));
+			}
+
+			donation.setDates(dateList);
+			donation.setMeridian(meridianList);
 
 			return donation;
 		}

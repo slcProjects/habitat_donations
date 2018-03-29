@@ -69,8 +69,7 @@ public class UserController {
 	private String months[] = { "January", "February", "March", "April", "May", "June", "July", "August", "September",
 			"October", "November", "December" };
 	GregorianCalendar today = null;
-	int month = 0, year = 0, statusDay = 0, statusMonth = 0, statusYear = 0;
-	String scheduleType = "";
+	int month = 0, year = 0;
 	private static final String STATUSFORM_PATTERN = "^statusForm\\d+$";
 	List<Attachment> images = null;
 
@@ -424,6 +423,7 @@ public class UserController {
 			return "redirect:/dashboard";
 		} else {
 			model.addAttribute("searchForm", new Search());
+			populateMonths(model);
 			return "users/searchform";
 		}
 
@@ -437,6 +437,7 @@ public class UserController {
 		logger.debug("searchUser() search : {}", search);
 
 		if (result.hasErrors()) {
+			populateMonths(model);
 			return "users/searchform";
 		} else {
 
@@ -448,7 +449,12 @@ public class UserController {
 			if (role == null) {
 				role = "";
 			}
-			List<User> users = userService.search(first, last, city, code, role);
+			String startMonth = search.getStartMonth();
+			String endMonth = search.getEndMonth();
+			String startYear = search.getStartYear();
+			String endYear = search.getEndYear();
+			List<User> users = userService.search(first, last, city, code, role, startMonth, endMonth, startYear,
+					endYear);
 			if (users == null) {
 				model.addAttribute("css", "danger");
 				model.addAttribute("msg", "User not found");
@@ -505,8 +511,45 @@ public class UserController {
 			HttpServletResponse response, HttpServletRequest request) {
 
 		logger.debug("saveOrUpdateDonation() : {}", donation);
+		
+		String checkedAm[] = request.getParameterValues("am");
+		String checkedPm[] = request.getParameterValues("pm");
+		
+		List<java.util.Date> am = new ArrayList<>();
+		List<java.util.Date> pm = new ArrayList<>();
+		
+		for (int ctr = 0; ctr < checkedAm.length; ctr++) {
+			GregorianCalendar calendar = new GregorianCalendar(year, month, Integer.parseInt(checkedAm[ctr]));
+			am.add(calendar.getTime());
+			logger.debug("saveOrUpdateDonation() am date : {}", calendar.getTime());
+		}
+		
+		for (int ctr = 0; ctr < checkedPm.length; ctr++) {
+			GregorianCalendar calendar = new GregorianCalendar(year, month, Integer.parseInt(checkedPm[ctr]));
+			pm.add(calendar.getTime());
+			logger.debug("saveOrUpdateDonation() pm date : {}", calendar.getTime());
+		}
 
 		if (result.hasErrors()) {
+			year = today.get(Calendar.YEAR);
+			month = today.get(Calendar.MONTH);
+			int day = today.get(Calendar.DATE);
+			
+			GregorianCalendar first = new GregorianCalendar(year, month, 1);
+			int daysInMonth = first.getActualMaximum(Calendar.DAY_OF_MONTH);
+			int firstOfMonth = first.get(Calendar.DAY_OF_WEEK);
+
+			GregorianCalendar last = new GregorianCalendar(year, month, daysInMonth);
+			int weeksInMonth = last.get(Calendar.WEEK_OF_MONTH);
+
+			model.addAttribute("monthName", months[month]);
+			model.addAttribute("month", month);
+			model.addAttribute("year", year);
+			model.addAttribute("day", day);
+			model.addAttribute("daysInMonth", daysInMonth);
+			model.addAttribute("first", firstOfMonth);
+			model.addAttribute("weeksInMonth", weeksInMonth);
+			
 			if (!donation.isNew()) {
 				images = attachmentService.findByDonation(donation.getId());
 				Boolean noImage = false;
@@ -526,6 +569,7 @@ public class UserController {
 			} else {
 				model.addAttribute("noImage", true);
 			}
+			
 			populateProvinces(model);
 			populateDonationTypes(model);
 			populateDonationStatuses(model);
@@ -540,7 +584,7 @@ public class UserController {
 				donation.setCompletedDate(null);
 			}
 			donationService.saveOrUpdate(donation);
-			
+
 			redirectAttributes.addFlashAttribute("css", "success");
 			if (donation.isNew()) {
 				donation.setNumImages(0);
@@ -553,7 +597,7 @@ public class UserController {
 
 			int id = donation.getId();
 			if (!donation.getFile1().getContentType().contains("application/octet-stream")
-					|| donation.getFile1() == null) {
+					|| donation.getFile1() != null) {
 				try {
 					InputStream input = donation.getFile1().getInputStream();
 					ImageIO.read(input).toString();
@@ -565,7 +609,7 @@ public class UserController {
 				}
 			}
 			if (!donation.getFile2().getContentType().contains("application/octet-stream")
-					|| donation.getFile2() == null) {
+					|| donation.getFile2() != null) {
 				try {
 					InputStream input = donation.getFile2().getInputStream();
 					ImageIO.read(input).toString();
@@ -577,7 +621,7 @@ public class UserController {
 				}
 			}
 			if (!donation.getFile3().getContentType().contains("application/octet-stream")
-					|| donation.getFile3() == null) {
+					|| donation.getFile3() != null) {
 				try {
 					InputStream input = donation.getFile3().getInputStream();
 					ImageIO.read(input).toString();
@@ -589,7 +633,7 @@ public class UserController {
 				}
 			}
 			if (!donation.getFile4().getContentType().contains("application/octet-stream")
-					|| donation.getFile4() == null) {
+					|| donation.getFile4() != null) {
 				try {
 					InputStream input = donation.getFile4().getInputStream();
 					ImageIO.read(input).toString();
@@ -639,6 +683,25 @@ public class UserController {
 			donation.setPostalCode(donor.getPostalCode());
 			donation.setStatus("AWAITING APPROVAL");
 			donation.setNumImages(0);
+			
+			year = today.get(Calendar.YEAR);
+			month = today.get(Calendar.MONTH);
+			int day = today.get(Calendar.DATE);
+			
+			GregorianCalendar first = new GregorianCalendar(year, month, 1);
+			int daysInMonth = first.getActualMaximum(Calendar.DAY_OF_MONTH);
+			int firstOfMonth = first.get(Calendar.DAY_OF_WEEK);
+
+			GregorianCalendar last = new GregorianCalendar(year, month, daysInMonth);
+			int weeksInMonth = last.get(Calendar.WEEK_OF_MONTH);
+
+			model.addAttribute("monthName", months[month]);
+			model.addAttribute("month", month);
+			model.addAttribute("year", year);
+			model.addAttribute("day", day);
+			model.addAttribute("daysInMonth", daysInMonth);
+			model.addAttribute("first", firstOfMonth);
+			model.addAttribute("weeksInMonth", weeksInMonth);
 
 			model.addAttribute("donationForm", donation);
 			model.addAttribute("noImage", true);
@@ -688,6 +751,25 @@ public class UserController {
 			}
 			model.addAttribute("noImage", noImage);
 			model.addAttribute("role", currentRole);
+			
+			year = today.get(Calendar.YEAR);
+			month = today.get(Calendar.MONTH);
+			int day = today.get(Calendar.DATE);
+			
+			GregorianCalendar first = new GregorianCalendar(year, month, 1);
+			int daysInMonth = first.getActualMaximum(Calendar.DAY_OF_MONTH);
+			int firstOfMonth = first.get(Calendar.DAY_OF_WEEK);
+
+			GregorianCalendar last = new GregorianCalendar(year, month, daysInMonth);
+			int weeksInMonth = last.get(Calendar.WEEK_OF_MONTH);
+
+			model.addAttribute("monthName", months[month]);
+			model.addAttribute("month", month);
+			model.addAttribute("year", year);
+			model.addAttribute("day", day);
+			model.addAttribute("daysInMonth", daysInMonth);
+			model.addAttribute("first", firstOfMonth);
+			model.addAttribute("weeksInMonth", weeksInMonth);
 
 			populateProvinces(model);
 			populateDonationTypes(model);
@@ -814,10 +896,6 @@ public class UserController {
 			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
 			return "redirect:/dashboard";
 		} else {
-			scheduleType = "day";
-			statusDay = day;
-			statusMonth = month;
-			statusYear = year;
 			return getSchedule(model, month, day, year) + "schedule";
 		}
 
@@ -856,7 +934,12 @@ public class UserController {
 		for (int ctr = 0; ctr < donations.size(); ctr++) {
 			status = new Status();
 			donations.get(ctr).setTime(timeFormat.format(donations.get(ctr).getScheduledDate()));
-			status.setStatus(donations.get(ctr).getStatus().replaceAll(" ", "_"));
+			status.setId(donations.get(ctr).getId());
+			status.setStatus(donations.get(ctr).getStatus());
+			status.setDay(day);
+			status.setMonth(month);
+			status.setYear(year);
+			status.setType("day");
 			model.addAttribute("statusForm" + donations.get(ctr).getId(), status);
 		}
 
@@ -959,10 +1042,6 @@ public class UserController {
 			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
 			return "redirect:/dashboard";
 		} else {
-			scheduleType = "week";
-			statusDay = day;
-			statusMonth = month;
-			statusYear = year;
 			return getWeekSchedule(model, day, month, year) + "weekschedule";
 		}
 
@@ -1022,8 +1101,13 @@ public class UserController {
 
 		for (int ctr = 0; ctr < donations.size(); ctr++) {
 			status = new Status();
+			status.setId(donations.get(ctr).getId());
 			donations.get(ctr).setTime(timeFormat.format(donations.get(ctr).getScheduledDate()));
-			status.setStatus(donations.get(ctr).getStatus().replaceAll(" ", "_"));
+			status.setStatus(donations.get(ctr).getStatus());
+			status.setDay(day);
+			status.setMonth(month);
+			status.setYear(year);
+			status.setType("week");
 			model.addAttribute("statusForm" + donations.get(ctr).getId(), status);
 		}
 
@@ -1040,22 +1124,34 @@ public class UserController {
 	}
 
 	// update donation status
-	@RequestMapping(value = "/statusupdate/{id}", method = RequestMethod.POST)
-	private String updateStatus(@ModelAttribute(STATUSFORM_PATTERN) @Validated Status status,
-			@PathVariable("id") int id, BindingResult result, Model model,
-			final RedirectAttributes redirectAttributes) {
+	@RequestMapping(value = "/statusupdate", method = RequestMethod.POST)
+	public String updateStatus(@ModelAttribute(STATUSFORM_PATTERN) @Validated Status status, BindingResult result, Model model,
+			final RedirectAttributes redirectAttributes, HttpServletResponse response, HttpServletRequest request) {
 
-		logger.debug("updateStatus() id + status : {}", id + " " + status);
+		logger.debug("updateStatus() status : {}", status);
+		
+		populateDonationStatuses(model);
 
-		donationService.updateStatus(id, status.getStatus());
-
-		redirectAttributes.addFlashAttribute("css", "success");
-		redirectAttributes.addFlashAttribute("msg", "Status updated successfully!");
-
-		if (scheduleType.equals("week")) {
-			return "redirect:/calendar/weekof/" + statusDay + "/" + statusMonth + "/" + statusYear;
+		if (result.hasErrors()) {
+			model.addAttribute("error", status.getId());
+			if (status.getType().equals("week")) {
+				return getWeekSchedule(model, status.getDay(), status.getMonth(), status.getYear()) + "weekschedule";
+			} else {
+				return getSchedule(model, status.getMonth(), status.getDay(), status.getYear()) + "schedule";
+			}
 		} else {
-			return "redirect:/schedule/" + statusMonth + "/" + statusDay + "/" + statusYear;
+
+			donationService.updateStatus(status.getId(), status.getStatus());
+
+			redirectAttributes.addFlashAttribute("css", "success");
+			redirectAttributes.addFlashAttribute("msg", "Status updated successfully!");
+
+			if (status.getType().equals("week")) {
+				return getWeekSchedule(model, status.getDay(), status.getMonth(), status.getYear()) + "weekschedule";
+			} else {
+				return getSchedule(model, status.getMonth(), status.getDay(), status.getYear()) + "schedule";
+			}
+
 		}
 
 	}
@@ -1153,6 +1249,23 @@ public class UserController {
 		statuses.put("RECEIVED", "RECEIVED");
 		model.addAttribute("statusList", statuses);
 
+	}
+
+	private void populateMonths(Model model) {
+		Map<String, String> months = new LinkedHashMap<String, String>();
+		months.put("1", "January");
+		months.put("2", "February");
+		months.put("3", "March");
+		months.put("4", "April");
+		months.put("5", "May");
+		months.put("6", "June");
+		months.put("7", "July");
+		months.put("8", "August");
+		months.put("9", "September");
+		months.put("10", "October");
+		months.put("11", "November");
+		months.put("12", "December");
+		model.addAttribute("months", months);
 	}
 
 	@ExceptionHandler(EmptyResultDataAccessException.class)

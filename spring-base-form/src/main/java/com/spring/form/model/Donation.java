@@ -1,6 +1,9 @@
 package com.spring.form.model;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +22,12 @@ public class Donation {
 
 	// form:input - textbox
 	Timestamp scheduledDate;
+	
+	// form:input - checkbox
+	List<Date> dates = new ArrayList<>();
+	
+	// form:input - checkbox
+	List<String> meridian = new ArrayList<>();
 
 	// form:input - textbox
 	Timestamp completedDate;
@@ -161,6 +170,22 @@ public class Donation {
 
 	public void setScheduledDate(Timestamp scheduledDate) {
 		this.scheduledDate = scheduledDate;
+	}
+	
+	public List<Date> getDates() {
+		return dates;
+	}
+
+	public void setDates(List<Date> dates) {
+		this.dates = dates;
+	}
+	
+	public List<String> getMeridian() {
+		return meridian;
+	}
+
+	public void setMeridian(List<String> meridian) {
+		this.meridian = meridian;
 	}
 
 	public Timestamp getCompletedDate() {
