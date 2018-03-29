@@ -7225,3 +7225,8 @@ button.close {
 		display: none !important
 	}
 }
+
+.container-staff-dashboard
+{
+	background-color: #333;
+}

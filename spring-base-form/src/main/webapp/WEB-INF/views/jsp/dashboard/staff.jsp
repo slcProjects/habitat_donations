@@ -8,6 +8,7 @@
 <html lang="en">
 
 <jsp:include page="../fragments/head.jsp" />
+<link rel="stylesheet" href="../css/style.css">
 <body>
 	<jsp:include page="../fragments/header.jsp" />
 	<div class="content_body" style="margin-top: 156px">
@@ -24,9 +25,11 @@
 			</c:if>
 
 			<h1>Staff Dashboard</h1>
-			
+		<div class="container-staff-dashboard">
+	<div class="custom_menu_3 main_menu_underline_effect">
 			<spring:url value="/donations/${userId}/add" var="donateUrl" />
 			<button onclick="location.href='${donateUrl}'">Donate</button>
+			<p></p>
 			
 			<spring:url value="/donationsforuser" var="forUserUrl" />
 			<button onclick="location.href='${forUserUrl}'">View Your Donations</button>
@@ -50,7 +53,8 @@
 				
 			<spring:url value="/logout" var="logoutUrl" />
 			<button class="btn btn-info" onclick="location.href='${logoutUrl}'">Log Out</button>
-
+</div>
+</div>
 		</div>
 	</div>
 
