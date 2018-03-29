@@ -16,7 +16,7 @@
 			<h1>Donation Schedule</h1>
 
 			<h3>${date}</h3>
-			
+
 			<c:choose>
 				<c:when test="${empty donations}">
 					<p>No donations found</p>
@@ -42,32 +42,51 @@
 								<td>${donation.time}</td>
 								<td>${donation.type}</td>
 								<td>
-									<spring:url value="/statusupdate" var="statusUrl" />
-									<form:form class="form-horizontal" method="post"
-										modelAttribute="statusForm${donation.id}" action="${statusUrl}">
-										<form:hidden path="id" />
-										<form:hidden path="day" />
-										<form:hidden path="month" />
-										<form:hidden path="year" />
-										<form:hidden path="type" />
-										<spring:bind path="status">
-											<form:select path="status" class="form-control">
-												<form:option value="NONE" label="" />
-												<form:options items="${statusList}" />
-											</form:select>
-										</spring:bind>
-										<form:errors path="status" class="gfield_description validation_message" />
-										<button type="submit">Update Status</button>
-									</form:form>
+									<div class="gf_browser_chrome gform_wrapper"
+										id="gform_wrapper_6">
+										<spring:url value="/statusupdate" var="statusUrl" />
+										<c:choose>
+											<c:when test="${not empty error && error == donation.id}">
+												<c:set var="errClass" value="gfield_error" />
+											</c:when>
+											<c:otherwise>
+												<c:set var="errClass" value="" />
+											</c:otherwise>
+										</c:choose>
+										<ul id="gform_fields_6"
+											class="gform_fields top_label form_sublabel_below description_below">
+											<li
+												class="gform_body gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${errClass}">
+												<form:form class="form-horizontal" method="post"
+													modelAttribute="statusForm${donation.id}"
+													action="${statusUrl}">
+													<form:hidden path="id" />
+													<form:hidden path="day" />
+													<form:hidden path="month" />
+													<form:hidden path="year" />
+													<form:hidden path="type" />
+													<spring:bind path="status">
+														<form:select path="status" class="form-control">
+															<form:option value="NONE" label="" />
+															<form:options items="${statusList}" />
+														</form:select>
+													</spring:bind>
+													<button type="submit">Update Status</button>
+													<c:if test="${not empty error && error == donation.id}">
+														<label class="gfield_description validation_message">This
+															field is required.</label>
+													</c:if>
+												</form:form>
+											</li>
+										</ul>
+									</div>
 								</td>
-								<td>${donation.address} ${donation.city},
+								<td>${donation.address}${donation.city},
 									${donation.province}, ${donation.postalCode}</td>
-								<td style='border: 2px solid black'>
-									<spring:url value="http://www.google.ca/maps/place/${donation.address},${donation.city},${donation.province},${donation.postalCode}"
+								<td style='border: 2px solid black'><spring:url
+										value="http://www.google.ca/maps/place/${donation.address},${donation.city},${donation.province},${donation.postalCode}"
 										var="mapUrl" />
-									<button
-										onclick="window.open('${mapUrl}')">Direction</button>
-								</td>
+									<button onclick="window.open('${mapUrl}')">Direction</button></td>
 							</tr>
 						</c:forEach>
 					</table>

@@ -511,8 +511,45 @@ public class UserController {
 			HttpServletResponse response, HttpServletRequest request) {
 
 		logger.debug("saveOrUpdateDonation() : {}", donation);
+		
+		String checkedAm[] = request.getParameterValues("am");
+		String checkedPm[] = request.getParameterValues("pm");
+		
+		List<java.util.Date> am = new ArrayList<>();
+		List<java.util.Date> pm = new ArrayList<>();
+		
+		for (int ctr = 0; ctr < checkedAm.length; ctr++) {
+			GregorianCalendar calendar = new GregorianCalendar(year, month, Integer.parseInt(checkedAm[ctr]));
+			am.add(calendar.getTime());
+			logger.debug("saveOrUpdateDonation() am date : {}", calendar.getTime());
+		}
+		
+		for (int ctr = 0; ctr < checkedPm.length; ctr++) {
+			GregorianCalendar calendar = new GregorianCalendar(year, month, Integer.parseInt(checkedPm[ctr]));
+			pm.add(calendar.getTime());
+			logger.debug("saveOrUpdateDonation() pm date : {}", calendar.getTime());
+		}
 
 		if (result.hasErrors()) {
+			year = today.get(Calendar.YEAR);
+			month = today.get(Calendar.MONTH);
+			int day = today.get(Calendar.DATE);
+			
+			GregorianCalendar first = new GregorianCalendar(year, month, 1);
+			int daysInMonth = first.getActualMaximum(Calendar.DAY_OF_MONTH);
+			int firstOfMonth = first.get(Calendar.DAY_OF_WEEK);
+
+			GregorianCalendar last = new GregorianCalendar(year, month, daysInMonth);
+			int weeksInMonth = last.get(Calendar.WEEK_OF_MONTH);
+
+			model.addAttribute("monthName", months[month]);
+			model.addAttribute("month", month);
+			model.addAttribute("year", year);
+			model.addAttribute("day", day);
+			model.addAttribute("daysInMonth", daysInMonth);
+			model.addAttribute("first", firstOfMonth);
+			model.addAttribute("weeksInMonth", weeksInMonth);
+			
 			if (!donation.isNew()) {
 				images = attachmentService.findByDonation(donation.getId());
 				Boolean noImage = false;
@@ -532,6 +569,7 @@ public class UserController {
 			} else {
 				model.addAttribute("noImage", true);
 			}
+			
 			populateProvinces(model);
 			populateDonationTypes(model);
 			populateDonationStatuses(model);
@@ -645,6 +683,25 @@ public class UserController {
 			donation.setPostalCode(donor.getPostalCode());
 			donation.setStatus("AWAITING APPROVAL");
 			donation.setNumImages(0);
+			
+			year = today.get(Calendar.YEAR);
+			month = today.get(Calendar.MONTH);
+			int day = today.get(Calendar.DATE);
+			
+			GregorianCalendar first = new GregorianCalendar(year, month, 1);
+			int daysInMonth = first.getActualMaximum(Calendar.DAY_OF_MONTH);
+			int firstOfMonth = first.get(Calendar.DAY_OF_WEEK);
+
+			GregorianCalendar last = new GregorianCalendar(year, month, daysInMonth);
+			int weeksInMonth = last.get(Calendar.WEEK_OF_MONTH);
+
+			model.addAttribute("monthName", months[month]);
+			model.addAttribute("month", month);
+			model.addAttribute("year", year);
+			model.addAttribute("day", day);
+			model.addAttribute("daysInMonth", daysInMonth);
+			model.addAttribute("first", firstOfMonth);
+			model.addAttribute("weeksInMonth", weeksInMonth);
 
 			model.addAttribute("donationForm", donation);
 			model.addAttribute("noImage", true);
@@ -694,6 +751,25 @@ public class UserController {
 			}
 			model.addAttribute("noImage", noImage);
 			model.addAttribute("role", currentRole);
+			
+			year = today.get(Calendar.YEAR);
+			month = today.get(Calendar.MONTH);
+			int day = today.get(Calendar.DATE);
+			
+			GregorianCalendar first = new GregorianCalendar(year, month, 1);
+			int daysInMonth = first.getActualMaximum(Calendar.DAY_OF_MONTH);
+			int firstOfMonth = first.get(Calendar.DAY_OF_WEEK);
+
+			GregorianCalendar last = new GregorianCalendar(year, month, daysInMonth);
+			int weeksInMonth = last.get(Calendar.WEEK_OF_MONTH);
+
+			model.addAttribute("monthName", months[month]);
+			model.addAttribute("month", month);
+			model.addAttribute("year", year);
+			model.addAttribute("day", day);
+			model.addAttribute("daysInMonth", daysInMonth);
+			model.addAttribute("first", firstOfMonth);
+			model.addAttribute("weeksInMonth", weeksInMonth);
 
 			populateProvinces(model);
 			populateDonationTypes(model);
@@ -859,7 +935,7 @@ public class UserController {
 			status = new Status();
 			donations.get(ctr).setTime(timeFormat.format(donations.get(ctr).getScheduledDate()));
 			status.setId(donations.get(ctr).getId());
-			status.setStatus(donations.get(ctr).getStatus().replaceAll(" ", "_"));
+			status.setStatus(donations.get(ctr).getStatus());
 			status.setDay(day);
 			status.setMonth(month);
 			status.setYear(year);
@@ -1027,7 +1103,7 @@ public class UserController {
 			status = new Status();
 			status.setId(donations.get(ctr).getId());
 			donations.get(ctr).setTime(timeFormat.format(donations.get(ctr).getScheduledDate()));
-			status.setStatus(donations.get(ctr).getStatus().replaceAll(" ", "_"));
+			status.setStatus(donations.get(ctr).getStatus());
 			status.setDay(day);
 			status.setMonth(month);
 			status.setYear(year);
@@ -1057,10 +1133,11 @@ public class UserController {
 		populateDonationStatuses(model);
 
 		if (result.hasErrors()) {
+			model.addAttribute("error", status.getId());
 			if (status.getType().equals("week")) {
-				return getWeekSchedule(model, status.getDay(), status.getMonth(), status.getYear()) + "/weekschedule";
+				return getWeekSchedule(model, status.getDay(), status.getMonth(), status.getYear()) + "weekschedule";
 			} else {
-				return getSchedule(model, status.getMonth(), status.getDay(), status.getYear()) + "/schedule";
+				return getSchedule(model, status.getMonth(), status.getDay(), status.getYear()) + "schedule";
 			}
 		} else {
 
@@ -1070,16 +1147,10 @@ public class UserController {
 			redirectAttributes.addFlashAttribute("msg", "Status updated successfully!");
 
 			if (status.getType().equals("week")) {
-				return getWeekSchedule(model, status.getDay(), status.getMonth(), status.getYear()) + "/weekschedule";
+				return getWeekSchedule(model, status.getDay(), status.getMonth(), status.getYear()) + "weekschedule";
 			} else {
-				return getSchedule(model, status.getMonth(), status.getDay(), status.getYear()) + "/schedule";
+				return getSchedule(model, status.getMonth(), status.getDay(), status.getYear()) + "schedule";
 			}
-			
-			/*if (status.getType().equals("week")) {
-				return "calendar/weekof/" + status.getDay() + "/" + status.getMonth() + "/" + status.getYear();
-			} else {
-				return "schedule/" + status.getMonth() + "/" + status.getDay() + "/" + status.getYear();
-			}*/
 
 		}
 

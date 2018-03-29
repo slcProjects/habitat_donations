@@ -42,23 +42,44 @@
 								<td>${donation.scheduledDate}</td>
 								<td>${donation.type}</td>
 								<td>
-									<spring:url value="/statusupdate" var="statusUrl" />
-									<form:form class="form-horizontal" method="post"
-										modelAttribute="statusForm${donation.id}" action="${statusUrl}">
-										<form:hidden path="id" />
-										<form:hidden path="day" />
-										<form:hidden path="month" />
-										<form:hidden path="year" />
-										<form:hidden path="type" />
-										<spring:bind path="status">
-											<form:select path="status" class="form-control">
-												<form:option value="NONE" label="" />
-												<form:options items="${statusList}" />
-											</form:select>
-										</spring:bind>
-										<button type="submit">Update Status</button>
-										<form:errors path="status" class="gfield_description validation_message" />
-									</form:form>
+									<div class="gf_browser_chrome gform_wrapper"
+										id="gform_wrapper_6">
+										<spring:url value="/statusupdate" var="statusUrl" />
+										<c:choose>
+											<c:when test="${not empty error && error == donation.id}">
+												<c:set var="errClass" value="gfield_error" />
+											</c:when>
+											<c:otherwise>
+												<c:set var="errClass" value="" />
+											</c:otherwise>
+										</c:choose>
+										<ul id="gform_fields_6"
+											class="gform_fields top_label form_sublabel_below description_below">
+											<li
+												class="gform_body gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${errClass}">
+												<form:form class="form-horizontal" method="post"
+													modelAttribute="statusForm${donation.id}"
+													action="${statusUrl}">
+													<form:hidden path="id" />
+													<form:hidden path="day" />
+													<form:hidden path="month" />
+													<form:hidden path="year" />
+													<form:hidden path="type" />
+													<spring:bind path="status">
+														<form:select path="status" class="form-control">
+															<form:option value="NONE" label="" />
+															<form:options items="${statusList}" />
+														</form:select>
+													</spring:bind>
+													<button type="submit">Update Status</button>
+													<c:if test="${not empty error && error == donation.id}">
+														<label class="gfield_description validation_message">This
+															field is required.</label>
+													</c:if>
+												</form:form>
+											</li>
+										</ul>
+									</div>
 								</td>
 								<td>${donation.address} ${donation.city},
 									${donation.province}, ${donation.postalCode}</td>
@@ -69,12 +90,14 @@
 							</tr>
 						</c:forEach>
 					</table>
-					<input type="submit" value="Print" onClick="window.print()"/>
+					<input type="submit" value="Print" onClick="window.print()" />
 				</c:otherwise>
 			</c:choose>
-			
-			<spring:url value="/weekof/print/${day}/${month}/${year}" var="printUrl" />
-			<button class="btn btn-info" onclick="window.open('${printUrl}')">Printer Friendly Version</button>
+
+			<spring:url value="/weekof/print/${day}/${month}/${year}"
+				var="printUrl" />
+			<button class="btn btn-info" onclick="window.open('${printUrl}')">Printer
+				Friendly Version</button>
 
 			<spring:url value="/calendar/${month}/${year}/recent" var="calendar" />
 			<button class="btn btn-info" onclick="location.href='${calendar}'">View
