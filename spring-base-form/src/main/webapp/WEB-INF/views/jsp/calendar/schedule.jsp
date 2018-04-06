@@ -27,7 +27,7 @@
 							<tr>
 								<th>#ID</th>
 								<th>Description</th>
-								<th>Scheduled Time</th>
+								<th>Available Times</th>
 								<th>Type</th>
 								<th>Status</th>
 								<th>Address</th>
@@ -39,7 +39,12 @@
 							<tr>
 								<td>${donation.id}</td>
 								<td>${donation.description}</td>
-								<td>${donation.time}</td>
+								<td>
+									<c:forEach var="meridian" items="${donation.meridian}">
+										${meridian}
+									</c:forEach>
+									<br />
+								</td>
 								<td>${donation.type}</td>
 								<td>
 									<div class="gf_browser_chrome gform_wrapper"
@@ -81,7 +86,7 @@
 										</ul>
 									</div>
 								</td>
-								<td>${donation.address}${donation.city},
+								<td>${donation.address} ${donation.city},
 									${donation.province}, ${donation.postalCode}</td>
 								<td style='border: 2px solid black'><spring:url
 										value="http://www.google.ca/maps/place/${donation.address},${donation.city},${donation.province},${donation.postalCode}"

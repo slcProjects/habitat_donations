@@ -61,8 +61,18 @@
 
 						<li
 							class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible">
-							<label class="gfield_label">Scheduled Date</label>
-							<div>${donation.scheduledDate}</div>
+							<label class="gfield_label">Available Dates</label>
+							<div>
+								<c:forEach var="date" items="${donation.scheduledDate}" varStatus="dateindex">
+									${date}:
+									<c:forEach var="meridian" items="${donation.meridian}" varStatus="meridianindex">
+										<c:if test="${dateindex.count == meridianindex.count}">
+											${meridian}
+										</c:if>
+									</c:forEach>
+									<br />
+								</c:forEach>
+							</div>
 						</li>
 
 						<li
@@ -89,7 +99,7 @@
 						<li
 							class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible">
 							<label class="gfield_label">Address</label>
-							<div>${donation.address}${donation.city},
+							<div>${donation.address} ${donation.city},
 								${donation.province}, ${donation.postalCode}</div>
 						</li>
 

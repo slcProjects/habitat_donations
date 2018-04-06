@@ -19,7 +19,7 @@ public class DonationServiceImpl implements DonationService {
 	}
 
 	@Override
-	public Donation findById(Integer id) {
+	public List<Donation> findById(Integer id) {
 		return donationDao.findById(id);
 	}
 
@@ -30,7 +30,7 @@ public class DonationServiceImpl implements DonationService {
 
 	@Override
 	public void saveOrUpdate(Donation donation) {
-		if (findById(donation.getId())==null) {
+		if (findById(donation.getId()).size() == 0) {
 			donationDao.save(donation);
 		} else {
 			donationDao.update(donation);
@@ -48,7 +48,7 @@ public class DonationServiceImpl implements DonationService {
 	}
 	
 	@Override 
-	public List<Donation> findByScheduledDate(String date) {
+	public List<Donation> findByScheduledDate(java.util.Date date) {
 		return donationDao.findByScheduledDate(date);
 	}
 	

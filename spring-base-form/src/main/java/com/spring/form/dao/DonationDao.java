@@ -6,7 +6,7 @@ import com.spring.form.model.Donation;
 
 public interface DonationDao {
 
-	Donation findById(Integer id);
+	List<Donation> findById(Integer id);
 
 	List<Donation> findAll();
 
@@ -18,7 +18,7 @@ public interface DonationDao {
 
 	List<Donation> findByUserId(Integer id);
 
-	List<Donation> findByScheduledDate(String date);
+	List<Donation> findByScheduledDate(java.util.Date date);
 
 	List<Donation> findByScheduledMonth(Integer month, Integer year);
 

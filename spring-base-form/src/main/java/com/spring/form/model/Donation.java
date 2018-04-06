@@ -20,13 +20,10 @@ public class Donation {
 	// form:input - textbox
 	Double value;
 
-	// form:input - textbox
-	Timestamp scheduledDate;
+	// form:checkbox - checkbox
+	List<Date> scheduledDate = new ArrayList<>();
 	
-	// form:input - checkbox
-	List<Date> dates = new ArrayList<>();
-	
-	// form:input - checkbox
+	// form:checkbox - checkbox
 	List<String> meridian = new ArrayList<>();
 
 	// form:input - textbox
@@ -64,8 +61,6 @@ public class Donation {
 	
 	Integer numImages;
 	
-	String time;
-	
 	String donorName;
 	
 	String descError;
@@ -85,14 +80,6 @@ public class Donation {
 	String statusError;
 	
 	String fileError;
-	
-	public String getTime() {
-		return time;
-	}
-	
-	public void setTime(String time) {
-		this.time = time;
-	}
 
 	private MultipartFile file1, file2, file3, file4;
 
@@ -164,20 +151,12 @@ public class Donation {
 		this.value = value;
 	}
 
-	public Timestamp getScheduledDate() {
+	public List<Date> getScheduledDate() {
 		return scheduledDate;
 	}
 
-	public void setScheduledDate(Timestamp scheduledDate) {
+	public void setScheduledDate(List<Date> scheduledDate) {
 		this.scheduledDate = scheduledDate;
-	}
-	
-	public List<Date> getDates() {
-		return dates;
-	}
-
-	public void setDates(List<Date> dates) {
-		this.dates = dates;
 	}
 	
 	public List<String> getMeridian() {
@@ -371,7 +350,7 @@ public class Donation {
 	@Override
 	public String toString() {
 		return "Donation [id=" + id + ", donor=" + donor + ", description=" + description + ", value=" + value
-				+ ", scheduledDate=" + scheduledDate + ", completedDate=" + completedDate + ", address=" + address
+				+ ", scheduledDate=" + scheduledDate + ", meridian=" + meridian +", completedDate=" + completedDate + ", address=" + address
 				+ ", city=" + city + ", province=" + province + ", postalCode=" + postalCode + ", dropFee=" + dropFee
 				+ ", status=" + status + ", receiver=" + receiver + ", tacking=" + tacking + ", receipts=" + receipts
 				+ ", file1=" + file1 + ", file2=" + file2 + ", file3=" + file3 + ", file4=" + file4 
