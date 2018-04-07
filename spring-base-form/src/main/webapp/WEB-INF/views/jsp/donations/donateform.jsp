@@ -82,17 +82,8 @@
 							<li id="field_6_03"
 								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.dateError}"><label
 								class="gfield_label gfield_label_before_complex"
-								for="input_6_1_3">Scheduled Date (24 hour format:
-									YYYY-MM-DD HH:MM:SS)<span class="gfield_required">*</span>
-							</label> <span class="ginput_left address_zip"
-								id="input_6_2_5_container3"><spring:bind
-										path="scheduledDate">
-										<form:input path="scheduledDate" id="scheduledDate" />
-										<form:errors class="gfield_description validation_message"
-											path="scheduledDate" />
-										<div class="gf_clear gf_clear_complex"></div>
-									</spring:bind> </span> <br /> <c:set var="ctr" value="${1}" />
-
+								for="input_6_1_3">Available Dates<span class="gfield_required">*</span>
+							</label> <c:set var="ctr" value="${1}" />
 								<table>
 									<thead>
 										<tr>
@@ -135,7 +126,10 @@
 											</c:forEach>
 										</tr>
 									</c:forEach>
-								</table></li>
+								</table><br />
+								<c:if test="${not empty dateError}">
+									<label class="gfield_description validation_message">At least one checkbox is required.</label>
+								</c:if></li>
 
 							<li id="field_6_2"
 								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.typeError}"><label

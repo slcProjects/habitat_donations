@@ -1,7 +1,5 @@
 package com.spring.form.validator;
 
-import java.text.SimpleDateFormat;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -36,11 +34,8 @@ public class DonationFormValidator implements Validator {
 
 		Donation donation = (Donation) target;
 
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss");
-
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "NotEmpty.donationForm");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "value", "NotEmpty.donationForm");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "scheduledDate", "NotEmpty.donationForm");
 		
 		if (donation.getDescription().equals("")) {
 			donation.setDescError("gfield_error");
@@ -54,24 +49,11 @@ public class DonationFormValidator implements Validator {
 			donation.setValueError("");
 		}
 		
-		if (donation.getScheduledDate() == null) {
-			donation.setDateError("gfield_error");
-		} else {
-			donation.setDateError("");
-		}
-		
 		if (!donation.getPostalCode().equals("") && !postalCodeValidator.valid(donation.getPostalCode())) {
 			donation.setAddrError("gfield_error");
 			errors.rejectValue("postalCode", "Pattern.donationForm.postalCode");
 		} else {
 			donation.setAddrError("");
-		}
-
-		if (donation.getScheduledDate() != null && !dateValidator.valid(format.format(donation.getScheduledDate()))) {
-			errors.rejectValue("scheduledDate", "Pattern.donationForm.scheduledDate");
-			donation.setDateError("gfield_error");
-		} else {
-			donation.setDateError("");
 		}
 
 		if (donation.getType().equalsIgnoreCase("none")) {

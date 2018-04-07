@@ -22,7 +22,7 @@
 						<tr>
 							<th>#ID</th>
 							<th>Description</th>
-							<th>Scheduled Time</th>
+							<th>Available Times</th>
 							<th>Type</th>
 							<th>Status</th>
 							<th>Address</th>
@@ -33,7 +33,12 @@
 						<tr>
 							<td>${donation.id}</td>
 							<td>${donation.description}</td>
-							<td>${donation.time}</td>
+							<td>
+								<c:forEach var="meridian" items="${donation.meridian}" varStatus="meridianindex">
+									${meridian}
+								</c:forEach>
+								<br />
+							</td>
 							<td>${donation.type}</td>
 							<td>${donation.status}</td>
 							<td>${donation.address} ${donation.city},

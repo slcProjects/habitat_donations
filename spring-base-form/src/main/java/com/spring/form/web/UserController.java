@@ -64,8 +64,6 @@ public class UserController {
 	private String currentRole = "";
 	private int currentId = 0;
 	private SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE MMMM dd, yyyy");
-	private SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a");
-	private SimpleDateFormat sqlFormat = new SimpleDateFormat("yyyy-MM-dd");
 	private String months[] = { "January", "February", "March", "April", "May", "June", "July", "August", "September",
 			"October", "November", "December" };
 	GregorianCalendar today = null;
@@ -481,7 +479,26 @@ public class UserController {
 			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
 			return "redirect:/dashboard";
 		} else {
-			model.addAttribute("donations", donationService.findAll());
+			List<Donation> dons = donationService.findAll();
+			int previousId = 0;
+			int decrease = 0;
+			List<Integer> indexes = new ArrayList<>();
+			for (int ctr = 0; ctr < dons.size(); ctr++) {
+				if (previousId != dons.get(ctr).getId()) {
+					previousId = dons.get(ctr).getId();
+					decrease = 1;
+				} else if (previousId == dons.get(ctr).getId()) {
+					dons.get(ctr - decrease).getScheduledDate().add(dons.get(ctr).getScheduledDate().get(0));
+					dons.get(ctr - decrease).getMeridian().add(dons.get(ctr).getMeridian().get(0));
+					indexes.add(ctr);
+					decrease++;
+				}
+			}
+			for (int ctr = indexes.size() - 1; ctr >= 0; ctr--) {
+				int index = indexes.get(ctr);
+			    dons.remove(index);
+			}
+			model.addAttribute("donations", dons);
 			return "donations/list";
 		}
 
@@ -498,7 +515,31 @@ public class UserController {
 			return "redirect:/main";
 		} else {
 			model.addAttribute("role", currentRole);
-			model.addAttribute("donations", donationService.findByUserId(currentId));
+			
+			List<Donation> dons = donationService.findByUserId(currentId);
+			int previousId = 0;
+			int decrease = 0;
+			if (dons.size() > 1) {
+				List<Integer> indexes = new ArrayList<>();
+				for (int ctr = 0; ctr < dons.size(); ctr++) {
+					if (previousId != dons.get(ctr).getId()) {
+						previousId = dons.get(ctr).getId();
+						decrease = 1;
+					} else if (previousId == dons.get(ctr).getId()) {
+						dons.get(ctr - decrease).getScheduledDate().add(dons.get(ctr).getScheduledDate().get(0));
+						dons.get(ctr - decrease).getMeridian().add(dons.get(ctr).getMeridian().get(0));
+						indexes.add(ctr);
+						decrease++;
+					}
+				}
+				for (int ctr = indexes.size() - 1; ctr >= 0; ctr--) {
+					int index = indexes.get(ctr);
+					dons.remove(index);
+				}
+			}
+			
+			model.addAttribute("donations", dons);
+			
 			return "donations/listforuser";
 		}
 
@@ -514,23 +555,14 @@ public class UserController {
 		
 		String checkedAm[] = request.getParameterValues("am");
 		String checkedPm[] = request.getParameterValues("pm");
-		
-		List<java.util.Date> am = new ArrayList<>();
-		List<java.util.Date> pm = new ArrayList<>();
-		
-		for (int ctr = 0; ctr < checkedAm.length; ctr++) {
-			GregorianCalendar calendar = new GregorianCalendar(year, month, Integer.parseInt(checkedAm[ctr]));
-			am.add(calendar.getTime());
-			logger.debug("saveOrUpdateDonation() am date : {}", calendar.getTime());
-		}
-		
-		for (int ctr = 0; ctr < checkedPm.length; ctr++) {
-			GregorianCalendar calendar = new GregorianCalendar(year, month, Integer.parseInt(checkedPm[ctr]));
-			pm.add(calendar.getTime());
-			logger.debug("saveOrUpdateDonation() pm date : {}", calendar.getTime());
-		}
+		donation.setDateError("");
 
-		if (result.hasErrors()) {
+		if (result.hasErrors() || checkedAm == null && checkedPm == null) {
+			
+			if (checkedAm == null && checkedPm == null) {
+				donation.setDateError("gfield_error");
+				model.addAttribute("dateError", true);
+			}
 			year = today.get(Calendar.YEAR);
 			month = today.get(Calendar.MONTH);
 			int day = today.get(Calendar.DATE);
@@ -576,6 +608,22 @@ public class UserController {
 			model.addAttribute("role", currentRole);
 			return "donations/donateform";
 		} else {
+			
+			if (checkedAm != null) {
+				for (int ctr = 0; ctr < checkedAm.length; ctr++) {
+					GregorianCalendar calendar = new GregorianCalendar(year, month, Integer.parseInt(checkedAm[ctr]));
+					donation.getScheduledDate().add(calendar.getTime());
+					donation.getMeridian().add("AM");
+				}
+			}
+			
+			if (checkedPm != null) {
+				for (int ctr = 0; ctr < checkedPm.length; ctr++) {
+					GregorianCalendar calendar = new GregorianCalendar(year, month, Integer.parseInt(checkedPm[ctr]));
+					donation.getScheduledDate().add(calendar.getTime());
+					donation.getMeridian().add("PM");
+				}
+			}
 
 			donation.setTacking(new Timestamp(new java.util.Date().getTime()));
 			if (donation.getStatus().equals("RECEIVED") || donation.getStatus().equals("PICKUP COMPLETE")) {
@@ -594,7 +642,7 @@ public class UserController {
 			}
 
 			int numImages = donation.getNumImages();
-
+			
 			int id = donation.getId();
 			if (!donation.getFile1().getContentType().contains("application/octet-stream")
 					|| donation.getFile1() != null) {
@@ -676,7 +724,6 @@ public class UserController {
 
 			// set default value
 			donation.setDonor(donor.getId());
-			donation.setScheduledDate(new Timestamp(new java.util.Date().getTime()));
 			donation.setAddress(donor.getAddress());
 			donation.setCity(donor.getCity());
 			donation.setProvince(donor.getProvince());
@@ -732,7 +779,19 @@ public class UserController {
 			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
 			return "redirect:/dashboard";
 		} else {
-			Donation donation = donationService.findById(id);
+			List<Donation> dons = donationService.findById(id);
+			int decrease = 1;
+			for (int ctr = 0; ctr < dons.size(); ctr++) {
+				if (ctr != 0) {
+					dons.get(ctr - decrease).getScheduledDate().add(dons.get(ctr).getScheduledDate().get(0));
+					dons.get(ctr - decrease).getMeridian().add(dons.get(ctr).getMeridian().get(0));
+					decrease++;
+				}
+			}
+			for (int ctr = dons.size() - 1; ctr >= 1; ctr--) {
+				dons.remove(ctr);
+			}
+			Donation donation = dons.get(0);
 			images = attachmentService.findByDonation(id);
 			model.addAttribute("donationForm", donation);
 
@@ -823,7 +882,22 @@ public class UserController {
 			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
 			return "redirect:/main";
 		} else {
-			Donation donation = donationService.findById(id);
+			List<Donation> dons = donationService.findById(id);
+			int decrease = 1;
+			if (dons.size() > 1) {
+				for (int ctr = 0; ctr < dons.size(); ctr++) {
+					if (ctr != 0) {
+						dons.get(ctr - decrease).getScheduledDate().add(dons.get(ctr).getScheduledDate().get(0));
+						dons.get(ctr - decrease).getMeridian().add(dons.get(ctr).getMeridian().get(0));
+						decrease++;
+					}
+				}
+				for (int ctr = dons.size() - 1; ctr >= 1; ctr--) {
+					dons.remove(ctr);
+				}
+			}
+			
+			Donation donation = dons.get(0);
 			List<Attachment> images = attachmentService.findByDonation(id);
 
 			if (donation == null) {
@@ -833,7 +907,7 @@ public class UserController {
 			model.addAttribute("donation", donation);
 
 			GregorianCalendar calendar = new GregorianCalendar();
-			calendar.setTime(donation.getScheduledDate());
+			calendar.setTime(donation.getScheduledDate().get(0));
 			month = calendar.get(Calendar.MONTH);
 			year = calendar.get(Calendar.YEAR);
 
@@ -928,23 +1002,42 @@ public class UserController {
 
 		GregorianCalendar date = new GregorianCalendar(year, month, day);
 
-		List<Donation> donations = donationService.findByScheduledDate(sqlFormat.format(date.getTime()));
+		List<Donation> dons = donationService.findByScheduledDate(date.getTime());
+		int previousId = 0;
+		int decrease = 0;
+		if (dons.size() > 1) {
+			List<Integer> indexes = new ArrayList<>();
+			for (int ctr = 0; ctr < dons.size(); ctr++) {
+				if (previousId != dons.get(ctr).getId()) {
+					previousId = dons.get(ctr).getId();
+					decrease = 1;
+				} else if (previousId == dons.get(ctr).getId()) {
+					dons.get(ctr - decrease).getScheduledDate().add(dons.get(ctr).getScheduledDate().get(0));
+					dons.get(ctr - decrease).getMeridian().add(dons.get(ctr).getMeridian().get(0));
+					indexes.add(ctr);
+					decrease++;
+				}
+			}
+			for (int ctr = indexes.size() - 1; ctr >= 0; ctr--) {
+				int index = indexes.get(ctr);
+				dons.remove(index);
+			}
+		}
 		Status status;
 
-		for (int ctr = 0; ctr < donations.size(); ctr++) {
+		for (int ctr = 0; ctr < dons.size(); ctr++) {
 			status = new Status();
-			donations.get(ctr).setTime(timeFormat.format(donations.get(ctr).getScheduledDate()));
-			status.setId(donations.get(ctr).getId());
-			status.setStatus(donations.get(ctr).getStatus());
+			status.setId(dons.get(ctr).getId());
+			status.setStatus(dons.get(ctr).getStatus());
 			status.setDay(day);
 			status.setMonth(month);
 			status.setYear(year);
 			status.setType("day");
-			model.addAttribute("statusForm" + donations.get(ctr).getId(), status);
+			model.addAttribute("statusForm" + dons.get(ctr).getId(), status);
 		}
 
 		model.addAttribute("date", dayFormat.format(date.getTime()));
-		model.addAttribute("donations", donations);
+		model.addAttribute("donations", dons);
 		model.addAttribute("month", month);
 		model.addAttribute("day", day);
 		model.addAttribute("year", year);
@@ -1096,26 +1189,45 @@ public class UserController {
 			lastDayOfWeek += 1;
 		}
 
-		List<Donation> donations = donationService.findByScheduledWeekOfMonth(day, lastDayOfWeek, month + 1, year);
+		List<Donation> dons = donationService.findByScheduledWeekOfMonth(day, lastDayOfWeek, month + 1, year);
+		int previousId = 0;
+		int decrease = 0;
+		if (dons.size() > 1) {
+			List<Integer> indexes = new ArrayList<>();
+			for (int ctr = 0; ctr < dons.size(); ctr++) {
+				if (previousId != dons.get(ctr).getId()) {
+					previousId = dons.get(ctr).getId();
+					decrease = 1;
+				} else if (previousId == dons.get(ctr).getId()) {
+					dons.get(ctr - decrease).getScheduledDate().add(dons.get(ctr).getScheduledDate().get(0));
+					dons.get(ctr - decrease).getMeridian().add(dons.get(ctr).getMeridian().get(0));
+					indexes.add(ctr);
+					decrease++;
+				}
+			}
+			for (int ctr = indexes.size() - 1; ctr >= 0; ctr--) {
+				int index = indexes.get(ctr);
+				dons.remove(index);
+			}
+		}
+		
 		Status status;
-
-		for (int ctr = 0; ctr < donations.size(); ctr++) {
+		for (int ctr = 0; ctr < dons.size(); ctr++) {
 			status = new Status();
-			status.setId(donations.get(ctr).getId());
-			donations.get(ctr).setTime(timeFormat.format(donations.get(ctr).getScheduledDate()));
-			status.setStatus(donations.get(ctr).getStatus());
+			status.setId(dons.get(ctr).getId());
+			status.setStatus(dons.get(ctr).getStatus());
 			status.setDay(day);
 			status.setMonth(month);
 			status.setYear(year);
 			status.setType("week");
-			model.addAttribute("statusForm" + donations.get(ctr).getId(), status);
+			model.addAttribute("statusForm" + dons.get(ctr).getId(), status);
 		}
 
 		model.addAttribute("week", months[month] + " " + day + " - " + lastDayOfWeek + ", " + year);
 		model.addAttribute("day", day);
 		model.addAttribute("month", month);
 		model.addAttribute("year", year);
-		model.addAttribute("donations", donations);
+		model.addAttribute("donations", dons);
 
 		populateDonationStatuses(model);
 
@@ -1199,7 +1311,19 @@ public class UserController {
 
 		int donId = attachmentService.findById(id).getDonation();
 		attachmentService.delete(id);
-		Donation donation = donationService.findById(donId);
+		List<Donation> dons = donationService.findById(id);
+		int decrease = 1;
+		if (dons.size() > 1) {
+			for (int ctr = 0; ctr < dons.size(); ctr++) {
+				dons.get(ctr - decrease).getScheduledDate().add(dons.get(ctr).getScheduledDate().get(0));
+				dons.get(ctr - decrease).getMeridian().add(dons.get(ctr).getMeridian().get(0));
+				decrease++;
+			}
+			for (int ctr = dons.size() - 1; ctr >= 1; ctr--) {
+				dons.remove(ctr);
+			}
+		}
+		Donation donation = dons.get(0);
 		donation.decreaseNumImages(1);
 		donationService.saveOrUpdate(donation);
 

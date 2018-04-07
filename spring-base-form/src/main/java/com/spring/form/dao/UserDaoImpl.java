@@ -100,7 +100,9 @@ public class UserDaoImpl implements UserDao {
 		params.put("format", "YYYY-MM-DD");
 		Boolean trim = true;
 
-		String sql = "SELECT DISTINCT ON(\"UserID\") * FROM \"User\" LEFT JOIN \"Donation\" ON \"Donation\".\"DonorID\" = \"User\".\"UserID\" WHERE ";
+		String sql = "SELECT DISTINCT ON(\"UserID\") * FROM \"User\" "
+				+ "LEFT JOIN \"Donation\" ON \"Donation\".\"DonorID\" = \"User\".\"UserID\" "
+				+ "LEFT JOIN \"ScheduledDate\" ON \"ScheduledDate\".\"DonationID\" = \"Donation\".\"DonationID\" WHERE ";
 		if (!first.equals("")) {
 			params.put("first", first);
 			sql += "\"FirstName\"=:first AND ";
@@ -322,12 +324,12 @@ public class UserDaoImpl implements UserDao {
 		if (startCalendar != null) {
 			java.util.Date startDate = startCalendar.getTime();
 			params.put("startDate", startDate);
-			sql += "\"ScheduledDate\">=CAST(:startDate AS \"timestamp\") AND ";
+			sql += "\"Date\">=:startDate AND ";
 		}
 		if (endCalendar != null) {
 			java.util.Date endDate = endCalendar.getTime();
 			params.put("endDate", endDate);
-			sql += "\"ScheduledDate\"<=CAST(:endDate AS \"timestamp\") ";
+			sql += "\"Date\"<=:endDate ";
 			trim = false;
 		}
 		

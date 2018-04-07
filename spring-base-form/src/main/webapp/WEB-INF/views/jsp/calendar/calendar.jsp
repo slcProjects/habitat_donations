@@ -58,17 +58,19 @@
 													onclick="location.href='${schedule}'">${ctr}</button> <c:if
 													test="${not empty donations}">
 													<c:forEach var="donation" items="${donations}">
-														<fmt:formatDate value="${donation.scheduledDate}"
-															pattern="d" var="scheduledDay" />
-														<c:if test="${scheduledDay == ctr}">
-															<fmt:formatDate value="${donation.scheduledDate}"
-																pattern="h:mma" var="scheduledTime" />
-															<spring:url value="/donations/${donation.id}"
-																var="donationUrl" />
-															<a class="donlink" href="${donationUrl}" 
-																title="${monthName} ${ctr} ${scheduledTime} ${donation.type} ${donation.donorName}, ${donation.description}, Status: ${donation.status}">
-																ID #${donation.id}: ${scheduledTime}</a>
-														</c:if>
+														<c:forEach var="scheduledDate" items="${donation.scheduledDate}">
+															<fmt:formatDate value="${scheduledDate}"
+																pattern="d" var="scheduledDay" />
+															<c:if test="${scheduledDay == ctr}">
+																<c:forEach var="meridian" items="${donation.meridian}">
+																	<spring:url value="/donations/${donation.id}"
+																		var="donationUrl" />
+																	<a class="donlink" href="${donationUrl}" 
+																		title="${monthName} ${ctr} ${meridian} ${donation.type} ${donation.donorName}, ${donation.description}, Status: ${donation.status}">
+																		ID #${donation.id}: ${meridian}</a>
+																</c:forEach>
+															</c:if>
+														</c:forEach>
 													</c:forEach>
 												</c:if></td>
 										</c:when>
@@ -79,17 +81,19 @@
 													onclick="location.href='${schedule}'">${ctr}</button> <c:if
 													test="${not empty donations}">
 													<c:forEach var="donation" items="${donations}">
-														<fmt:formatDate value="${donation.scheduledDate}"
-															pattern="d" var="scheduledDay" />
-														<c:if test="${scheduledDay == ctr}">
-															<fmt:formatDate value="${donation.scheduledDate}"
-																pattern="h:mma" var="scheduledTime" />
-															<spring:url value="/donations/${donation.id}"
-																var="donationUrl" />
-															<a class="donlink" href="${donationUrl}"
-																title="${monthName} ${ctr} ${scheduledTime} ${donation.type} ${donation.donorName}, ${donation.description}, Status: ${donation.status}">
-																ID #${donation.id}: ${scheduledTime}</a>
-														</c:if>
+														<c:forEach var="scheduledDate" items="${donation.scheduledDate}">
+															<fmt:formatDate value="${scheduledDate}"
+																pattern="d" var="scheduledDay" />
+															<c:if test="${scheduledDay == ctr}">
+																<c:forEach var="meridian" items="${donation.meridian}">
+																	<spring:url value="/donations/${donation.id}"
+																		var="donationUrl" />
+																	<a class="donlink" href="${donationUrl}" 
+																		title="${monthName} ${ctr} ${meridian} ${donation.type} ${donation.donorName}, ${donation.description}, Status: ${donation.status}">
+																		ID #${donation.id}: ${meridian}</a>
+																</c:forEach>
+															</c:if>
+														</c:forEach>
 													</c:forEach>
 												</c:if></td>
 										</c:otherwise>

@@ -23,7 +23,7 @@
 						<tr>
 							<th>#ID</th>
 							<th>Description</th>
-							<th>Scheduled Date</th>
+							<th>Available Times</th>
 							<th>Type</th>
 							<th>Status</th>
 							<th>Address</th>
@@ -34,7 +34,17 @@
 						<tr>
 							<td>${donation.id}</td>
 							<td>${donation.description}</td>
-							<td>${donation.scheduledDate}</td>
+							<td>
+								<c:forEach var="date" items="${donation.scheduledDate}" varStatus="dateindex">
+									${date}:
+									<c:forEach var="meridian" items="${donation.meridian}" varStatus="meridianindex">
+										<c:if test="${dateindex.count == meridianindex.count}">
+											${meridian}
+										</c:if>
+									</c:forEach>
+									<br />
+								</c:forEach>
+							</td>
 							<td>${donation.type}</td>
 							<td>${donation.status}</td>
 							<td>${donation.address} ${donation.city},

@@ -3,22 +3,15 @@ package com.spring.form.dao;
 import static java.lang.Math.toIntExact;
 
 import java.io.IOException;
-import java.sql.Array;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.sql.rowset.serial.SerialException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -31,15 +24,17 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.spring.form.model.Donation;
-import com.spring.form.web.UserController;
+import com.spring.form.model.ScheduledDate;
+import com.spring.form.service.ScheduledDateService;
 
 @Repository
 public class DonationDaoImpl implements DonationDao {
 	
-	private final static Logger logger = LoggerFactory.getLogger(UserController.class);
-
 	NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
+	
+	@Autowired
+	ScheduledDateService scheduledDateService;
+	
 	@Autowired
 	public void setNamedParameterJdbcTemplate(NamedParameterJdbcTemplate namedParameterJdbcTemplate)
 			throws DataAccessException {
@@ -47,16 +42,19 @@ public class DonationDaoImpl implements DonationDao {
 	}
 
 	@Override
-	public Donation findById(Integer id) {
+	public List<Donation> findById(Integer id) {
 
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", id);
 
-		String sql = "SELECT * FROM \"Donation\" WHERE \"DonationID\"=:id ORDER BY \"DonationID\" ASC";
+		String sql = "SELECT \"Donation\".*, \"ScheduledDate\".\"Date\", \"ScheduledDate\".\"Meridian\" FROM \"Donation\" "
+				+ "INNER JOIN \"ScheduledDate\" ON \"Donation\".\"DonationID\"=\"ScheduledDate\".\"DonationID\" "
+				+ "WHERE \"Donation\".\"DonationID\"=:id ORDER BY \"ScheduledDate\".\"Date\" ASC, \"ScheduledDate\".\"Meridian\" ASC, "
+				+ "\"Donation\".\"DonationID\" ASC";
 
-		Donation result = null;
+		List<Donation> result = null;
 		try {
-			result = namedParameterJdbcTemplate.queryForObject(sql, params, new DonationMapper());
+			result = namedParameterJdbcTemplate.query(sql, params, new DonationMapper());
 		} catch (EmptyResultDataAccessException e) {
 			// do nothing, return null
 		}
@@ -73,7 +71,9 @@ public class DonationDaoImpl implements DonationDao {
 	@Override
 	public List<Donation> findAll() {
 
-		String sql = "SELECT * FROM \"Donation\" ORDER BY \"DonationID\" ASC";
+		String sql = "SELECT \"Donation\".*, \"ScheduledDate\".\"Date\", \"ScheduledDate\".\"Meridian\" FROM \"Donation\" "
+				+ "INNER JOIN \"ScheduledDate\" ON \"Donation\".\"DonationID\"=\"ScheduledDate\".\"DonationID\" "
+				+ "ORDER BY \"ScheduledDate\".\"Date\" ASC, \"ScheduledDate\".\"Meridian\" ASC, \"Donation\".\"DonationID\" ASC";
 		List<Donation> result = namedParameterJdbcTemplate.query(sql, new DonationMapper());
 
 		return result;
@@ -86,7 +86,9 @@ public class DonationDaoImpl implements DonationDao {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", id);
 
-		String sql = "SELECT * FROM \"Donation\" WHERE \"DonorID\"=:id ORDER BY \"DonationID\" ASC";
+		String sql = "SELECT \"Donation\".*, \"ScheduledDate\".\"Date\", \"ScheduledDate\".\"Meridian\" FROM \"Donation\" "
+				+ "INNER JOIN \"ScheduledDate\" ON \"Donation\".\"DonationID\"=\"ScheduledDate\".\"DonationID\" "
+				+ "WHERE \"DonorID\"=:id ORDER BY \"ScheduledDate\".\"Date\" ASC, \"ScheduledDate\".\"Meridian\" ASC, \"Donation\".\"DonationID\" ASC";
 		List<Donation> result = namedParameterJdbcTemplate.query(sql, params, new DonationMapper());
 
 		return result;
@@ -94,16 +96,18 @@ public class DonationDaoImpl implements DonationDao {
 	}
 	
 	@Override
-	public List<Donation> findByScheduledDate(String date) {
+	public List<Donation> findByScheduledDate(java.util.Date date) {
 		
 		List<Donation> result = null;
 		
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("date", date);
-		params.put("format", "YYYY-MM-DD");
-		String sql = "SELECT * FROM \"Donation\" WHERE to_char(\"ScheduledDate\", :format)=:date ORDER BY \"ScheduledDate\" ASC";
+		String sql = "SELECT \"Donation\".*, \"ScheduledDate\".\"Date\", \"ScheduledDate\".\"Meridian\" FROM \"Donation\" "
+				+ "INNER JOIN \"ScheduledDate\" ON \"Donation\".\"DonationID\"=\"ScheduledDate\".\"DonationID\" "
+				+ "WHERE \"ScheduledDate\".\"Date\"=:date "
+				+ "ORDER BY \"ScheduledDate\".\"Date\" ASC, \"ScheduledDate\".\"Meridian\" ASC, \"Donation\".\"DonationID\" ASC";
 		result = namedParameterJdbcTemplate.query(sql, params, new DonationMapper());
-
+		
 		return result;
 
 	}
@@ -118,15 +122,18 @@ public class DonationDaoImpl implements DonationDao {
 		params.put("month", month);
 		params.put("year", year);
 		
-		String sql = "SELECT * FROM \"Donation\" WHERE Extract(month from \"ScheduledDate\")=:month "
-				+ "AND Extract(year from \"ScheduledDate\")=:year ORDER BY \"ScheduledDate\" ASC";
+		String sql = "SELECT \"Donation\".*, \"ScheduledDate\".\"Date\", \"ScheduledDate\".\"Meridian\" FROM \"Donation\" "  
+				+ "INNER JOIN \"ScheduledDate\" ON \"Donation\".\"DonationID\"=\"ScheduledDate\".\"DonationID\" "
+				+ "WHERE Extract(month from \"ScheduledDate\".\"Date\")=:month "
+				+ "AND Extract(year from \"ScheduledDate\".\"Date\")=:year "
+				+ "ORDER BY \"ScheduledDate\".\"Date\" ASC, \"ScheduledDate\".\"Meridian\" ASC, \"Donation\".\"DonationID\" ASC";
 		
 		try {
 			result = namedParameterJdbcTemplate.query(sql, params, new DonationMapper());
 		} catch (EmptyResultDataAccessException e) {
 			// do nothing, return null
 		}
-
+		
 		return result;
 
 	}
@@ -143,23 +150,24 @@ public class DonationDaoImpl implements DonationDao {
 		params.put("month", month);
 		params.put("year", year);
 		
-		String sql = "SELECT * FROM \"Donation\" WHERE Extract(month from \"ScheduledDate\")=:month "
-				+ "AND Extract(year from \"ScheduledDate\")=:year AND Extract(day from \"ScheduledDate\")>=:firstDay "
-				+ "AND Extract(day from \"ScheduledDate\")<=:lastDay ORDER BY \"ScheduledDate\" ASC";
+		String sql = "SELECT \"Donation\".*, \"ScheduledDate\".\"Date\", \"ScheduledDate\".\"Meridian\" FROM \"Donation\" "  
+				+ "INNER JOIN \"ScheduledDate\" ON \"Donation\".\"DonationID\"=\"ScheduledDate\".\"DonationID\" "
+				+ "WHERE Extract(month from \"ScheduledDate\".\"Date\")=:month AND Extract(year from \"ScheduledDate\".\"Date\")=:year "
+				+ "AND Extract(day from \"ScheduledDate\".\"Date\")>=:firstDay AND Extract(day from \"ScheduledDate\".\"Date\")<=:lastDay "
+				+ "ORDER BY \"ScheduledDate\".\"Date\" ASC, \"ScheduledDate\".\"Meridian\" ASC, \"Donation\".\"DonationID\" ASC";
 		
 		try {
 			result = namedParameterJdbcTemplate.query(sql, params, new DonationMapper());
 		} catch (EmptyResultDataAccessException e) {
 			// do nothing, return null
 		}
-
+		
 		return result;
 
 	}
 
 	@Override
 	public void save(Donation donation) {
-
 		/*
 		 * byte[] picBytes; SerialBlob sBlob; try { picBytes =
 		 * donation.getFile().getBytes(); sBlob = new SerialBlob(picBytes);
@@ -172,9 +180,9 @@ public class DonationDaoImpl implements DonationDao {
 
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 
-		String sql = "INSERT INTO \"Donation\"(\"DonorID\", \"Description\", \"Value\", \"ScheduledDate\", \"CompletedDate\", \"Address\", "
+		String sql = "INSERT INTO \"Donation\"(\"DonorID\", \"Description\", \"Value\", \"CompletedDate\", \"Address\", "
 				+ "\"City\", \"Province\", \"PostalCode\", \"DropFee\", \"ReceiverID\", \"Tacking\", \"Receipts\", \"NumImages\", \"Type\", \"Status\") "
-				+ "VALUES (:donor, :description, :value, :scheduledDate, :completedDate, :address, :city, :province, :postalCode, :dropFee, "
+				+ "VALUES (:donor, :description, :value, :completedDate, :address, :city, :province, :postalCode, :dropFee, "
 				+ ":receiver, :tacking, :receipts, :numImages, CAST(:type AS \"DonationType\"), CAST(:status AS \"DonationStatus\"))";
 				
 		try {
@@ -184,6 +192,14 @@ public class DonationDaoImpl implements DonationDao {
 			e.printStackTrace();
 		}
 		donation.setId((toIntExact((long) keyHolder.getKeys().get("DonationID"))));
+		
+		for (int ctr = 0; ctr < donation.getScheduledDate().size(); ctr++) {
+			ScheduledDate date = new ScheduledDate();
+			date.setDonation(donation.getId());
+			date.setDate(donation.getScheduledDate().get(ctr));
+			date.setMeridian(donation.getMeridian().get(ctr));
+			scheduledDateService.saveOrUpdate(date);
+		}
 
 	}
 
@@ -195,7 +211,7 @@ public class DonationDaoImpl implements DonationDao {
 		 */
 
 		String sql = "UPDATE \"Donation\" SET \"DonorID\"=:donor, \"Description\"=:description, \"Value\"=:value, "
-				+ "\"ScheduledDate\"=:scheduledDate, \"CompletedDate\"=:completedDate, \"Address\"=:address, \"City\"=:city, "
+				+ "\"CompletedDate\"=:completedDate, \"Address\"=:address, \"City\"=:city, "
 				+ "\"Province\"=:province, \"PostalCode\"=:postalCode, \"DropFee\"=:dropFee, "
 				+ "\"ReceiverID\"=:receiver, \"Tacking\"=:tacking, \"Receipts\"=:receipts, \"NumImages\"=:numImages, "
 				+ "\"Type\"=CAST(:type AS \"DonationType\"), \"Status\"=CAST(:status AS \"DonationStatus\") WHERE \"DonationID\"=:id";
@@ -211,6 +227,8 @@ public class DonationDaoImpl implements DonationDao {
 
 	@Override
 	public void delete(Integer id) {
+		
+		scheduledDateService.delete(id);
 
 		String sql = "DELETE FROM \"Donation\" WHERE \"DonationID\"= :id";
 		namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource("id", id));
@@ -253,7 +271,6 @@ public class DonationDaoImpl implements DonationDao {
 		paramSource.addValue("donor", donation.getDonor());
 		paramSource.addValue("description", donation.getDescription());
 		paramSource.addValue("value", donation.getValue());
-		paramSource.addValue("scheduledDate", donation.getScheduledDate());
 		paramSource.addValue("completedDate", donation.getCompletedDate());
 		paramSource.addValue("address", donation.getAddress());
 		paramSource.addValue("city", donation.getCity());
@@ -267,20 +284,6 @@ public class DonationDaoImpl implements DonationDao {
 		paramSource.addValue("type", donation.getType());
 		paramSource.addValue("status", donation.getStatus());
 		
-		List<Date> dates = donation.getDates();
-		List<String> meridians = donation.getMeridian();
-		int size = dates.size();
-		Date[] dateArray = new Date[size];
-		String[] meridianArray = new String[size];
-		
-		for (int ctr = 0; ctr < size; ctr++) {
-			dateArray[ctr] = dates.get(ctr);
-			meridianArray[ctr] = meridians.get(ctr);
-		}
-		
-		/*paramSource.addValue("dates", dateArray);
-		paramSource.addValue("meridian", meridianArray);*/
-		
 		return paramSource;
 	}
 
@@ -292,7 +295,8 @@ public class DonationDaoImpl implements DonationDao {
 			donation.setDonor(rs.getInt("DonorID"));
 			donation.setDescription(rs.getString("Description"));
 			donation.setValue(rs.getDouble("Value"));
-			donation.setScheduledDate(rs.getTimestamp("ScheduledDate"));
+			donation.getScheduledDate().add(rs.getDate("Date"));
+			donation.getMeridian().add(rs.getString("Meridian"));
 			donation.setCompletedDate(rs.getTimestamp("CompletedDate"));
 			donation.setAddress(rs.getString("Address"));
 			donation.setCity(rs.getString("City"));
@@ -305,22 +309,6 @@ public class DonationDaoImpl implements DonationDao {
 			donation.setNumImages(rs.getInt("NumImages"));
 			donation.setType(rs.getString("Type"));
 			donation.setStatus(rs.getString("Status"));
-			
-			ResultSet set1 = rs.getArray("Dates").getResultSet();
-			ResultSet set2 = rs.getArray("Meridian").getResultSet();
-			
-			List<Date> dateList = new ArrayList<>();
-			List<String> meridianList = new ArrayList<>();
-			
-			while (!set1.isLast() && !set2.isLast()) {
-				set1.next();
-				set2.next();
-				dateList.add(set1.getDate("VALUE"));
-				meridianList.add(set2.getString("VALUE"));
-			}
-
-			donation.setDates(dateList);
-			donation.setMeridian(meridianList);
 
 			return donation;
 		}
