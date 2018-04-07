@@ -37,6 +37,7 @@ a {
 }
 
 a:active, a:hover {
+	 background-color: green;
 	outline: 0
 }
 
@@ -120,7 +121,7 @@ button {
 }
 
 button, select {
-	text-transform: none
+	text-transform: none;
 }
 
 button, html input[type=button], input[type=reset], input[type=submit] {
@@ -202,7 +203,9 @@ td, th {
 		box-shadow: none !important
 	}
 	a, a:visited {
+	
 		text-decoration: underline
+		
 	}
 	a[href]:after {
 		content: " (" attr(href) ")"
@@ -1447,26 +1450,30 @@ hr {
 	font-family: inherit;
 	font-weight: 500;
 	line-height: 1.1;
-	color: inherit
+	color: inherit;
+	text-transform: capitalize;
 }
 
-.h1 .small, .h1 small, .h2 .small, .h2 small, .h3 .small, .h3 small, .h4 .small,
-	.h4 small, .h5 .small, .h5 small, .h6 .small, .h6 small, h1 .small, h1 small,
+.h1 .small,/* .h1 small, */.h2 .small, .h2 small, .h3 .small, .h3 small, .h4 .small,
+	.h4 small, .h5 .small, .h5 small, .h6 .small, .h6 small,/* h1 .small, h1 small,*/
 	h2 .small, h2 small, h3 .small, h3 small, h4 .small, h4 small, h5 .small,
 	h5 small, h6 .small, h6 small {
 	font-weight: 400;
 	line-height: 1;
-	color: #777
+	color: #777;
 }
 
 .h1, .h2, .h3, h1, h2, h3 {
 	margin-top: 20px;
-	margin-bottom: 10px
+	margin-bottom: 10px;
+	text-transform: capitalize;
 }
 
-.h1 .small, .h1 small, .h2 .small, .h2 small, .h3 .small, .h3 small, h1 .small,
-	h1 small, h2 .small, h2 small, h3 .small, h3 small {
-	font-size: 65%
+/*.h1 .small, .h1 small,*/
+ .h2 .small, .h2 small, .h3 .small, .h3 small, /*h1 .small,
+	h1 small,*/ h2 .small, h2 small, h3 .small, h3 small {
+	font-size: 65%;
+	
 }
 
 .h4, .h5, .h6, h4, h5, h6 {
@@ -1480,15 +1487,19 @@ hr {
 }
 
 .h1, h1 {
-	font-size: 36px
+	/*font-size: 36px;*/
+	font-size: 500px;
+	text-transform: capitalize;
 }
 
 .h2, h2 {
-	font-size: 30px
+	font-size: 30px;
+	text-transform: capitalize;
+	
 }
 
 .h3, h3 {
-	font-size: 24px
+	font-size: 24px;
 }
 
 .h4, h4 {
@@ -1502,7 +1513,6 @@ hr {
 .h6, h6 {
 	font-size: 12px
 }
-
 p {
 	margin: 0 0 10px
 }
@@ -3337,7 +3347,7 @@ select[multiple].form-group-lg .form-control, textarea.form-group-lg .form-contr
 /* edited by satya #333 to #333 */
 .btn.focus, .btn:focus, .btn:hover {
 	color: #333;
-	text-decoration: none
+	text-decoration: underline;
 }
 
 .btn.active, .btn:active {
