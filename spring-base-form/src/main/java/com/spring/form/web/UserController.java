@@ -41,11 +41,13 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import com.spring.form.model.Attachment;
 import com.spring.form.model.Donation;
 import com.spring.form.model.Login;
+import com.spring.form.model.ScheduledDate;
 import com.spring.form.model.Search;
 import com.spring.form.model.Status;
 import com.spring.form.model.User;
 import com.spring.form.service.AttachmentService;
 import com.spring.form.service.DonationService;
+import com.spring.form.service.ScheduledDateService;
 import com.spring.form.service.UserService;
 import com.spring.form.validator.DonationFormValidator;
 import com.spring.form.validator.LoginFormValidator;
@@ -119,6 +121,7 @@ public class UserController {
 	private UserService userService;
 	private DonationService donationService;
 	private AttachmentService attachmentService;
+	private ScheduledDateService scheduledDateService;
 
 	@Autowired
 	public void setUserService(UserService userService) {
@@ -133,6 +136,11 @@ public class UserController {
 	@Autowired
 	public void setAttachmentService(AttachmentService attachmentService) {
 		this.attachmentService = attachmentService;
+	}
+	
+	@Autowired
+	public void setScheduledDateService(ScheduledDateService scheduledDateService) {
+		this.scheduledDateService = scheduledDateService;
 	}
 
 	// log in redirect or dashboard redirect
@@ -829,6 +837,7 @@ public class UserController {
 			model.addAttribute("daysInMonth", daysInMonth);
 			model.addAttribute("first", firstOfMonth);
 			model.addAttribute("weeksInMonth", weeksInMonth);
+			model.addAttribute("dateCount", donation.getScheduledDate().size());
 
 			populateProvinces(model);
 			populateDonationTypes(model);
@@ -928,6 +937,7 @@ public class UserController {
 			model.addAttribute("role", currentRole);
 			model.addAttribute("month", month);
 			model.addAttribute("year", year);
+			model.addAttribute("dateCount", donation.getScheduledDate().size());
 
 			return "donations/show";
 		}
@@ -951,6 +961,30 @@ public class UserController {
 			return "confirmation/confirm";
 		}
 
+	}
+	
+	// select donation date
+	@RequestMapping(value = "/donation/{donId}/choosedate/{datePos}", method = RequestMethod.POST)
+	public String chooseDonationDate(@PathVariable("donId") int donId, @PathVariable("datePos") int datePos,
+			Model model, HttpServletResponse response, HttpServletRequest request,
+			final RedirectAttributes redirectAttributes) {
+		
+		logger.debug("chooseDonationDate()");
+		
+		if (currentRole.equals("") || currentId == 0) {
+			redirectAttributes.addFlashAttribute("css", "danger");
+			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
+			return "redirect:/main";
+		} else if (!currentRole.equals("Staff")) {
+			redirectAttributes.addFlashAttribute("css", "danger");
+			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
+			return "redirect:/dashboard";
+		} else {
+			List<ScheduledDate> dates = scheduledDateService.findByDonation(donId);
+			scheduledDateService.chooseDate(donId, dates.get(datePos).getId());
+			return "redirect:/donations/" + donId;
+		}
+		
 	}
 
 	// day schedule page

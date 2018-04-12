@@ -64,7 +64,14 @@
 										<spring:url value="/donations/${donation.id}/delete" var="deleteUrl" />
 										<spring:url value="/donations/${donation.id}/update" var="updateUrl" />
 										<button onclick="location.href='${updateUrl}'">Edit Donation</button>
-										<button onclick="location.href='${deleteUrl}'">Delete</button>
+										<c:choose>
+											<c:when test="${empty donation.completedDate}">
+												<button onclick="location.href='${deleteUrl}'">Decline Donation</button>
+											</c:when>
+											<c:otherwise>
+												<button onclick="location.href='${deleteUrl}'">Delete Donation</button>
+											</c:otherwise>
+										</c:choose>
 									</c:if>
 								</td>
 							</tr>

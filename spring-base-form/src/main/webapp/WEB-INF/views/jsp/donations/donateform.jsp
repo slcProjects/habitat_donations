@@ -82,54 +82,85 @@
 							<li id="field_6_03"
 								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.dateError}"><label
 								class="gfield_label gfield_label_before_complex"
-								for="input_6_1_3">Available Dates<span class="gfield_required">*</span>
-							</label> <c:set var="ctr" value="${1}" />
-								<table>
-									<thead>
-										<tr>
-											<th>Sun</th>
-											<th>Mon</th>
-											<th>Tue</th>
-											<th>Wed</th>
-											<th>Thu</th>
-											<th>Fri</th>
-											<th>Sat</th>
-										</tr>
-									</thead>
-									<c:forEach begin="1" end="${weeksInMonth}" step="1" var="week">
-										<tr id="week${week}">
-											<c:forEach begin="1" end="7" step="1" var="dayInWeek">
-												<c:choose>
-													<c:when
-														test="${ctr > daysInMonth || week == 1 && first > dayInWeek && dayInWeek != 0}">
-														<td class='calendar-day-np-form'></td>
-													</c:when>
-													<c:otherwise>
+								for="input_6_1_3">Available Dates<span
+									class="gfield_required">*</span>
+							</label> <c:choose>
+									<c:when test="${donationForm['new']}">
+										<c:set var="ctr" value="${1}" />
+										<table>
+											<thead>
+												<tr>
+													<th>Sun</th>
+													<th>Mon</th>
+													<th>Tue</th>
+													<th>Wed</th>
+													<th>Thu</th>
+													<th>Fri</th>
+													<th>Sat</th>
+												</tr>
+											</thead>
+											<c:forEach begin="1" end="${weeksInMonth}" step="1"
+												var="week">
+												<tr id="week${week}">
+													<c:forEach begin="1" end="7" step="1" var="dayInWeek">
 														<c:choose>
-															<c:when test="${ctr < day}">
-																<td id="day${ctr}" class='calendar-day-np-form'>${ctr}</td>
-															</c:when>
-															<c:when test="${ctr == day}">
-																<td id="day${ctr}" class='calendar-day-form today'><div>${ctr}</div>
-																<div>AM<input type="checkbox" name="am" value="${ctr}"/>
-																PM<input type="checkbox" name="pm" value="${ctr}"/></div></td>
+															<c:when
+																test="${ctr > daysInMonth || week == 1 && first > dayInWeek && dayInWeek != 0}">
+																<td class='calendar-day-np-form'></td>
 															</c:when>
 															<c:otherwise>
-																<td id="day${ctr}" class='calendar-day-form'><div>${ctr}</div>
-																<div>AM<input type="checkbox" name="am" value="${ctr}"/>
-																PM<input type="checkbox" name="pm" value="${ctr}"/></div></td>
+																<c:choose>
+																	<c:when test="${ctr < day}">
+																		<td id="day${ctr}" class='calendar-day-np-form'>${ctr}</td>
+																	</c:when>
+																	<c:when test="${ctr == day}">
+																		<td id="day${ctr}" class='calendar-day-form today'><div>${ctr}</div>
+																			<div>
+																				AM<input type="checkbox" name="am" value="${ctr}" />
+																				PM<input type="checkbox" name="pm" value="${ctr}" />
+																			</div></td>
+																	</c:when>
+																	<c:otherwise>
+																		<td id="day${ctr}" class='calendar-day-form'><div>${ctr}</div>
+																			<div>
+																				AM<input type="checkbox" name="am" value="${ctr}" />
+																				PM<input type="checkbox" name="pm" value="${ctr}" />
+																			</div></td>
+																	</c:otherwise>
+																</c:choose>
+																<c:set var="ctr" value="${ctr + 1}" />
 															</c:otherwise>
 														</c:choose>
-														<c:set var="ctr" value="${ctr + 1}" />
-													</c:otherwise>
-												</c:choose>
+													</c:forEach>
+												</tr>
 											</c:forEach>
-										</tr>
-									</c:forEach>
-								</table><br />
-								<c:if test="${not empty dateError}">
-									<label class="gfield_description validation_message">At least one checkbox is required.</label>
-								</c:if></li>
+										</table>
+										<br />
+										<c:if test="${not empty dateError}">
+											<label class="gfield_description validation_message">At
+												least one checkbox is required.</label>
+										</c:if>
+									</c:when>
+									<c:otherwise>
+										<div>
+											<c:forEach var="date" items="${donationForm.scheduledDate}"
+												varStatus="dateindex">
+												${date}: 
+												<c:forEach var="meridian" items="${donationForm.meridian}"
+													varStatus="meridianindex">
+													<c:if test="${dateindex.count == meridianindex.count}">
+														${meridian}
+													</c:if>
+												</c:forEach>
+												<c:if test="${role == 'Staff' && dateCount > 1}">
+													<spring:url value="/donation/${donationForm.id}/choosedate/${dateindex.index}" var="chooseUrl" />
+													<button formaction="${chooseUrl}">Select Date</button>
+												</c:if>
+												<br />
+											</c:forEach>
+										</div>
+									</c:otherwise>
+								</c:choose></li>
 
 							<li id="field_6_2"
 								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.typeError}"><label

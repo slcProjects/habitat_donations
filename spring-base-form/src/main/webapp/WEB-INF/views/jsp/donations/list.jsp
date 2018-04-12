@@ -67,7 +67,14 @@
 										Detail</button>
 									<button onclick="location.href='${updateUrl}'">Edit
 										Donation</button>
-									<button onclick="location.href='${deleteUrl}'">Delete</button></td>
+									<c:choose>
+										<c:when test="${empty donation.completedDate}">
+											<button onclick="location.href='${deleteUrl}'">Decline</button>
+										</c:when>
+										<c:otherwise>
+											<button onclick="location.href='${deleteUrl}'">Delete Donation</button>
+										</c:otherwise>
+									</c:choose></td>
 								<td style='border: 2px solid black'>
 									<spring:url value="http://www.google.ca/maps/place/${donation.address},${donation.city},${donation.province},${donation.postalCode}"
 										var="mapUrl" />

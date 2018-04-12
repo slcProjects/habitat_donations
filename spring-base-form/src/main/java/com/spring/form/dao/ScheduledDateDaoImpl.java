@@ -5,6 +5,7 @@ import static java.lang.Math.toIntExact;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,30 @@ public class ScheduledDateDaoImpl implements ScheduledDateDao {
 		return result;
 		
 	}
+	
+	@Override
+	public List<ScheduledDate> findByDonation(Integer id) {
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("id", id);
+
+		String sql = "SELECT * FROM \"ScheduledDate\" WHERE \"DonationID\"=:id ORDER BY \"Date\" ASC, \"Meridian\" ASC, \"DateID\" ASC";
+
+		List<ScheduledDate> result = null;
+		try {
+			result = namedParameterJdbcTemplate.query(sql, params, new ScheduledDateMapper());
+		} catch (EmptyResultDataAccessException e) {
+			// do nothing, return null
+		}
+
+		/*
+		 * User result = namedParameterJdbcTemplate.queryForObject( sql, params, new
+		 * BeanPropertyRowMapper<User>());
+		 */
+
+		return result;
+		
+	}
 
 	@Override
 	public void save(ScheduledDate date) {
@@ -83,6 +108,18 @@ public class ScheduledDateDaoImpl implements ScheduledDateDao {
 		
 		String sql = "DELETE FROM \"ScheduledDate\" WHERE \"DonationID\"= :id";
 		namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource("id", id));
+
+	}
+	
+	@Override
+	public void chooseDate(int donId, int dateId) {
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("donId", donId);
+		params.put("dateId", dateId);
+		
+		String sql = "DELETE FROM \"ScheduledDate\" WHERE \"DonationID\"= :donId AND \"DateID\" != :dateId";
+		namedParameterJdbcTemplate.update(sql, params);
 
 	}
 	

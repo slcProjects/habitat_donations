@@ -1,5 +1,7 @@
 package com.spring.form.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,11 @@ public class ScheduledDateServiceImpl implements ScheduledDateService {
 	}
 	
 	@Override
+	public List<ScheduledDate> findByDonation(Integer id) {
+		return scheduledDateDao.findByDonation(id);
+	}
+	
+	@Override
 	public void saveOrUpdate(ScheduledDate date) {
 		if (findById(date.getId())==null) {
 			scheduledDateDao.save(date);
@@ -33,6 +40,11 @@ public class ScheduledDateServiceImpl implements ScheduledDateService {
 	@Override
 	public void delete(int id) {
 		scheduledDateDao.delete(id);
+	}
+	
+	@Override
+	public void chooseDate(int donId, int dateId) {
+		scheduledDateDao.chooseDate(donId, dateId);
 	}
 
 }

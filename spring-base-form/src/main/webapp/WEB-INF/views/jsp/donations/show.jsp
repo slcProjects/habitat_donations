@@ -64,13 +64,18 @@
 							<label class="gfield_label">Available Dates</label>
 							<div>
 								<c:forEach var="date" items="${donation.scheduledDate}" varStatus="dateindex">
-									${date}:
-									<c:forEach var="meridian" items="${donation.meridian}" varStatus="meridianindex">
-										<c:if test="${dateindex.count == meridianindex.count}">
-											${meridian}
+									<spring:url value="/donation/${donation.id}/choosedate/${dateindex.index}" var="chooseUrl" />
+									<form:form class="form-horizontal" method="post" action="${chooseUrl}">
+										${date}:
+										<c:forEach var="meridian" items="${donation.meridian}" varStatus="meridianindex">
+											<c:if test="${dateindex.count == meridianindex.count}">
+												${meridian}
+											</c:if>
+										</c:forEach>
+										<c:if test="${role == 'Staff' && dateCount > 1}">
+											<button type="submit">Select Date</button>
 										</c:if>
-									</c:forEach>
-									<br />
+									</form:form>
 								</c:forEach>
 							</div>
 						</li>
