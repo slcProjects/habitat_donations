@@ -70,17 +70,24 @@
 													<form:hidden path="month" />
 													<form:hidden path="year" />
 													<form:hidden path="type" />
-													<spring:bind path="status">
-														<form:select path="status" class="form-control">
-															<form:option value="NONE" label="" />
-															<form:options items="${statusList}" />
-														</form:select>
-													</spring:bind>
-													<button type="submit">Update Status</button>
-													<c:if test="${not empty error && error == donation.id}">
-														<label class="gfield_description validation_message">This
-															field is required.</label>
-													</c:if>
+													<c:choose>
+														<c:when test="${donation.status == 'AWAITING APPROVAL'}">
+															AWAITING APPROVAL
+														</c:when>
+														<c:otherwise>
+															<spring:bind path="status">
+																<form:select path="status" class="form-control">
+																	<form:option value="NONE" label="" />
+																	<form:options items="${statusList}" />
+																</form:select>
+															</spring:bind>
+															<button type="submit">Update Status</button>
+															<c:if test="${not empty error && error == donation.id}">
+																<label class="gfield_description validation_message">This
+																	field is required.</label>
+															</c:if>
+														</c:otherwise>
+													</c:choose>
 												</form:form>
 											</li>
 										</ul>

@@ -239,21 +239,35 @@
 												<form:errors class="gfield_description validation_message"
 													path="receiver" />
 											</spring:bind></span></li>
-
-									<li id="field_6_6"
-										class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.statusError}"><label
-										class="gfield_label gfield_label_before_complex"
-										for="input_6_1_3">Donation Status<span
-											class="gfield_required">*</span></label> <span
-										class="ginput_left address_zip"><spring:bind
-												path="status">
-												<form:select path="status">
-													<form:option value="NONE" label="" />
-													<form:options items="${statusList}" />
-												</form:select>
-												<form:errors class="gfield_description validation_message"
-													path="status" />
-											</spring:bind> </span></li>
+											
+									<c:choose>
+										<c:when test="${not empty donationForm.id}">
+											<li id="field_6_6"
+												class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.statusError}"><label
+												class="gfield_label gfield_label_before_complex"
+												for="input_6_1_3">Donation Status<span
+													class="gfield_required">*</span></label> <span
+												class="ginput_left address_zip">
+												<c:choose>
+													<c:when test="${donationForm.status == 'AWAITING APPROVAL'}">
+														AWAITING APPROVAL
+													</c:when>
+													<c:otherwise>
+														<spring:bind path="status">
+															<form:select path="status">
+																<form:option value="NONE" label="" />
+																<form:options items="${statusList}" />
+															</form:select>
+															<form:errors class="gfield_description validation_message"
+																path="status" />
+														</spring:bind>
+													</c:otherwise>
+												</c:choose></span></li>
+										</c:when>
+										<c:otherwise>
+											<form:hidden path="status" />
+										</c:otherwise>
+									</c:choose>
 								</c:when>
 								<c:otherwise>
 									<form:hidden path="dropFee" />
