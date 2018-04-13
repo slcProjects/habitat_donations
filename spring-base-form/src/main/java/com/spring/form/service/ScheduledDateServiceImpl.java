@@ -19,6 +19,11 @@ public class ScheduledDateServiceImpl implements ScheduledDateService {
 	}
 	
 	@Override
+	public List<ScheduledDate> findAll() {
+		return scheduledDateDao.findAll();
+	}
+	
+	@Override
 	public ScheduledDate findById(Integer id) {
 		return scheduledDateDao.findById(id);
 	}

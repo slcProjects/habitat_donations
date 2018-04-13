@@ -25,5 +25,7 @@ public interface DonationDao {
 	List<Donation> findByScheduledWeekOfMonth(Integer firstDay, Integer lastDay, Integer month, Integer year);
 
 	void updateStatus(Integer id, String status);
+
+	void reserve(Integer id);
 	
 }

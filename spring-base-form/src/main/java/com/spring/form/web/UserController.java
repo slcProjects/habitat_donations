@@ -481,6 +481,34 @@ public class UserController {
 		}
 
 	}
+	
+	// send email to checked users
+	@RequestMapping(value = "/users/email", method = RequestMethod.POST)
+	public String emailSelectedDonors(Model model, final RedirectAttributes redirectAttributes, 
+			HttpServletResponse response, HttpServletRequest request) {
+		
+		logger.debug("emailSelectedDonors()");
+		
+		String checkedUsers[] = request.getParameterValues("usersend");
+		
+		if (checkedUsers == null) {
+			redirectAttributes.addFlashAttribute("msg", "Did not select any users");
+		} else {
+			String subject = "Hello from Habitat for Humanity";
+			for (int ctr = 0; ctr < checkedUsers.length; ctr++) {
+				User user = userService.findById(Integer.parseInt(checkedUsers[ctr]));
+				String text = "Hello " + user.getFirstName() + " " + user.getLastName() + "."
+						+ "\n\nYou are being emailed today because we are testing out our email services within our user search engine."
+						+ "\n\nThank you for thinking of us, and we hope you enjoy the rest of your day."
+						+ "\n\nHabitat for Humanity Kingston ReStore";
+				email(subject, text);
+			}
+			redirectAttributes.addFlashAttribute("msg", "Emails sent");
+		}
+		
+		return "redirect:/users/searchform";
+		
+	}
 
 	// donation list page
 	@RequestMapping(value = "/donations", method = RequestMethod.GET)
@@ -761,6 +789,7 @@ public class UserController {
 			donation.setPostalCode(donor.getPostalCode());
 			donation.setStatus("AWAITING APPROVAL");
 			donation.setNumImages(0);
+			donation.setReserved(false);
 			
 			year = today.get(Calendar.YEAR);
 			month = today.get(Calendar.MONTH);
@@ -852,7 +881,11 @@ public class UserController {
 
 			GregorianCalendar last = new GregorianCalendar(year, month, daysInMonth);
 			int weeksInMonth = last.get(Calendar.WEEK_OF_MONTH);
+			
+			List<ScheduledDate> dates = scheduledDateService.findAll();
 
+			model.addAttribute("allDonations", donationService.findAll());
+			model.addAttribute("dates", dates);
 			model.addAttribute("monthName", months[month]);
 			model.addAttribute("month", month);
 			model.addAttribute("year", year);
@@ -896,7 +929,7 @@ public class UserController {
 			donationService.delete(id);
 			
 			emailDonorDeclined(id, user);
-			emailStaff(id, user, "deleted");
+			emailStaff(id, user, "declined");
 
 			redirectAttributes.addFlashAttribute("css", "success");
 			redirectAttributes.addFlashAttribute("msg", "Donation is deleted!");
@@ -1026,6 +1059,11 @@ public class UserController {
 			} else {
 				model.addAttribute("imageIds", imageIds);
 			}
+			
+			List<ScheduledDate> dates = scheduledDateService.findAll();
+
+			model.addAttribute("allDonations", donationService.findAll());
+			model.addAttribute("dates", dates);
 			model.addAttribute("noImage", noImage);
 			model.addAttribute("role", currentRole);
 			model.addAttribute("month", month);
@@ -1075,6 +1113,7 @@ public class UserController {
 		} else {
 			List<ScheduledDate> dates = scheduledDateService.findByDonation(donId);
 			scheduledDateService.chooseDate(donId, dates.get(datePos).getId());
+			donationService.reserve(donId);
 			emailDonorDatePicked(donId, userService.findById(donationService.findById(donId).get(0).getDonor()));
 			return "redirect:/donations/" + donId;
 		}

@@ -49,8 +49,7 @@ public class DonationDaoImpl implements DonationDao {
 
 		String sql = "SELECT \"Donation\".*, \"ScheduledDate\".\"Date\", \"ScheduledDate\".\"Meridian\" FROM \"Donation\" "
 				+ "INNER JOIN \"ScheduledDate\" ON \"Donation\".\"DonationID\"=\"ScheduledDate\".\"DonationID\" "
-				+ "WHERE \"Donation\".\"DonationID\"=:id ORDER BY \"ScheduledDate\".\"Date\" ASC, \"ScheduledDate\".\"Meridian\" ASC, "
-				+ "\"Donation\".\"DonationID\" ASC";
+				+ "WHERE \"Donation\".\"DonationID\"=:id ORDER BY \"Donation\".\"DonationID\" ASC";
 
 		List<Donation> result = null;
 		try {
@@ -73,7 +72,7 @@ public class DonationDaoImpl implements DonationDao {
 
 		String sql = "SELECT \"Donation\".*, \"ScheduledDate\".\"Date\", \"ScheduledDate\".\"Meridian\" FROM \"Donation\" "
 				+ "INNER JOIN \"ScheduledDate\" ON \"Donation\".\"DonationID\"=\"ScheduledDate\".\"DonationID\" "
-				+ "ORDER BY \"ScheduledDate\".\"Date\" ASC, \"ScheduledDate\".\"Meridian\" ASC, \"Donation\".\"DonationID\" ASC";
+				+ "ORDER BY \"Donation\".\"DonationID\" ASC";
 		List<Donation> result = namedParameterJdbcTemplate.query(sql, new DonationMapper());
 
 		return result;
@@ -88,7 +87,7 @@ public class DonationDaoImpl implements DonationDao {
 
 		String sql = "SELECT \"Donation\".*, \"ScheduledDate\".\"Date\", \"ScheduledDate\".\"Meridian\" FROM \"Donation\" "
 				+ "INNER JOIN \"ScheduledDate\" ON \"Donation\".\"DonationID\"=\"ScheduledDate\".\"DonationID\" "
-				+ "WHERE \"DonorID\"=:id ORDER BY \"ScheduledDate\".\"Date\" ASC, \"ScheduledDate\".\"Meridian\" ASC, \"Donation\".\"DonationID\" ASC";
+				+ "WHERE \"DonorID\"=:id ORDER BY \"Donation\".\"DonationID\" ASC";
 		List<Donation> result = namedParameterJdbcTemplate.query(sql, params, new DonationMapper());
 
 		return result;
@@ -181,9 +180,9 @@ public class DonationDaoImpl implements DonationDao {
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 
 		String sql = "INSERT INTO \"Donation\"(\"DonorID\", \"Description\", \"Value\", \"CompletedDate\", \"Address\", "
-				+ "\"City\", \"Province\", \"PostalCode\", \"DropFee\", \"ReceiverID\", \"Tacking\", \"Receipts\", \"NumImages\", \"Type\", \"Status\") "
+				+ "\"City\", \"Province\", \"PostalCode\", \"DropFee\", \"ReceiverID\", \"Tacking\", \"Receipts\", \"Reserved\", \"NumImages\", \"Type\", \"Status\") "
 				+ "VALUES (:donor, :description, :value, :completedDate, :address, :city, :province, :postalCode, :dropFee, "
-				+ ":receiver, :tacking, :receipts, :numImages, CAST(:type AS \"DonationType\"), CAST(:status AS \"DonationStatus\"))";
+				+ ":receiver, :tacking, :receipts, :reserved, :numImages, CAST(:type AS \"DonationType\"), CAST(:status AS \"DonationStatus\"))";
 				
 		try {
 			namedParameterJdbcTemplate.update(sql, getSqlParameterByModel(donation), keyHolder);
@@ -213,7 +212,7 @@ public class DonationDaoImpl implements DonationDao {
 		String sql = "UPDATE \"Donation\" SET \"DonorID\"=:donor, \"Description\"=:description, \"Value\"=:value, "
 				+ "\"CompletedDate\"=:completedDate, \"Address\"=:address, \"City\"=:city, "
 				+ "\"Province\"=:province, \"PostalCode\"=:postalCode, \"DropFee\"=:dropFee, "
-				+ "\"ReceiverID\"=:receiver, \"Tacking\"=:tacking, \"Receipts\"=:receipts, \"NumImages\"=:numImages, "
+				+ "\"ReceiverID\"=:receiver, \"Tacking\"=:tacking, \"Receipts\"=:receipts, \"Reserved\"=:reserved \"NumImages\"=:numImages, "
 				+ "\"Type\"=CAST(:type AS \"DonationType\"), \"Status\"=CAST(:status AS \"DonationStatus\") WHERE \"DonationID\"=:id";
 
 		try {
@@ -222,6 +221,14 @@ public class DonationDaoImpl implements DonationDao {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+	}
+	
+	@Override
+	public void reserve(Integer id) {
+		
+		String sql = "UPDATE \"Donation\" SET \"Reserved\"=true WHERE \"DonationID\"=:id";
+		namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource("id", id));
 
 	}
 
@@ -283,6 +290,7 @@ public class DonationDaoImpl implements DonationDao {
 		paramSource.addValue("numImages", donation.getNumImages());
 		paramSource.addValue("type", donation.getType());
 		paramSource.addValue("status", donation.getStatus());
+		paramSource.addValue("reserved", donation.isReserved());
 		
 		return paramSource;
 	}
@@ -309,6 +317,7 @@ public class DonationDaoImpl implements DonationDao {
 			donation.setNumImages(rs.getInt("NumImages"));
 			donation.setType(rs.getString("Type"));
 			donation.setStatus(rs.getString("Status"));
+			donation.setReserved(rs.getBoolean("Reserved"));
 
 			return donation;
 		}

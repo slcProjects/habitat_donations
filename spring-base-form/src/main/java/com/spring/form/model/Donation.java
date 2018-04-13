@@ -59,6 +59,8 @@ public class Donation {
 	// form:select - form:option - dropdown - single select
 	String status;
 	
+	boolean reserved;
+	
 	Integer numImages;
 	
 	String donorName;
@@ -239,6 +241,14 @@ public class Donation {
 		this.receipts = receipts;
 	}
 	
+	public boolean isReserved() {
+		return reserved;
+	}
+
+	public void setReserved(boolean reserved) {
+		this.reserved = reserved;
+	}
+	
 	public String getType() {
 		return type;
 	}
@@ -353,7 +363,7 @@ public class Donation {
 				+ ", scheduledDate=" + scheduledDate + ", meridian=" + meridian +", completedDate=" + completedDate + ", address=" + address
 				+ ", city=" + city + ", province=" + province + ", postalCode=" + postalCode + ", dropFee=" + dropFee
 				+ ", status=" + status + ", receiver=" + receiver + ", tacking=" + tacking + ", receipts=" + receipts
-				+ ", file1=" + file1 + ", file2=" + file2 + ", file3=" + file3 + ", file4=" + file4 
+				+ ", reserved=" + reserved + ", file1=" + file1 + ", file2=" + file2 + ", file3=" + file3 + ", file4=" + file4 
 				+ ", numImages=" + numImages + "]" + isNew();
 	}
 

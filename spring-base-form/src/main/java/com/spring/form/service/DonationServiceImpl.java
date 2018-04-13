@@ -66,5 +66,9 @@ public class DonationServiceImpl implements DonationService {
 	public void updateStatus(int id, String status) {
 		donationDao.updateStatus(id, status);
 	}
+	
+	@Override public void reserve(int id) {
+		donationDao.reserve(id);
+	}
 
 }
