@@ -64,18 +64,33 @@
 							<label class="gfield_label">Available Dates</label>
 							<div>
 								<c:forEach var="date" items="${donation.scheduledDate}" varStatus="dateindex">
-									<spring:url value="/donation/${donation.id}/choosedate/${dateindex.index}" var="chooseUrl" />
-									<form:form class="form-horizontal" method="post" action="${chooseUrl}">
-										${date}:
-										<c:forEach var="meridian" items="${donation.meridian}" varStatus="meridianindex">
-											<c:if test="${dateindex.count == meridianindex.count}">
-												${meridian}
-											</c:if>
-										</c:forEach>
-										<c:if test="${role == 'Staff' && dateCount > 1}">
-											<button type="submit">Select Date</button>
+									<c:forEach var="meridian" items="${donation.meridian}" varStatus="meridianindex">
+										<c:if test="${dateindex.count == meridianindex.count}">
+											<spring:url value="/donation/${donation.id}/choosedate/${dateindex.index}" var="chooseUrl" />
+											<form:form class="form-horizontal" method="post" action="${chooseUrl}">
+												${date}: ${meridian}
+												<c:if test="${role == 'Staff' && dateCount > 1}">
+													<spring:url value="/donation/${donation.id}/choosedate/${dateindex.index}" var="chooseUrl" />
+													<c:set var="available" value="true"/>
+													<form method="post" action="${chooseUrl}">
+														<c:forEach var="date2" items="${dates}" varStatus="date2index">
+															<c:forEach var="don" items="${allDonations}">
+																<c:if test="${available == 'true' && don.reserved && don.id == date2.donation  && donation.id != date2.donation && date == date2.date && meridian == date2.meridian}">
+																	<button onclick="return confirm('This date is already reserved. Are you sure you want to select this date?')">Select Date</button>
+																	This date is already reserved.
+																	<c:set var="available" value="false"/>
+																</c:if>
+															</c:forEach>
+														</c:forEach>
+														<c:if test="${available == 'true'}">
+															<button type="submit">Select Date</button>
+															This date is available.
+														</c:if>
+													</form>
+												</c:if>
+											</form:form>
 										</c:if>
-									</form:form>
+									</c:forEach>
 								</c:forEach>
 							</div>
 						</li>

@@ -46,6 +46,7 @@
 					<form:hidden path="id" />
 					<form:hidden path="donor" />
 					<form:hidden path="numImages" />
+					<form:hidden path="reserved" />
 					<div class="gform_heading">
 						<span class="gform_description"></span>
 					</div>
@@ -145,17 +146,31 @@
 										<div>
 											<c:forEach var="date" items="${donationForm.scheduledDate}"
 												varStatus="dateindex">
-												${date}: 
 												<c:forEach var="meridian" items="${donationForm.meridian}"
 													varStatus="meridianindex">
 													<c:if test="${dateindex.count == meridianindex.count}">
-														${meridian}
+														${date}: ${meridian}
+														<c:if test="${role == 'Staff' && dateCount > 1}">
+															<spring:url value="/donation/${donationForm.id}/choosedate/${dateindex.index}" var="chooseUrl" />
+															<c:set var="available" value="true"/>
+															<form:form method="post" action="${chooseUrl}">
+																<c:forEach var="date2" items="${dates}" varStatus="date2index">
+																	<c:forEach var="don" items="${allDonations}">
+																		<c:if test="${available == 'true' && don.reserved && don.id == date2.donation && donationForm.id != date2.donation && date == date2.date && meridian == date2.meridian}">
+																			<button onclick="return confirm('This date is already reserved. Are you sure you want to select this date?')">Select Date</button>
+																			This date is already reserved.
+																			<c:set var="available" value="false"/>
+																		</c:if>
+																	</c:forEach>
+																</c:forEach>
+																<c:if test="${available == 'true'}">
+																	<button type="submit">Select Date</button>
+																	This date is available.
+																</c:if>
+															</form:form>
+														</c:if>
 													</c:if>
 												</c:forEach>
-												<c:if test="${role == 'Staff' && dateCount > 1}">
-													<spring:url value="/donation/${donationForm.id}/choosedate/${dateindex.index}" var="chooseUrl" />
-													<button formaction="${chooseUrl}">Select Date</button>
-												</c:if>
 												<br />
 											</c:forEach>
 										</div>
@@ -239,21 +254,35 @@
 												<form:errors class="gfield_description validation_message"
 													path="receiver" />
 											</spring:bind></span></li>
-
-									<li id="field_6_6"
-										class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.statusError}"><label
-										class="gfield_label gfield_label_before_complex"
-										for="input_6_1_3">Donation Status<span
-											class="gfield_required">*</span></label> <span
-										class="ginput_left address_zip"><spring:bind
-												path="status">
-												<form:select path="status">
-													<form:option value="NONE" label="" />
-													<form:options items="${statusList}" />
-												</form:select>
-												<form:errors class="gfield_description validation_message"
-													path="status" />
-											</spring:bind> </span></li>
+											
+									<c:choose>
+										<c:when test="${not empty donationForm.id}">
+											<li id="field_6_6"
+												class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${donationForm.statusError}"><label
+												class="gfield_label gfield_label_before_complex"
+												for="input_6_1_3">Donation Status<span
+													class="gfield_required">*</span></label> <span
+												class="ginput_left address_zip">
+												<c:choose>
+													<c:when test="${donationForm.status == 'AWAITING APPROVAL'}">
+														AWAITING APPROVAL
+													</c:when>
+													<c:otherwise>
+														<spring:bind path="status">
+															<form:select path="status">
+																<form:option value="NONE" label="" />
+																<form:options items="${statusList}" />
+															</form:select>
+															<form:errors class="gfield_description validation_message"
+																path="status" />
+														</spring:bind>
+													</c:otherwise>
+												</c:choose></span></li>
+										</c:when>
+										<c:otherwise>
+											<form:hidden path="status" />
+										</c:otherwise>
+									</c:choose>
 								</c:when>
 								<c:otherwise>
 									<form:hidden path="dropFee" />

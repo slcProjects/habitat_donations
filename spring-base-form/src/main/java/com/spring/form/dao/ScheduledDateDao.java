@@ -8,6 +8,8 @@ public interface ScheduledDateDao {
 	
 	ScheduledDate findById(Integer id);
 	
+	List<ScheduledDate> findAll();
+	
 	List<ScheduledDate> findByDonation(Integer id);
 	
 	void save(ScheduledDate date);

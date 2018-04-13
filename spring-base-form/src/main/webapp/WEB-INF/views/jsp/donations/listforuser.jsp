@@ -63,12 +63,15 @@
 									<spring:url value="/donations/${donation.id}" var="donationUrl" />
 									<button onclick="location.href='${donationUrl}'">Donation Detail</button> 
 									<c:if test="${role == 'Staff'}">
+										<spring:url value="/donations/${donation.id}/approve" var="approveUrl" />
+										<spring:url value="/donations/${donation.id}/decline" var="declineUrl" />
 										<spring:url value="/donations/${donation.id}/delete" var="deleteUrl" />
 										<spring:url value="/donations/${donation.id}/update" var="updateUrl" />
 										<button onclick="location.href='${updateUrl}'">Edit Donation</button>
 										<c:choose>
-											<c:when test="${empty donation.completedDate}">
-												<button onclick="location.href='${deleteUrl}'">Decline Donation</button>
+											<c:when test="${donation.status == 'AWAITING APPROVAL'}">
+												<button onclick="location.href='${approveUrl}'">Approve Donation</button>
+												<button onclick="location.href='${declineUrl}'">Decline Donation</button>
 											</c:when>
 											<c:otherwise>
 												<button onclick="location.href='${deleteUrl}'">Delete Donation</button>

@@ -28,37 +28,43 @@
 					<p>No users found</p>
 				</c:when>
 				<c:otherwise>
-					<table>
-						<thead>
-							<tr>
-								<th>#ID</th>
-								<th>LoginName</th>
-								<th>Email</th>
-								<th>Role</th>
-								<th>Actions</th>
-							</tr>
-						</thead>
-
-						<c:forEach var="user" items="${users}">
-							<tr>
-								<td>${user.id}</td>
-								<td>${user.loginName}</td>
-								<td>${user.email}</td>
-								<td>${user.role}</td>
-								<td><spring:url value="/users/${user.id}" var="userUrl" />
-									<spring:url value="/users/${user.id}/delete" var="deleteUrl" />
-									<spring:url value="/users/${user.id}/update" var="updateUrl" />
-									<spring:url value="/donations/${user.id}/add" var="donateUrl" />
-									<button onclick="location.href='${userUrl}'">View
-										Detail</button>
-									<button onclick="location.href='${updateUrl}'">Edit
-										User</button>
-									<button onclick="location.href='${deleteUrl}'">Delete</button>
-									<button onclick="location.href='${donateUrl}'">Donate</button>
-								</td>
-							</tr>
-						</c:forEach>
-					</table>
+					<spring:url value="/users/email" var="userEmail" />
+					<form method="post" action="${userEmail}">
+						<table>
+							<thead>
+								<tr>
+									<th>Check to Email User</th>
+									<th>#ID</th>
+									<th>LoginName</th>
+									<th>Email</th>
+									<th>Role</th>
+									<th>Actions</th>
+								</tr>
+							</thead>
+	
+							<c:forEach var="user" items="${users}">
+								<tr>
+									<td><input name="usersend" type="checkbox" value="${user.id}"/></td>
+									<td>${user.id}</td>
+									<td>${user.loginName}</td>
+									<td>${user.email}</td>
+									<td>${user.role}</td>
+									<td><spring:url value="/users/${user.id}" var="userUrl" />
+										<spring:url value="/users/${user.id}/delete" var="deleteUrl" />
+										<spring:url value="/users/${user.id}/update" var="updateUrl" />
+										<spring:url value="/donations/${user.id}/add" var="donateUrl" />
+										<button onclick="location.href='${userUrl}'">View
+											Detail</button>
+										<button onclick="location.href='${updateUrl}'">Edit
+											User</button>
+										<button onclick="location.href='${deleteUrl}'">Delete</button>
+										<button onclick="location.href='${donateUrl}'">Donate</button>
+									</td>
+								</tr>
+							</c:forEach>
+						</table>
+						<button type="submit">Email Selected Users</button>
+					</form>
 				</c:otherwise>
 			</c:choose>
 

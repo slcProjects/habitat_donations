@@ -57,6 +57,17 @@ public class ScheduledDateDaoImpl implements ScheduledDateDao {
 	}
 	
 	@Override
+	public List<ScheduledDate> findAll() {
+		
+		String sql = "SELECT * FROM \"ScheduledDate\"";
+
+		List<ScheduledDate> result = namedParameterJdbcTemplate.query(sql, new ScheduledDateMapper());
+		
+		return result;
+		
+	}
+	
+	@Override
 	public List<ScheduledDate> findByDonation(Integer id) {
 		
 		Map<String, Object> params = new HashMap<String, Object>();

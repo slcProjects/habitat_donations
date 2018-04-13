@@ -23,5 +23,7 @@ public interface DonationService {
 	List<Donation> findByScheduledWeekOfMonth(Integer firstDay, Integer lastDay, Integer month, Integer year);
 
 	void updateStatus(int id, String status);
+
+	void reserve(int id);
 	
 }

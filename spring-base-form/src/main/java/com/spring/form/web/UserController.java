@@ -10,8 +10,16 @@ import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.imageio.ImageIO;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -72,6 +80,7 @@ public class UserController {
 	int month = 0, year = 0;
 	private static final String STATUSFORM_PATTERN = "^statusForm\\d+$";
 	List<Attachment> images = null;
+	String listType;
 
 	@Autowired
 	LoginFormValidator loginFormValidator;
@@ -472,6 +481,34 @@ public class UserController {
 		}
 
 	}
+	
+	// send email to checked users
+	@RequestMapping(value = "/users/email", method = RequestMethod.POST)
+	public String emailSelectedDonors(Model model, final RedirectAttributes redirectAttributes, 
+			HttpServletResponse response, HttpServletRequest request) {
+		
+		logger.debug("emailSelectedDonors()");
+		
+		String checkedUsers[] = request.getParameterValues("usersend");
+		
+		if (checkedUsers == null) {
+			redirectAttributes.addFlashAttribute("msg", "Did not select any users");
+		} else {
+			String subject = "Hello from Habitat for Humanity";
+			for (int ctr = 0; ctr < checkedUsers.length; ctr++) {
+				User user = userService.findById(Integer.parseInt(checkedUsers[ctr]));
+				String text = "Hello " + user.getFirstName() + " " + user.getLastName() + "."
+						+ "\n\nYou are being emailed today because we are testing out our email services within our user search engine."
+						+ "\n\nThank you for thinking of us, and we hope you enjoy the rest of your day."
+						+ "\n\nHabitat for Humanity Kingston ReStore";
+				email(subject, text);
+			}
+			redirectAttributes.addFlashAttribute("msg", "Emails sent");
+		}
+		
+		return "redirect:/users/searchform";
+		
+	}
 
 	// donation list page
 	@RequestMapping(value = "/donations", method = RequestMethod.GET)
@@ -487,6 +524,7 @@ public class UserController {
 			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
 			return "redirect:/dashboard";
 		} else {
+			listType = "all";
 			List<Donation> dons = donationService.findAll();
 			int previousId = 0;
 			int decrease = 0;
@@ -524,6 +562,7 @@ public class UserController {
 		} else {
 			model.addAttribute("role", currentRole);
 			
+			listType = "user";
 			List<Donation> dons = donationService.findByUserId(currentId);
 			int previousId = 0;
 			int decrease = 0;
@@ -565,7 +604,7 @@ public class UserController {
 		String checkedPm[] = request.getParameterValues("pm");
 		donation.setDateError("");
 
-		if (result.hasErrors() || checkedAm == null && checkedPm == null) {
+		if (result.hasErrors() || donation.isNew() && checkedAm == null && checkedPm == null) {
 			
 			if (checkedAm == null && checkedPm == null) {
 				donation.setDateError("gfield_error");
@@ -639,15 +678,18 @@ public class UserController {
 			} else {
 				donation.setCompletedDate(null);
 			}
-			donationService.saveOrUpdate(donation);
 
+			Boolean created = false;
 			redirectAttributes.addFlashAttribute("css", "success");
 			if (donation.isNew()) {
+				created = true;
 				donation.setNumImages(0);
 				redirectAttributes.addFlashAttribute("msg", "Donation ID " + donation.getId() + " added successfully!");
 			} else {
 				redirectAttributes.addFlashAttribute("msg", "Donation updated successfully!");
 			}
+			
+			donationService.saveOrUpdate(donation);
 
 			int numImages = donation.getNumImages();
 			
@@ -704,6 +746,15 @@ public class UserController {
 			donation.setNumImages(numImages);
 			donationService.saveOrUpdate(donation);
 			redirectAttributes.addFlashAttribute("role", currentRole);
+			
+			String action = "updated";
+			if (created) {
+				action = "created";
+				emailDonorCreate(donation.getId(), userService.findById(donation.getDonor()));
+			} else {
+				emailDonorUpdate(donation.getId(), userService.findById(donation.getDonor()));
+			}
+			emailStaff(donation.getId(), userService.findById(donation.getDonor()), action);
 
 			// POST/REDIRECT/GET
 			return "redirect:/confirmation/" + donation.getId();
@@ -738,6 +789,7 @@ public class UserController {
 			donation.setPostalCode(donor.getPostalCode());
 			donation.setStatus("AWAITING APPROVAL");
 			donation.setNumImages(0);
+			donation.setReserved(false);
 			
 			year = today.get(Calendar.YEAR);
 			month = today.get(Calendar.MONTH);
@@ -829,7 +881,11 @@ public class UserController {
 
 			GregorianCalendar last = new GregorianCalendar(year, month, daysInMonth);
 			int weeksInMonth = last.get(Calendar.WEEK_OF_MONTH);
+			
+			List<ScheduledDate> dates = scheduledDateService.findAll();
 
+			model.addAttribute("allDonations", donationService.findAll());
+			model.addAttribute("dates", dates);
 			model.addAttribute("monthName", months[month]);
 			model.addAttribute("month", month);
 			model.addAttribute("year", year);
@@ -844,6 +900,45 @@ public class UserController {
 			populateDonationStatuses(model);
 
 			return "donations/donateform";
+		}
+
+	}
+	
+	// decline donation
+	@RequestMapping(value = "/donations/{id}/decline", method = RequestMethod.GET)
+	public String declineDonation(@PathVariable("id") int id, final RedirectAttributes redirectAttributes) {
+
+		logger.debug("deleteDonation() : {}", id);
+
+		if (currentRole.equals("") || currentId == 0) {
+			redirectAttributes.addFlashAttribute("css", "danger");
+			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
+			return "redirect:/main";
+		} else if (!currentRole.equals("Staff")) {
+			redirectAttributes.addFlashAttribute("css", "danger");
+			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
+			return "redirect:/dashboard";
+		} else {
+			List<Attachment> images = attachmentService.findByDonation(id);
+			User user = userService.findById(donationService.findById(id).get(0).getDonor());
+
+			for (int ctr = 0; ctr < images.size(); ctr++) {
+				attachmentService.delete(images.get(ctr).getId());
+			}
+
+			donationService.delete(id);
+			
+			emailDonorDeclined(id, user);
+			emailStaff(id, user, "declined");
+
+			redirectAttributes.addFlashAttribute("css", "success");
+			redirectAttributes.addFlashAttribute("msg", "Donation is deleted!");
+
+			if (listType.equals("user")) {
+				return "redirect:/donationsforuser";
+			} else {
+				return "redirect:/donations";
+			}
 		}
 
 	}
@@ -864,19 +959,50 @@ public class UserController {
 			return "redirect:/dashboard";
 		} else {
 			List<Attachment> images = attachmentService.findByDonation(id);
+			User user = userService.findById(donationService.findById(id).get(0).getDonor());
 
 			for (int ctr = 0; ctr < images.size(); ctr++) {
 				attachmentService.delete(images.get(ctr).getId());
 			}
 
 			donationService.delete(id);
+			
+			emailStaff(id, user, "deleted");
 
 			redirectAttributes.addFlashAttribute("css", "success");
 			redirectAttributes.addFlashAttribute("msg", "Donation is deleted!");
 
-			return "redirect:/donations";
+			if (listType.equals("user")) {
+				return "redirect:/donationsforuser";
+			} else {
+				return "redirect:/donations";
+			}
 		}
 
+	}
+	
+	// approve donation
+	@RequestMapping(value = "/donations/{id}/approve", method = RequestMethod.GET)
+	public String approveDonation(@PathVariable("id") int id, Model model, HttpServletResponse response,
+			HttpServletRequest request, final RedirectAttributes redirectAttributes) {
+		
+		logger.debug("approveDonation() id : {}", id);
+		
+		Donation donation = donationService.findById(id).get(0);
+		
+		if (donation.getType().equals("DROPOFF")) {
+			donationService.updateStatus(id, "AWAITING DROPOFF");
+		} else {
+			donationService.updateStatus(id, "AWAITING PICKUP");
+		}
+		
+		User user = userService.findById(donation.getDonor());
+		
+		emailDonorApproved(id, user);
+		emailStaff(id, user, "approved");
+		
+		return "redirect:/donations/" + id;
+		
 	}
 
 	// show donation
@@ -933,6 +1059,11 @@ public class UserController {
 			} else {
 				model.addAttribute("imageIds", imageIds);
 			}
+			
+			List<ScheduledDate> dates = scheduledDateService.findAll();
+
+			model.addAttribute("allDonations", donationService.findAll());
+			model.addAttribute("dates", dates);
 			model.addAttribute("noImage", noImage);
 			model.addAttribute("role", currentRole);
 			model.addAttribute("month", month);
@@ -982,6 +1113,8 @@ public class UserController {
 		} else {
 			List<ScheduledDate> dates = scheduledDateService.findByDonation(donId);
 			scheduledDateService.chooseDate(donId, dates.get(datePos).getId());
+			donationService.reserve(donId);
+			emailDonorDatePicked(donId, userService.findById(donationService.findById(donId).get(0).getDonor()));
 			return "redirect:/donations/" + donId;
 		}
 		
@@ -1400,7 +1533,7 @@ public class UserController {
 	private void populateDonationStatuses(Model model) {
 
 		Map<String, String> statuses = new LinkedHashMap<String, String>();
-		statuses.put("AWAITING APPROVAL", "AWAITING APPROVAL");
+		statuses.put("AWAITING DROPOFF", "AWAITING DROPOFF");
 		statuses.put("AWAITING PICKUP", "AWAITING PICKUP");
 		statuses.put("PICKUP COMPLETE", "PICKUP COMPLETE");
 		statuses.put("RESCHEDULED", "RESCHEDULED");
@@ -1438,6 +1571,127 @@ public class UserController {
 
 		return model;
 
+	}
+	
+	private void emailDonorCreate(Integer donId, User user) {
+		
+		logger.debug("emailDonorCreate() donation id : {}", donId);
+		
+		String subject = "Donation ID# " + donId + " to Habitat for Humanity - Submitted";
+		String text = "Hello " + user.getFirstName() + " " + user.getLastName() + 
+					".\n\nYour donation has been submitted successfully and is now awaiting approval. " + 
+					"We will check our inbox as soon as possible in order to confirm your donation. " +
+					"\n\nYour donation ID# is " + donId + "; please refer to this number if you have any future questions or concerns." +
+					"\n\nThank you for thinking of us, and we hope you enjoy the rest of your day." +
+					"\n\nHabitat for Humanity Kingston ReStore";
+			
+		email(subject, text);
+	}
+	
+	private void emailDonorUpdate(Integer donId, User user) {
+		
+		logger.debug("emailDonorUpdate() donation id : {}", donId);
+		
+		String subject = "Donation ID# " + donId + " to Habitat for Humanity - Updated";
+		String text = "Hello " + user.getFirstName() + " " + user.getLastName() + 
+					".\n\nYour donation ID# " + donId + " has been updated. " + 
+					"If you have any questions or concerns involving these changes please contact us as soon as possible." +
+					"\n\nThank you for thinking of us, and we hope you enjoy the rest of your day." +
+					"\n\nHabitat for Humanity Kingston ReStore";
+			
+		email(subject, text);
+		
+	}
+	
+	private void emailDonorApproved(Integer donId, User user) {
+		
+		logger.debug("emailDonorDeclined() donation id : {}", donId);
+		
+		String subject = "Donation ID# " + donId + " to Habitat for Humanity - Approved";
+		String text = "Hello " + user.getFirstName() + " " + user.getLastName() + 
+					".\n\nYour donation ID# " + donId + " has been approved." + 
+					"\n\nIf you have any further questions, details, or changes regarding your donation, please contact us as soon as possible." +
+					"\n\nThank you for thinking of us, and we hope you enjoy the rest of your day." +
+					"\n\nHabitat for Humanity Kingston ReStore";
+			
+		email(subject, text);
+		
+	}
+	
+	private void emailDonorDeclined(Integer donId, User user) {
+		
+		logger.debug("emailDonorDeclined() donation id : {}", donId);
+		
+		String subject = "Donation ID# " + donId + " to Habitat for Humanity - Declined";
+		String text = "Hello " + user.getFirstName() + " " + user.getLastName() + 
+					".\n\nWe regret to inform you your donation ID# " + donId + " has been declined. " + 
+					"If you have any questions or concerns regarding this, please do not hesitate to contact us." +
+					"\n\nThank you for thinking of us, and we hope you enjoy the rest of your day." +
+					"\n\nHabitat for Humanity Kingston ReStore";
+			
+		email(subject, text);
+		
+	}
+	
+	private void emailDonorDatePicked(Integer donId, User user) {
+		
+		logger.debug("emailDonorDatePicked() donation id : {}", donId);
+		
+		Donation donation = donationService.findById(donId).get(0);
+			
+		String subject = "Donation ID# " + donId + " to Habitat for Humanity - Date Picked";
+		String text = "Hello " + user.getFirstName() + " " + user.getLastName() + 
+					".\n\nA scheduled date of " + donation.getScheduledDate().get(0) + ": " + donation.getMeridian().get(0) + " has been chosen for your donation ID# " + donId + "." + 
+					"\n\nWe will contact you on the chosen date to confirm a time. If you have any questions or concerns please contact us as soon as possible." +
+					"\n\nThank you for thinking of us, and we hope you enjoy the rest of your day." +
+					"\n\nHabitat for Humanity Kingston ReStore";
+		
+		email(subject, text);
+		
+	}
+	
+	private void emailStaff(Integer donId, User user, String action) {
+		
+		logger.debug("emailStaff() donation id : {}", donId);
+		
+		String subject = "Donation ID# " + donId + " " + action;
+		String text = "Donation ID #" + donId + " submitted by " + user.getFirstName() + " " + user.getLastName() + " has been " + action + ".";
+			
+		email(subject, text);
+	}
+	
+	private void email(String subject, String text) {
+		
+		logger.debug("email()");
+		String from = "habitattestemail@gmail.com";
+		String to = "alexfaul96@gmail.com";
+		String host = "smtp.gmail.com";
+		final String username = "habitattestemail@gmail.com";
+		final String password = "Habitat2018";
+		Properties properties = System.getProperties();
+		properties.setProperty("mail.smtp.host", host);
+		properties.setProperty("mail.smtp.port", "587");
+		properties.setProperty("mail.smtp.auth", "true");
+		properties.setProperty("mail.smtp.starttls.enable", "true");
+		
+		Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(username, password);
+			}
+		});
+
+		try {
+			
+			MimeMessage message = new MimeMessage(session);
+			message.setFrom(new InternetAddress(from));
+			message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+			message.setSubject(subject);
+			message.setText(text);
+			
+			Transport.send(message);
+		} catch (MessagingException mex) {
+			mex.printStackTrace();
+		}
 	}
 
 }
