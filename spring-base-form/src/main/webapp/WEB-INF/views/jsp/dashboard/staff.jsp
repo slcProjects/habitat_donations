@@ -65,6 +65,11 @@
 				<button class="btn btn-info" onclick="location.href='${calendar}'">
 					<i class="material-icons">date_range</i> View calendar
 				</button>
+				
+				<spring:url value="/analytics" var="analyticsUrl" />
+				<button class="btn btn-info" onclick="location.href='${analyticsUrl}'">
+					View Donation Analaytics
+				</button>
 
 				<spring:url value="/logout" var="logoutUrl" />
 				<button class="btn btn-info" onclick="location.href='${logoutUrl}'">

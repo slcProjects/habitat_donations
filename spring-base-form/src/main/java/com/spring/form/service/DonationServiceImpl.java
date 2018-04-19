@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.spring.form.dao.DonationDao;
+import com.spring.form.model.Analytic;
 import com.spring.form.model.Donation;
 
 @Service("donationService")
@@ -60,6 +61,21 @@ public class DonationServiceImpl implements DonationService {
 	@Override 
 	public List<Donation> findByScheduledWeekOfMonth(Integer firstDay, Integer lastDay, Integer month, Integer year) {
 		return donationDao.findByScheduledWeekOfMonth(firstDay, lastDay, month, year);
+	}
+	
+	@Override
+	public List<Analytic> findMeridianCount() {
+		return donationDao.findMeridianCount();
+	}
+	
+	@Override 
+	public List<Analytic> findPostalCodeCount() {
+		return donationDao.findPostalCodeCount();
+	}
+	
+	@Override 
+	public List<Analytic> findTypeCount() {
+		return donationDao.findTypeCount();
 	}
 	
 	@Override

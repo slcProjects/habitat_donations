@@ -53,6 +53,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.ServletRequestDataBinder;
 
+import com.spring.form.model.Analytic;
 import com.spring.form.model.Attachment;
 import com.spring.form.model.Donation;
 import com.spring.form.model.Login;
@@ -89,6 +90,7 @@ public class UserController {
 	List<Attachment> images = null;
 	String listType;
 	private List<User> userExport;
+	private List<Analytic> analyticExport;
 
 	@Autowired
 	LoginFormValidator loginFormValidator;
@@ -553,8 +555,10 @@ public class UserController {
 					cell.setCellValue("Role");
 					cell = row.createCell(8);
 					cell.setCellValue("Receives Notifications");
+					row = sheet.createRow(rownum++);
+					createUserList(user, row);
 				} else {
-					createList(user, row);
+					createUserList(user, row);
 				}
 			}
 
@@ -1187,6 +1191,105 @@ public class UserController {
 		}
 
 	}
+	
+	// donation analytics menu
+	@RequestMapping(value = "/analytics", method = RequestMethod.GET)
+	public String analyticsMenu(Model model, final RedirectAttributes redirectAttributes) {
+
+		logger.debug("analyticsMenu()");
+
+		if (currentRole.equals("") || currentId == 0) {
+			redirectAttributes.addFlashAttribute("css", "danger");
+			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
+			return "redirect:/main";
+		} else if (!currentRole.equals("Staff")) {
+			redirectAttributes.addFlashAttribute("css", "danger");
+			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
+			return "redirect:/dashboard";
+		} else {
+			return "donations/analytic_menu";
+		}
+
+	}
+	
+	// donation analytics page
+	@RequestMapping(value = "/analytics/{analytic}", method = RequestMethod.GET)
+	public String donationAnalytics(@PathVariable("analytic") String analytic, Model model, 
+			final RedirectAttributes redirectAttributes) {
+
+		logger.debug("donationAnalytics() analytic : {}", analytic);
+
+		if (currentRole.equals("") || currentId == 0) {
+			redirectAttributes.addFlashAttribute("css", "danger");
+			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
+			return "redirect:/main";
+		} else if (!currentRole.equals("Staff")) {
+			redirectAttributes.addFlashAttribute("css", "danger");
+			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
+			return "redirect:/dashboard";
+		} else {
+			switch (analytic) {
+			case "type":
+				analyticExport = donationService.findTypeCount();
+				break;
+			case "code":
+				analyticExport = donationService.findPostalCodeCount();
+				break;
+			case "meridian":
+				analyticExport = donationService.findMeridianCount();
+			}
+			model.addAttribute("analytics", analyticExport);
+			model.addAttribute("type", analytic.substring(0, 1).toUpperCase() + analytic.substring(1));
+			return "donations/analytic";
+		}
+
+	}
+	
+	@RequestMapping(value = "/analytics/{type}/export", method = RequestMethod.POST)
+	public String exportAnalytics(@PathVariable("type") String type, Model model, final RedirectAttributes redirectAttributes) {
+		
+		logger.debug("exportAnalytics()");
+		
+		today = new GregorianCalendar();
+		
+		try {
+
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet sheet = workbook.createSheet("testsheet");
+			int rownum = 0;
+
+			for (Analytic analytic : analyticExport) {
+				Row row = sheet.createRow(rownum++);
+				if (rownum == 1) {
+					Cell cell = row.createCell(0);
+					cell.setCellValue(type.substring(0, 1).toUpperCase() + type.substring(1));
+					cell = row.createCell(1);
+					cell.setCellValue("Count");
+					row = sheet.createRow(rownum++);
+					createAnalyticList(analytic, row);
+				}
+				createAnalyticList(analytic, row);
+			}
+
+			String home = System.getProperty("user.home");
+			String fileName = home + "/Downloads/analytic_" + type + "_year" + today.get(Calendar.YEAR) + "_month" 
+					+ today.get(Calendar.MONTH) + "_day" + today.get(Calendar.DAY_OF_MONTH) + "_hour"
+					+ today.get(Calendar.HOUR) + "_min" + today.get(Calendar.MINUTE) + "_sec"
+					+ today.get(Calendar.SECOND) + ".xlsx";
+			FileOutputStream out = new FileOutputStream(new File(fileName));
+			workbook.write(out);
+			out.close();
+			workbook.close();
+
+		} catch (FileNotFoundException e) {
+			logger.debug("index() file not found exception: {}", e.getMessage());
+		} catch (IOException e) {
+			logger.debug("index() io exception : {}", e.getMessage());
+		}
+		
+		return "redirect:/analytics/" + type;
+		
+	}
 
 	// day schedule page
 	@RequestMapping(value = "/schedule/{month}/{day}/{year}", method = RequestMethod.GET)
@@ -1766,7 +1869,7 @@ public class UserController {
 		}
 	}
 
-	public void createList(User user, Row row) {
+	public void createUserList(User user, Row row) {
 		Cell cell = row.createCell(0);
 		cell.setCellValue(user.getId());
 		cell = row.createCell(1);
@@ -1790,6 +1893,13 @@ public class UserController {
 			cell.setCellValue("No");
 		}
 		
+	}
+	
+	public void createAnalyticList(Analytic analytic, Row row) {
+		Cell cell = row.createCell(0);
+		cell.setCellValue(analytic.getValue());
+		cell = row.createCell(1);
+		cell.setCellValue(analytic.getCount());
 	}
 
 }

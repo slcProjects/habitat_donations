@@ -4,6 +4,7 @@ import static java.lang.Math.toIntExact;
 
 import java.io.IOException;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import com.spring.form.model.Analytic;
 import com.spring.form.model.Donation;
 import com.spring.form.model.ScheduledDate;
 import com.spring.form.service.ScheduledDateService;
@@ -157,6 +159,57 @@ public class DonationDaoImpl implements DonationDao {
 		
 		try {
 			result = namedParameterJdbcTemplate.query(sql, params, new DonationMapper());
+		} catch (EmptyResultDataAccessException e) {
+			// do nothing, return null
+		}
+		
+		return result;
+
+	}
+	
+	@Override
+	public List<Analytic> findMeridianCount() {
+		
+		List<Analytic> result = null;
+		
+		String sql = "SELECT \"Meridian\", COUNT(*) AS \"Count\" FROM \"ScheduledDate\" GROUP BY \"Meridian\"";
+		
+		try {
+			result = namedParameterJdbcTemplate.query(sql, new AnalyticMapper());
+		} catch (EmptyResultDataAccessException e) {
+			// do nothing, return null
+		}
+		
+		return result;
+
+	}
+	
+	@Override
+	public List<Analytic> findPostalCodeCount() {
+		
+		List<Analytic> result = null;
+		
+		String sql = "SELECT \"PostalCode\", COUNT(*) AS \"Count\" FROM \"Donation\" GROUP BY \"PostalCode\"";
+		
+		try {
+			result = namedParameterJdbcTemplate.query(sql, new AnalyticMapper());
+		} catch (EmptyResultDataAccessException e) {
+			// do nothing, return null
+		}
+		
+		return result;
+
+	}
+	
+	@Override
+	public List<Analytic> findTypeCount() {
+		
+		List<Analytic> result = null;
+		
+		String sql = "SELECT \"Type\", COUNT(*) AS \"Count\" FROM \"Donation\" GROUP BY \"Type\"";
+		
+		try {
+			result = namedParameterJdbcTemplate.query(sql, new AnalyticMapper());
 		} catch (EmptyResultDataAccessException e) {
 			// do nothing, return null
 		}
@@ -320,6 +373,24 @@ public class DonationDaoImpl implements DonationDao {
 			donation.setReserved(rs.getBoolean("Reserved"));
 
 			return donation;
+		}
+	}
+	
+	private static final class AnalyticMapper implements RowMapper<Analytic> {
+
+		public Analytic mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Analytic analytic = new Analytic();
+			ResultSetMetaData rsmd = rs.getMetaData();
+			if (rsmd.getColumnName(1).equals("Type")) {
+				analytic.setValue(rs.getString("Type"));
+			} else if (rsmd.getColumnName(1).equals("PostalCode")) {
+				analytic.setValue(rs.getString("PostalCode"));
+			} else {
+				analytic.setValue(rs.getString("Meridian"));
+			}
+			analytic.setCount(rs.getInt("Count"));
+
+			return analytic;
 		}
 	}
 
