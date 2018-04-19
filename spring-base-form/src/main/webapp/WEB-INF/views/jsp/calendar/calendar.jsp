@@ -114,8 +114,6 @@
 				<spring:url value="/calendar/${month}/${year}/next" var="nextUrl" />
 				<button class="btn btn-info" onclick="location.href='${nextUrl}'">Next
 					Month</button>
-			</p>
-
 			<spring:url value="/dashboard" var="dashboardUrl" />
 			<button class="btn btn-info"
 				onclick="location.href='${dashboardUrl}'">Staff Dashboard</button>

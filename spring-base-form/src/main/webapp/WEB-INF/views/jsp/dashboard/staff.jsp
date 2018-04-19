@@ -6,11 +6,16 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+	rel="stylesheet">
 <jsp:include page="../fragments/head.jsp" />
 <body>
+
 	<jsp:include page="../fragments/header.jsp" />
 	<div class="content_body" style="margin-top: 156px">
+
 		<div class="container">
 
 			<c:if test="${not empty msg}">
@@ -23,188 +28,52 @@
 				</div>
 			</c:if>
 
-			<h1>Staff Dashboard</h1>
+			<h1 style="text-transform: uppercase; text-align: center">Staff
+				Dashboard</h1>
 			<div class="container-staff-dashboard">
-				<div data-vc-full-width="true" data-vc-full-width-init="true"
-					class="vc_row wpb_row vc_row-fluid center vc_custom_1513264566725 vc_row-o-equal-height vc_row-o-content-middle vc_row-flex ult-vc-hide-row vc_row-has-fill"
-					data-rtl="false"
-					style="position: relative; left: -115px; box-sizing: border-box; width: 980px; padding-left: 115px; padding-right: 115px; background-image: none !important;"
-					data-row-effect-mobile-disable="true">
-					<div class="upb_row_bg" data-bg-override="ex-full"
-						style="background: rgb(247, 243, 234); min-width: 980px; left: 0px; width: 980px;"></div>
-					<div class="wpb_column vc_column_container vc_col-sm-6">
-						<div class="vc_column-inner ">
-							<div class="wpb_wrapper">
-								<div
-									class="wpb_single_image wpb_content_element vc_align_center">
+				<spring:url value="/donations/${userId}/add" var="donateUrl" />
+				<button class="btn btn-info" onclick="location.href='${donateUrl}'">
+					<i class="material-icons">shopping_cart</i> Donate
+				</button>
+				<spring:url value="/donationsforuser" var="forUserUrl" />
+				<button class="btn btn-info" onclick="location.href='${forUserUrl}'">
+					<i class="material-icons">description</i> View Your Donations
+				</button>
 
-									<figure class="wpb_wrapper vc_figure"></figure>
-								</div>
-								<div class="boc_spacing " style="height: 20px"></div>
-								<div class="wpb_text_column wpb_content_element ">
-									<div class="wpb_wrapper">
-										<p style="text-align: center;">
-											<strong>Donate Something today!!</strong>
-										</p>
-										<p>
-										Want to make donation click button below. It will open new page with donation form
-										</p>
-									</div>
-								</div>
-								<spring:url value="/donations/${userId}/add" var="donateUrl" />
-								<button onclick="location.href='${donateUrl}'">Donate</button>
+				<spring:url value="/users/searchform" var="userSearch" />
+				<button class="btn btn-info" onclick="location.href='${userSearch}'">
+					<i class="material-icons">search</i> User Search
+				</button>
 
-								<div
-									class="wpb_single_image wpb_content_element vc_align_center">
-									<figure class="wpb_wrapper vc_figure"></figure>
-								</div>
-								<div class="boc_spacing " style="height: 20px"></div>
-								<div class="wpb_text_column wpb_content_element ">
-									<div class="wpb_wrapper">
-										<p style="text-align: center;">
-											<strong>see what you donated</strong>
-										</p>
-										<p>
-										See all the donations made...till now
-										</p>
-									</div>
-								</div>
-								<spring:url value="/donationsforuser" var="forUserUrl" />
-								<button onclick="location.href='${forUserUrl}'">View
-									Your Donations</button>
+				<spring:url value="/users" var="users" />
+				<button class="btn btn-info" onclick="location.href='${users}'">
+					<i class="material-icons">supervisor_account</i> View all users
+				</button>
 
+				<spring:url value="/donations" var="donations" />
+				<button class="btn btn-info" onclick="location.href='${donations}'">
+					<i class="material-icons">list</i> View all donations
+				</button>
 
-								<div
-									class="wpb_single_image wpb_content_element vc_align_center">
-									<figure class="wpb_wrapper vc_figure"></figure>
-								</div>
-								<div class="boc_spacing " style="height: 20px"></div>
-								<div class="wpb_text_column wpb_content_element ">
-									<div class="wpb_wrapper">
-										<p style="text-align: center;">
-											<strong>Find any user</strong>
-										</p>
-										<p>
-										Search for user details or donor Details
-										</p>
-									</div>
-								</div>
-								<spring:url value="/users/searchform" var="userSearch" />
-								<button class="btn btn-info"
-									onclick="location.href='${userSearch}'">User Search</button>
+				<spring:url value="/schedule/${month}/${day}/${year}" var="schedule" />
+				<button class="btn btn-info" onclick="location.href='${schedule}'">
+					<i class="material-icons">today</i> View today's schedule
+				</button>
 
+				<spring:url value="/calendar/${month}/${year}/current"
+					var="calendar" />
+				<button class="btn btn-info" onclick="location.href='${calendar}'">
+					<i class="material-icons">date_range</i> View calendar
+				</button>
 
-								<div
-									class="wpb_single_image wpb_content_element vc_align_center">
-									<figure class="wpb_wrapper vc_figure"></figure>
-								</div>
-								<div class="boc_spacing " style="height: 20px"></div>
-								<div class="wpb_text_column wpb_content_element ">
-									<div class="wpb_wrapper">
-										<p style="text-align: center;">
-											<strong>scroll through all users</strong>
-										</p>
-										<p>
-										view all the donor's details
-										</p>
-									</div>
-								</div>
-								<spring:url value="/users" var="users" />
-								<button class="btn btn-info" onclick="location.href='${users}'">View
-									all users</button>
+				<spring:url value="/logout" var="logoutUrl" />
+				<button class="btn btn-info" onclick="location.href='${logoutUrl}'">
+					<i class="material-icons">power_settings_new</i> Log Out
+				</button>
 
-
-								<div
-									class="wpb_single_image wpb_content_element vc_align_center">
-									<figure class="wpb_wrapper vc_figure"></figure>
-								</div>
-								<div class="boc_spacing " style="height: 20px"></div>
-								<div class="wpb_text_column wpb_content_element ">
-									<div class="wpb_wrapper">
-										<p style="text-align: center;">
-											<strong>scroll through all Donations</strong>
-										</p>
-										<p>
-										View all the donations, made at store or picked up from donor location
-										</p>
-									</div>
-								</div>
-								<spring:url value="/donations" var="donations" />
-								<button class="btn btn-info"
-									onclick="location.href='${donations}'">View all
-									donations</button>
-
-
-								<div
-									class="wpb_single_image wpb_content_element vc_align_center">
-									<figure class="wpb_wrapper vc_figure"></figure>
-								</div>
-								<div class="boc_spacing " style="height: 20px"></div>
-								<div class="wpb_text_column wpb_content_element ">
-									<div class="wpb_wrapper">
-										<p style="text-align: center;">
-											<strong>What is Today's Schedule Check here</strong>
-										</p>
-										<p>
-											See all the donation to be made at store or picked up for today's date
-										</p>
-									</div>
-								</div>
-								<spring:url value="/schedule/${month}/${day}/${year}"
-									var="schedule" />
-								<button class="btn btn-info"
-									onclick="location.href='${schedule}'">View today's
-									schedule</button>
-
-
-								<div
-									class="wpb_single_image wpb_content_element vc_align_center">
-									<figure class="wpb_wrapper vc_figure"></figure>
-								</div>
-								<div class="boc_spacing " style="height: 20px"></div>
-								<div class="wpb_text_column wpb_content_element ">
-									<div class="wpb_wrapper">
-										<p style="text-align: center;">
-											<strong>Check Calender</strong>
-										</p>
-										<p>
-										you can reach to calender you can see all upcoming donations or previous made donations 
-										</p>
-									</div>
-								</div>
-								<spring:url value="/calendar/${month}/${year}/current"
-									var="calendar" />
-								<button class="btn btn-info"
-									onclick="location.href='${calendar}'">View calendar</button>
-
-
-								<div
-									class="wpb_single_image wpb_content_element vc_align_center">
-									<figure class="wpb_wrapper vc_figure"></figure>
-								</div>
-								<div class="boc_spacing " style="height: 20px"></div>
-								<div class="wpb_text_column wpb_content_element ">
-									<div class="wpb_wrapper">
-										<p style="text-align: center;">
-											<strong>Good bye!!</strong>
-										</p>
-										<p>
-										You can end your session from here, always welcomed again..!!
-										</p>
-									</div>
-								</div>
-								<spring:url value="/logout" var="logoutUrl" />
-								<button class="btn btn-info"
-									onclick="location.href='${logoutUrl}'">Log Out</button>
-
-							</div>
-						</div>
-					</div>
-				</div>
 			</div>
 		</div>
 	</div>
-
 	<jsp:include page="../fragments/footer.jsp" />
 </body>
 </html>

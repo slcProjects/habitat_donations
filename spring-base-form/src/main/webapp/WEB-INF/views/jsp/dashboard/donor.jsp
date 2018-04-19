@@ -6,7 +6,10 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+	rel="stylesheet">
 <jsp:include page="../fragments/head.jsp" />
 <body>
 	<jsp:include page="../fragments/header.jsp" />
@@ -22,101 +25,31 @@
 					<strong>${msg}</strong>
 				</div>
 			</c:if>
+			<h1 style="text-transform: uppercase; text-align: center">Donor
+				Dashboard</h1>
+			<div class="container-donor-dashboard" style="text-align: center">
+				<button class="btn btn-info"
+					onclick="location.href='/spring-base-form-initial_load/donations/2/add'">
+					<i class="material-icons">shopping_cart</i> Donate
+				</button>
 
-			<h1>Donor Dashboard</h1>
+				<button class="btn btn-info"
+					onclick="location.href='/spring-base-form-initial_load/users/2'">
+					<i class="material-icons">supervisor_account</i> View User
+				</button>
 
+				<button class="btn btn-info"
+					onclick="location.href='/spring-base-form-initial_load/donationsforuser'">
+					<i class="material-icons">description</i> View Your Donations
+				</button>
 
-
-			<div data-vc-full-width="true" data-vc-full-width-init="true"
-				class="vc_row wpb_row vc_row-fluid center vc_custom_1513264566725 vc_row-o-equal-height vc_row-o-content-middle vc_row-flex ult-vc-hide-row vc_row-has-fill"
-				data-rtl="false"
-				style="position: relative; left: -115px; box-sizing: border-box; width: 980px; padding-left: 115px; padding-right: 115px; background-image: none !important;"
-				data-row-effect-mobile-disable="true">
-				<div class="upb_row_bg" data-bg-override="ex-full"
-					style="background: rgb(247, 243, 234); min-width: 980px; left: 0px; width: 980px;"></div>
-				<div class="wpb_column vc_column_container vc_col-sm-6">
-					<div class="vc_column-inner ">
-						<div class="wpb_wrapper">
-							<div class="wpb_single_image wpb_content_element vc_align_center">
-
-								<figure class="wpb_wrapper vc_figure"></figure>
-							</div>
-							<div class="boc_spacing " style="height: 20px"></div>
-							<div class="wpb_text_column wpb_content_element ">
-								<div class="wpb_wrapper">
-									<p style="text-align: center;">
-										<strong>Donate Something today!!</strong>
-										</p>
-										<p>
-										click on below button to make any donations. This will open new page with donation form.!!
-									</p>
-								</div>
-							</div>
-							<spring:url value="/users/${userId}" var="userUrl" />
-							<spring:url value="/donationsforuser" var="forUserUrl" />
-							<spring:url value="/donations/${userId}/add" var="donateUrl" />
-							<button onclick="location.href='${donateUrl}'">Donate</button>
-
-							<div class="wpb_single_image wpb_content_element vc_align_center">
-								<figure class="wpb_wrapper vc_figure"></figure>
-							</div>
-							<div class="boc_spacing " style="height: 20px"></div>
-							<div class="wpb_text_column wpb_content_element ">
-								<div class="wpb_wrapper">
-									<p style="text-align: center;">
-										<strong>see users details </strong>
-										</p>
-										<p>
-										Check your login details, you can edit details from there..!! 
-									</p>
-								</div>
-							</div>
-							<button onclick="location.href='${userUrl}'">View User
-								Detail</button>
-
-							<div class="wpb_single_image wpb_content_element vc_align_center">
-								<figure class="wpb_wrapper vc_figure"></figure>
-							</div>
-							<div class="boc_spacing " style="height: 20px"></div>
-							<div class="wpb_text_column wpb_content_element ">
-								<div class="wpb_wrapper">
-									<p style="text-align: center;">
-										<strong>see your Donations</strong>
-										</p>
-										<p>
-										see all your donations that you made here..!!
-									</p>
-								</div>
-							</div>
-							<button onclick="location.href='${forUserUrl}'">View
-								Your Donations</button>
-
-							<div class="wpb_single_image wpb_content_element vc_align_center">
-								<figure class="wpb_wrapper vc_figure"></figure>
-							</div>
-							<div class="boc_spacing " style="height: 20px"></div>
-							<div class="wpb_text_column wpb_content_element ">
-								<div class="wpb_wrapper">
-									<p style="text-align: center;">
-										<strong>Good bye!!</strong>
-										</p>
-										<p>
-										You can end you session here..!! you are always welcomed again
-									</p>
-								</div>
-							</div>
-
-							<spring:url value="/logout" var="logoutUrl" />
-							<button class="btn btn-info"
-								onclick="location.href='${logoutUrl}'">Log Out</button>
-
-						</div>
-					</div>
-				</div>
+				<button class="btn btn-info"
+					onclick="location.href='/spring-base-form-initial_load/logout'">
+					<i class="material-icons">power_settings_new</i> Log Out
+				</button>
 			</div>
 		</div>
 	</div>
-
 	<jsp:include page="../fragments/footer.jsp" />
 </body>
 </html>
