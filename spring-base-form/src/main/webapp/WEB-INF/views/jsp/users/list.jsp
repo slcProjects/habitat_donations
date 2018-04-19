@@ -28,7 +28,7 @@
 					<p>No users found</p>
 				</c:when>
 				<c:otherwise>
-					<table>
+					<table id="usertable">
 						<thead>
 							<tr>
 								<th>#ID</th>
@@ -39,25 +39,27 @@
 							</tr>
 						</thead>
 
-						<c:forEach var="user" items="${users}">
-							<tr>
-								<td>${user.id}</td>
-								<td>${user.loginName}</td>
-								<td>${user.email}</td>
-								<td>${user.role}</td>
-								<td><spring:url value="/users/${user.id}" var="userUrl" />
-									<spring:url value="/users/${user.id}/delete" var="deleteUrl" />
-									<spring:url value="/users/${user.id}/update" var="updateUrl" />
-									<spring:url value="/donations/${user.id}/add" var="donateUrl" />
-									<button onclick="location.href='${userUrl}'">View
-										Detail</button>
-									<button onclick="location.href='${updateUrl}'">Edit
-										User</button>
-									<button onclick="location.href='${deleteUrl}'">Delete</button>
-									<button onclick="location.href='${donateUrl}'">Donate</button>
-								</td>
-							</tr>
-						</c:forEach>
+						<tbody>
+							<c:forEach var="user" items="${users}">
+								<tr>
+									<td>${user.id}</td>
+									<td>${user.loginName}</td>
+									<td>${user.email}</td>
+									<td>${user.role}</td>
+									<td><spring:url value="/users/${user.id}" var="userUrl" />
+										<spring:url value="/users/${user.id}/delete" var="deleteUrl" />
+										<spring:url value="/users/${user.id}/update" var="updateUrl" />
+										<spring:url value="/donations/${user.id}/add" var="donateUrl" />
+										<button onclick="location.href='${userUrl}'">View
+											Detail</button>
+										<button onclick="location.href='${updateUrl}'">Edit
+											User</button>
+										<button onclick="location.href='${deleteUrl}'">Delete</button>
+										<button onclick="location.href='${donateUrl}'">Donate</button>
+									</td>
+								</tr>
+							</c:forEach>
+						</tbody>
 					</table>
 				</c:otherwise>
 			</c:choose>
@@ -82,4 +84,11 @@
 	<jsp:include page="../fragments/footer.jsp" />
 
 </body>
+
+<script type="text/javascript">
+	$(document).ready( function () {
+    	$('#usertable').DataTable();
+	} );
+</script>
+
 </html>

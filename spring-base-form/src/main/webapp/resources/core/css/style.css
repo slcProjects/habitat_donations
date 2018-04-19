@@ -1,4 +1,4 @@
-table, th, td, tr {
+.calendar-table, tr, td, th {
 	border: 2px solid black;
 	border-collapse: collapse;
 }
@@ -10,7 +10,7 @@ table, th, td {
 
 button {
 	margin-top: 10px;
-}
+} 
 
 .donlink {
 	display: block;

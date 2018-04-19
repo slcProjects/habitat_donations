@@ -28,7 +28,7 @@
 					<p>No donations found</p>
 				</c:when>
 				<c:otherwise>
-					<table>
+					<table id="dontable">
 						<thead>
 							<tr>
 								<th>#ID</th>
@@ -41,52 +41,54 @@
 							</tr>
 						</thead>
 
-						<c:forEach var="donation" items="${donations}">
-							<tr>
-								<td>${donation.id}</td>
-								<td>${donation.description}</td>
-								<td>
-									<c:forEach var="date" items="${donation.scheduledDate}" varStatus="dateindex">
-										${date}:
-										<c:forEach var="meridian" items="${donation.meridian}" varStatus="meridianindex">
-											<c:if test="${dateindex.count == meridianindex.count}">
-												${meridian}
-											</c:if>
+						<tbody>
+							<c:forEach var="donation" items="${donations}">
+								<tr>
+									<td>${donation.id}</td>
+									<td>${donation.description}</td>
+									<td>
+										<c:forEach var="date" items="${donation.scheduledDate}" varStatus="dateindex">
+											${date}:
+											<c:forEach var="meridian" items="${donation.meridian}" varStatus="meridianindex">
+												<c:if test="${dateindex.count == meridianindex.count}">
+													${meridian}
+												</c:if>
+											</c:forEach>
+											<br />
 										</c:forEach>
-										<br />
-									</c:forEach>
-								</td>
-								<td>${donation.type}</td>
-								<td>${donation.status}</td>
-								<td><spring:url value="/donations/${donation.id}"
-										var="donationUrl" /> <spring:url
-										value="/donations/${donation.id}/approve" var="approveUrl" /> <spring:url
-										value="/donations/${donation.id}/decline" var="declineUrl" /> <spring:url
-										value="/donations/${donation.id}/delete" var="deleteUrl" /> <spring:url
-										value="/donations/${donation.id}/update" var="updateUrl" />
+									</td>
+									<td>${donation.type}</td>
+									<td>${donation.status}</td>
+									<td><spring:url value="/donations/${donation.id}"
+											var="donationUrl" /> <spring:url
+											value="/donations/${donation.id}/approve" var="approveUrl" /> <spring:url
+											value="/donations/${donation.id}/decline" var="declineUrl" /> <spring:url
+											value="/donations/${donation.id}/delete" var="deleteUrl" /> <spring:url
+											value="/donations/${donation.id}/update" var="updateUrl" />
 
-									<button onclick="location.href='${donationUrl}'">Donation
-										Detail</button>
-									<button onclick="location.href='${updateUrl}'">Edit
-										Donation</button>
-									<c:choose>
-										<c:when test="${donation.status == 'AWAITING APPROVAL'}">
-											<button onclick="location.href='${approveUrl}'">Approve Donation</button>
-											<button onclick="location.href='${declineUrl}'">Decline Donation</button>
-										</c:when>
-										<c:otherwise>
-											<button onclick="location.href='${deleteUrl}'">Delete Donation</button>
-										</c:otherwise>
-									</c:choose></td>
-								<td style='border: 2px solid black'>
-									<spring:url value="http://www.google.ca/maps/place/${donation.address},${donation.city},${donation.province},${donation.postalCode}"
-										var="mapUrl" />
-									<button
-										onclick="window.open('${mapUrl}')">view
-										on google map</button>
-								</td>
-							</tr>
-						</c:forEach>
+										<button onclick="location.href='${donationUrl}'">Donation
+											Detail</button>
+										<button onclick="location.href='${updateUrl}'">Edit
+											Donation</button>
+										<c:choose>
+											<c:when test="${donation.status == 'AWAITING APPROVAL'}">
+												<button onclick="location.href='${approveUrl}'">Approve Donation</button>
+												<button onclick="location.href='${declineUrl}'">Decline Donation</button>
+											</c:when>
+											<c:otherwise>
+												<button onclick="location.href='${deleteUrl}'">Delete Donation</button>
+											</c:otherwise>
+										</c:choose></td>
+									<td style='border: 2px solid black'>
+										<spring:url value="http://www.google.ca/maps/place/${donation.address},${donation.city},${donation.province},${donation.postalCode}"
+											var="mapUrl" />
+										<button
+											onclick="window.open('${mapUrl}')">view
+											on google map</button>
+									</td>
+								</tr>
+							</c:forEach>
+						</tbody>
 					</table>
 				</c:otherwise>
 			</c:choose>
@@ -106,4 +108,11 @@
 	<jsp:include page="../fragments/footer.jsp" />
 
 </body>
+
+<script type="text/javascript">
+	$(document).ready( function () {
+    	$('#dontable').DataTable();
+	} );
+</script>
+
 </html>

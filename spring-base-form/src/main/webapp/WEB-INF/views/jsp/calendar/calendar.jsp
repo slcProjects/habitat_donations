@@ -22,7 +22,7 @@
 
 			<c:set var="ctr" value="${1}" />
 
-			<table>
+			<table class="calendar-table">
 				<thead>
 					<tr>
 						<th></th>

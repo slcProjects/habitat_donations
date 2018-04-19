@@ -12,6 +12,8 @@
 	content="width=device-width, initial-scale=1, maximum-scale=1">
 
 <title>Habitat for Humanity - Kingston Limestone Region</title>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jq-3.2.1/jszip-2.5.0/dt-1.10.16/b-1.5.1/b-colvis-1.5.1/b-flash-1.5.1/b-html5-1.5.1/b-print-1.5.1/fc-3.2.4/fh-3.1.3/r-2.2.1/sc-1.4.4/datatables.min.css"/>
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/jq-3.2.1/jszip-2.5.0/dt-1.10.16/b-1.5.1/b-colvis-1.5.1/b-flash-1.5.1/b-html5-1.5.1/b-print-1.5.1/fc-3.2.4/fh-3.1.3/r-2.2.1/sc-1.4.4/datatables.min.js"></script>
 <link rel="dns-prefetch" href="//fonts.googleapis.com">
 <link rel="dns-prefetch" href="//s.w.org">
 <script src="https://www.google-analytics.com/analytics.js"></script>

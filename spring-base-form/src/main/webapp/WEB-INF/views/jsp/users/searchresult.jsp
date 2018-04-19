@@ -30,7 +30,7 @@
 				<c:otherwise>
 					<spring:url value="/users/email" var="userEmail" />
 					<form method="post" action="${userEmail}">
-						<table>
+						<table id="searchtable">
 							<thead>
 								<tr>
 									<th>Check to Email User</th>
@@ -41,27 +41,29 @@
 									<th>Actions</th>
 								</tr>
 							</thead>
-	
-							<c:forEach var="user" items="${users}">
-								<tr>
-									<td><input name="usersend" type="checkbox" value="${user.id}"/></td>
-									<td>${user.id}</td>
-									<td>${user.loginName}</td>
-									<td>${user.email}</td>
-									<td>${user.role}</td>
-									<td><spring:url value="/users/${user.id}" var="userUrl" />
-										<spring:url value="/users/${user.id}/delete" var="deleteUrl" />
-										<spring:url value="/users/${user.id}/update" var="updateUrl" />
-										<spring:url value="/donations/${user.id}/add" var="donateUrl" />
-										<button onclick="location.href='${userUrl}'">View
-											Detail</button>
-										<button onclick="location.href='${updateUrl}'">Edit
-											User</button>
-										<button onclick="location.href='${deleteUrl}'">Delete</button>
-										<button onclick="location.href='${donateUrl}'">Donate</button>
-									</td>
-								</tr>
-							</c:forEach>
+
+							<tbody>
+								<c:forEach var="user" items="${users}">
+									<tr>
+										<td><input name="usersend" type="checkbox" value="${user.id}"/></td>
+										<td>${user.id}</td>
+										<td>${user.loginName}</td>
+										<td>${user.email}</td>
+										<td>${user.role}</td>
+										<td><spring:url value="/users/${user.id}" var="userUrl" />
+											<spring:url value="/users/${user.id}/delete" var="deleteUrl" />
+											<spring:url value="/users/${user.id}/update" var="updateUrl" />
+											<spring:url value="/donations/${user.id}/add" var="donateUrl" />
+											<button onclick="location.href='${userUrl}'">View
+												Detail</button>
+											<button onclick="location.href='${updateUrl}'">Edit
+												User</button>
+											<button onclick="location.href='${deleteUrl}'">Delete</button>
+											<button onclick="location.href='${donateUrl}'">Donate</button>
+										</td>
+									</tr>
+								</c:forEach>
+							</tbody>
 						</table>
 						<button type="submit">Email Selected Users</button>
 					</form>
@@ -84,4 +86,11 @@
 	<jsp:include page="../fragments/footer.jsp" />
 
 </body>
+
+<script type="text/javascript">
+	$(document).ready( function () {
+    	$('#searchtable').DataTable();
+	} );
+</script>
+
 </html>

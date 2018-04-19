@@ -22,7 +22,7 @@
 					<p>No donations found</p>
 				</c:when>
 				<c:otherwise>
-					<table>
+					<table id="weekscheduletable">
 						<thead>
 							<tr>
 								<th>#ID</th>
@@ -34,78 +34,80 @@
 								<th>Actions</th>
 							</tr>
 						</thead>
-
-						<c:forEach var="donation" items="${donations}">
-							<tr>
-								<td>${donation.id}</td>
-								<td>${donation.description}</td>
-								<td>
-									<c:forEach var="date" items="${donation.scheduledDate}" varStatus="dateindex">
-										${date}:
-										<c:forEach var="meridian" items="${donation.meridian}" varStatus="meridianindex">
-											<c:if test="${dateindex.count == meridianindex.count}">
-												${meridian}
-											</c:if>
+						
+						<tbody>
+							<c:forEach var="donation" items="${donations}">
+								<tr>
+									<td>${donation.id}</td>
+									<td>${donation.description}</td>
+									<td>
+										<c:forEach var="date" items="${donation.scheduledDate}" varStatus="dateindex">
+											${date}:
+											<c:forEach var="meridian" items="${donation.meridian}" varStatus="meridianindex">
+												<c:if test="${dateindex.count == meridianindex.count}">
+													${meridian}
+												</c:if>
+											</c:forEach>
+											<br />
 										</c:forEach>
-										<br />
-									</c:forEach>
-								</td>
-								<td>${donation.type}</td>
-								<td>
-									<div class="gf_browser_chrome gform_wrapper"
-										id="gform_wrapper_6">
-										<spring:url value="/statusupdate" var="statusUrl" />
-										<c:choose>
-											<c:when test="${not empty error && error == donation.id}">
-												<c:set var="errClass" value="gfield_error" />
-											</c:when>
-											<c:otherwise>
-												<c:set var="errClass" value="" />
-											</c:otherwise>
-										</c:choose>
-										<ul id="gform_fields_6"
-											class="gform_fields top_label form_sublabel_below description_below">
-											<li
-												class="gform_body gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${errClass}">
-												<form:form class="form-horizontal" method="post"
-													modelAttribute="statusForm${donation.id}"
-													action="${statusUrl}">
-													<form:hidden path="id" />
-													<form:hidden path="day" />
-													<form:hidden path="month" />
-													<form:hidden path="year" />
-													<form:hidden path="type" />
-													<c:choose>
-														<c:when test="${donation.status == 'AWAITING APPROVAL'}">
-															AWAITING APPROVAL
-														</c:when>
-														<c:otherwise>
-															<spring:bind path="status">
-																<form:select path="status" class="form-control">
-																	<form:option value="NONE" label="" />
-																	<form:options items="${statusList}" />
-																</form:select>
-															</spring:bind>
-															<button type="submit">Update Status</button>
-															<c:if test="${not empty error && error == donation.id}">
-																<label class="gfield_description validation_message">This
-																	field is required.</label>
-															</c:if>
-														</c:otherwise>
-													</c:choose>
-												</form:form>
-											</li>
-										</ul>
-									</div>
-								</td>
-								<td>${donation.address} ${donation.city},
-									${donation.province}, ${donation.postalCode}</td>
-								<td><spring:url value="/donations/${donation.id}"
-										var="donationUrl" />
-									<button onclick="location.href='${donationUrl}'">Donation
-										Detail</button></td>
-							</tr>
-						</c:forEach>
+									</td>
+									<td>${donation.type}</td>
+									<td>
+										<div class="gf_browser_chrome gform_wrapper"
+											id="gform_wrapper_6">
+											<spring:url value="/statusupdate" var="statusUrl" />
+											<c:choose>
+												<c:when test="${not empty error && error == donation.id}">
+													<c:set var="errClass" value="gfield_error" />
+												</c:when>
+												<c:otherwise>
+													<c:set var="errClass" value="" />
+												</c:otherwise>
+											</c:choose>
+											<ul id="gform_fields_6"
+												class="gform_fields top_label form_sublabel_below description_below">
+												<li
+													class="gform_body gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${errClass}">
+													<form:form class="form-horizontal" method="post"
+														modelAttribute="statusForm${donation.id}"
+														action="${statusUrl}">
+														<form:hidden path="id" />
+														<form:hidden path="day" />
+														<form:hidden path="month" />
+														<form:hidden path="year" />
+														<form:hidden path="type" />
+														<c:choose>
+															<c:when test="${donation.status == 'AWAITING APPROVAL'}">
+																AWAITING APPROVAL
+															</c:when>
+															<c:otherwise>
+																<spring:bind path="status">
+																	<form:select path="status" class="form-control">
+																		<form:option value="NONE" label="" />
+																		<form:options items="${statusList}" />
+																	</form:select>
+																</spring:bind>
+																<button type="submit">Update Status</button>
+																<c:if test="${not empty error && error == donation.id}">
+																	<label class="gfield_description validation_message">This
+																		field is required.</label>
+																</c:if>
+															</c:otherwise>
+														</c:choose>
+													</form:form>
+												</li>
+											</ul>
+										</div>
+									</td>
+									<td>${donation.address} ${donation.city},
+										${donation.province}, ${donation.postalCode}</td>
+									<td><spring:url value="/donations/${donation.id}"
+											var="donationUrl" />
+										<button onclick="location.href='${donationUrl}'">Donation
+											Detail</button></td>
+								</tr>
+							</c:forEach>
+						</tbody>
 					</table>
 					<input type="submit" value="Print" onClick="window.print()" />
 				</c:otherwise>
@@ -136,5 +138,12 @@
 
 	<jsp:include page="../fragments/footer.jsp" />
 </body>
+
+<script type="text/javascript">
+	$(document).ready( function () {
+    	$('#weekscheduletable').DataTable();
+	} );
+</script>
+
 </html>
 
