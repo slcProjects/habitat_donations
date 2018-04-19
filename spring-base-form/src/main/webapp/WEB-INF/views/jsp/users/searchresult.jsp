@@ -67,6 +67,10 @@
 						</table>
 						<button type="submit">Email Selected Users</button>
 					</form>
+					<spring:url value="/users/export" var="userExport" />
+					<form method="post" action="${userExport}">
+						<button type="submit">Export To Excel Spreadsheet</button>
+					</form>
 				</c:otherwise>
 			</c:choose>
 

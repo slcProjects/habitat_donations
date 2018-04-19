@@ -1,5 +1,8 @@
 package com.spring.form.web;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Timestamp;
@@ -24,6 +27,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +88,7 @@ public class UserController {
 	private static final String STATUSFORM_PATTERN = "^statusForm\\d+$";
 	List<Attachment> images = null;
 	String listType;
+	private List<User> userExport;
 
 	@Autowired
 	LoginFormValidator loginFormValidator;
@@ -146,7 +154,7 @@ public class UserController {
 	public void setAttachmentService(AttachmentService attachmentService) {
 		this.attachmentService = attachmentService;
 	}
-	
+
 	@Autowired
 	public void setScheduledDateService(ScheduledDateService scheduledDateService) {
 		this.scheduledDateService = scheduledDateService;
@@ -157,6 +165,7 @@ public class UserController {
 	public String index(Model model) {
 
 		logger.debug("index()");
+
 		if (!currentRole.equals("") && currentId != 0) {
 			return "redirect:/dashboard";
 		} else {
@@ -468,29 +477,29 @@ public class UserController {
 			String endMonth = search.getEndMonth();
 			String startYear = search.getStartYear();
 			String endYear = search.getEndYear();
-			List<User> users = userService.search(first, last, city, code, role, startMonth, endMonth, startYear,
+			userExport = userService.search(first, last, city, code, role, startMonth, endMonth, startYear,
 					endYear);
-			if (users == null) {
+			if (userExport == null) {
 				model.addAttribute("css", "danger");
-				model.addAttribute("msg", "User not found");
+				model.addAttribute("msg", "No users found");
 			}
-			model.addAttribute("users", users);
+			model.addAttribute("users", userExport);
 
 			return "users/searchresult";
 
 		}
 
 	}
-	
+
 	// send email to checked users
 	@RequestMapping(value = "/users/email", method = RequestMethod.POST)
-	public String emailSelectedDonors(Model model, final RedirectAttributes redirectAttributes, 
+	public String emailSelectedDonors(Model model, final RedirectAttributes redirectAttributes,
 			HttpServletResponse response, HttpServletRequest request) {
-		
+
 		logger.debug("emailSelectedDonors()");
-		
+
 		String checkedUsers[] = request.getParameterValues("usersend");
-		
+
 		if (checkedUsers == null) {
 			redirectAttributes.addFlashAttribute("msg", "Did not select any users");
 		} else {
@@ -504,6 +513,65 @@ public class UserController {
 				email(subject, text);
 			}
 			redirectAttributes.addFlashAttribute("msg", "Emails sent");
+		}
+
+		return "redirect:/users/searchform";
+
+	}
+	
+	@RequestMapping(value = "/users/export", method = RequestMethod.POST)
+	public String exportUsers(Model model, final RedirectAttributes redirectAttributes) {
+		
+		logger.debug("exportUsers()");
+		
+		today = new GregorianCalendar();
+		
+		try {
+
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet sheet = workbook.createSheet("testsheet");
+			int rownum = 0;
+
+			for (User user : userExport) {
+				Row row = sheet.createRow(rownum++);
+				if (rownum == 1) {
+					Cell cell = row.createCell(0);
+					cell.setCellValue("User ID");
+					cell = row.createCell(1);
+					cell.setCellValue("Login Name");
+					cell = row.createCell(2);
+					cell.setCellValue("First Name");
+					cell = row.createCell(3);
+					cell.setCellValue("Last Name");
+					cell = row.createCell(4);
+					cell.setCellValue("Email Address");
+					cell = row.createCell(5);
+					cell.setCellValue("Phone Number");
+					cell = row.createCell(6);
+					cell.setCellValue("Full Address");
+					cell = row.createCell(7);
+					cell.setCellValue("Role");
+					cell = row.createCell(8);
+					cell.setCellValue("Receives Notifications");
+				} else {
+					createList(user, row);
+				}
+			}
+
+			String home = System.getProperty("user.home");
+			String fileName = home + "/Downloads/usersearch_year" + today.get(Calendar.YEAR) + "_month" 
+					+ today.get(Calendar.MONTH) + "_day" + today.get(Calendar.DAY_OF_MONTH) + "_hour"
+					+ today.get(Calendar.HOUR) + "_min" + today.get(Calendar.MINUTE) + "_sec"
+					+ today.get(Calendar.SECOND) + ".xlsx";
+			FileOutputStream out = new FileOutputStream(new File(fileName));
+			workbook.write(out);
+			out.close();
+			workbook.close();
+
+		} catch (FileNotFoundException e) {
+			logger.debug("index() file not found exception: {}", e.getMessage());
+		} catch (IOException e) {
+			logger.debug("index() io exception : {}", e.getMessage());
 		}
 		
 		return "redirect:/users/searchform";
@@ -542,7 +610,7 @@ public class UserController {
 			}
 			for (int ctr = indexes.size() - 1; ctr >= 0; ctr--) {
 				int index = indexes.get(ctr);
-			    dons.remove(index);
+				dons.remove(index);
 			}
 			model.addAttribute("donations", dons);
 			return "donations/list";
@@ -561,7 +629,7 @@ public class UserController {
 			return "redirect:/main";
 		} else {
 			model.addAttribute("role", currentRole);
-			
+
 			listType = "user";
 			List<Donation> dons = donationService.findByUserId(currentId);
 			int previousId = 0;
@@ -584,9 +652,9 @@ public class UserController {
 					dons.remove(index);
 				}
 			}
-			
+
 			model.addAttribute("donations", dons);
-			
+
 			return "donations/listforuser";
 		}
 
@@ -599,13 +667,13 @@ public class UserController {
 			HttpServletResponse response, HttpServletRequest request) {
 
 		logger.debug("saveOrUpdateDonation() : {}", donation);
-		
+
 		String checkedAm[] = request.getParameterValues("am");
 		String checkedPm[] = request.getParameterValues("pm");
 		donation.setDateError("");
 
 		if (result.hasErrors() || donation.isNew() && checkedAm == null && checkedPm == null) {
-			
+
 			if (checkedAm == null && checkedPm == null) {
 				donation.setDateError("gfield_error");
 				model.addAttribute("dateError", true);
@@ -613,7 +681,7 @@ public class UserController {
 			year = today.get(Calendar.YEAR);
 			month = today.get(Calendar.MONTH);
 			int day = today.get(Calendar.DATE);
-			
+
 			GregorianCalendar first = new GregorianCalendar(year, month, 1);
 			int daysInMonth = first.getActualMaximum(Calendar.DAY_OF_MONTH);
 			int firstOfMonth = first.get(Calendar.DAY_OF_WEEK);
@@ -628,7 +696,7 @@ public class UserController {
 			model.addAttribute("daysInMonth", daysInMonth);
 			model.addAttribute("first", firstOfMonth);
 			model.addAttribute("weeksInMonth", weeksInMonth);
-			
+
 			if (!donation.isNew()) {
 				images = attachmentService.findByDonation(donation.getId());
 				Boolean noImage = false;
@@ -648,14 +716,14 @@ public class UserController {
 			} else {
 				model.addAttribute("noImage", true);
 			}
-			
+
 			populateProvinces(model);
 			populateDonationTypes(model);
 			populateDonationStatuses(model);
 			model.addAttribute("role", currentRole);
 			return "donations/donateform";
 		} else {
-			
+
 			if (checkedAm != null) {
 				for (int ctr = 0; ctr < checkedAm.length; ctr++) {
 					GregorianCalendar calendar = new GregorianCalendar(year, month, Integer.parseInt(checkedAm[ctr]));
@@ -663,7 +731,7 @@ public class UserController {
 					donation.getMeridian().add("AM");
 				}
 			}
-			
+
 			if (checkedPm != null) {
 				for (int ctr = 0; ctr < checkedPm.length; ctr++) {
 					GregorianCalendar calendar = new GregorianCalendar(year, month, Integer.parseInt(checkedPm[ctr]));
@@ -688,11 +756,11 @@ public class UserController {
 			} else {
 				redirectAttributes.addFlashAttribute("msg", "Donation updated successfully!");
 			}
-			
+
 			donationService.saveOrUpdate(donation);
 
 			int numImages = donation.getNumImages();
-			
+
 			int id = donation.getId();
 			if (!donation.getFile1().getContentType().contains("application/octet-stream")
 					|| donation.getFile1() != null) {
@@ -746,7 +814,7 @@ public class UserController {
 			donation.setNumImages(numImages);
 			donationService.saveOrUpdate(donation);
 			redirectAttributes.addFlashAttribute("role", currentRole);
-			
+
 			String action = "updated";
 			if (created) {
 				action = "created";
@@ -790,11 +858,11 @@ public class UserController {
 			donation.setStatus("AWAITING APPROVAL");
 			donation.setNumImages(0);
 			donation.setReserved(false);
-			
+
 			year = today.get(Calendar.YEAR);
 			month = today.get(Calendar.MONTH);
 			int day = today.get(Calendar.DATE);
-			
+
 			GregorianCalendar first = new GregorianCalendar(year, month, 1);
 			int daysInMonth = first.getActualMaximum(Calendar.DAY_OF_MONTH);
 			int firstOfMonth = first.get(Calendar.DAY_OF_WEEK);
@@ -870,18 +938,18 @@ public class UserController {
 			}
 			model.addAttribute("noImage", noImage);
 			model.addAttribute("role", currentRole);
-			
+
 			year = today.get(Calendar.YEAR);
 			month = today.get(Calendar.MONTH);
 			int day = today.get(Calendar.DATE);
-			
+
 			GregorianCalendar first = new GregorianCalendar(year, month, 1);
 			int daysInMonth = first.getActualMaximum(Calendar.DAY_OF_MONTH);
 			int firstOfMonth = first.get(Calendar.DAY_OF_WEEK);
 
 			GregorianCalendar last = new GregorianCalendar(year, month, daysInMonth);
 			int weeksInMonth = last.get(Calendar.WEEK_OF_MONTH);
-			
+
 			List<ScheduledDate> dates = scheduledDateService.findAll();
 
 			model.addAttribute("allDonations", donationService.findAll());
@@ -903,7 +971,7 @@ public class UserController {
 		}
 
 	}
-	
+
 	// decline donation
 	@RequestMapping(value = "/donations/{id}/decline", method = RequestMethod.GET)
 	public String declineDonation(@PathVariable("id") int id, final RedirectAttributes redirectAttributes) {
@@ -927,7 +995,7 @@ public class UserController {
 			}
 
 			donationService.delete(id);
-			
+
 			emailDonorDeclined(id, user);
 			emailStaff(id, user, "declined");
 
@@ -966,7 +1034,7 @@ public class UserController {
 			}
 
 			donationService.delete(id);
-			
+
 			emailStaff(id, user, "deleted");
 
 			redirectAttributes.addFlashAttribute("css", "success");
@@ -980,29 +1048,29 @@ public class UserController {
 		}
 
 	}
-	
+
 	// approve donation
 	@RequestMapping(value = "/donations/{id}/approve", method = RequestMethod.GET)
 	public String approveDonation(@PathVariable("id") int id, Model model, HttpServletResponse response,
 			HttpServletRequest request, final RedirectAttributes redirectAttributes) {
-		
+
 		logger.debug("approveDonation() id : {}", id);
-		
+
 		Donation donation = donationService.findById(id).get(0);
-		
+
 		if (donation.getType().equals("DROPOFF")) {
 			donationService.updateStatus(id, "AWAITING DROPOFF");
 		} else {
 			donationService.updateStatus(id, "AWAITING PICKUP");
 		}
-		
+
 		User user = userService.findById(donation.getDonor());
-		
+
 		emailDonorApproved(id, user);
 		emailStaff(id, user, "approved");
-		
+
 		return "redirect:/donations/" + id;
-		
+
 	}
 
 	// show donation
@@ -1031,7 +1099,7 @@ public class UserController {
 					dons.remove(ctr);
 				}
 			}
-			
+
 			Donation donation = dons.get(0);
 			List<Attachment> images = attachmentService.findByDonation(id);
 
@@ -1059,7 +1127,7 @@ public class UserController {
 			} else {
 				model.addAttribute("imageIds", imageIds);
 			}
-			
+
 			List<ScheduledDate> dates = scheduledDateService.findAll();
 
 			model.addAttribute("allDonations", donationService.findAll());
@@ -1093,15 +1161,15 @@ public class UserController {
 		}
 
 	}
-	
+
 	// select donation date
 	@RequestMapping(value = "/donation/{donId}/choosedate/{datePos}", method = RequestMethod.POST)
 	public String chooseDonationDate(@PathVariable("donId") int donId, @PathVariable("datePos") int datePos,
 			Model model, HttpServletResponse response, HttpServletRequest request,
 			final RedirectAttributes redirectAttributes) {
-		
+
 		logger.debug("chooseDonationDate()");
-		
+
 		if (currentRole.equals("") || currentId == 0) {
 			redirectAttributes.addFlashAttribute("css", "danger");
 			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
@@ -1117,7 +1185,7 @@ public class UserController {
 			emailDonorDatePicked(donId, userService.findById(donationService.findById(donId).get(0).getDonor()));
 			return "redirect:/donations/" + donId;
 		}
-		
+
 	}
 
 	// day schedule page
@@ -1377,7 +1445,7 @@ public class UserController {
 				dons.remove(index);
 			}
 		}
-		
+
 		Status status;
 		for (int ctr = 0; ctr < dons.size(); ctr++) {
 			status = new Status();
@@ -1404,11 +1472,12 @@ public class UserController {
 
 	// update donation status
 	@RequestMapping(value = "/statusupdate", method = RequestMethod.POST)
-	public String updateStatus(@ModelAttribute(STATUSFORM_PATTERN) @Validated Status status, BindingResult result, Model model,
-			final RedirectAttributes redirectAttributes, HttpServletResponse response, HttpServletRequest request) {
+	public String updateStatus(@ModelAttribute(STATUSFORM_PATTERN) @Validated Status status, BindingResult result,
+			Model model, final RedirectAttributes redirectAttributes, HttpServletResponse response,
+			HttpServletRequest request) {
 
 		logger.debug("updateStatus() status : {}", status);
-		
+
 		populateDonationStatuses(model);
 
 		if (result.hasErrors()) {
@@ -1572,96 +1641,99 @@ public class UserController {
 		return model;
 
 	}
-	
+
 	private void emailDonorCreate(Integer donId, User user) {
-		
+
 		logger.debug("emailDonorCreate() donation id : {}", donId);
-		
+
 		String subject = "Donation ID# " + donId + " to Habitat for Humanity - Submitted";
-		String text = "Hello " + user.getFirstName() + " " + user.getLastName() + 
-					".\n\nYour donation has been submitted successfully and is now awaiting approval. " + 
-					"We will check our inbox as soon as possible in order to confirm your donation. " +
-					"\n\nYour donation ID# is " + donId + "; please refer to this number if you have any future questions or concerns." +
-					"\n\nThank you for thinking of us, and we hope you enjoy the rest of your day." +
-					"\n\nHabitat for Humanity Kingston ReStore";
-			
+		String text = "Hello " + user.getFirstName() + " " + user.getLastName()
+				+ ".\n\nYour donation has been submitted successfully and is now awaiting approval. "
+				+ "We will check our inbox as soon as possible in order to confirm your donation. "
+				+ "\n\nYour donation ID# is " + donId
+				+ "; please refer to this number if you have any future questions or concerns."
+				+ "\n\nThank you for thinking of us, and we hope you enjoy the rest of your day."
+				+ "\n\nHabitat for Humanity Kingston ReStore";
+
 		email(subject, text);
 	}
-	
+
 	private void emailDonorUpdate(Integer donId, User user) {
-		
+
 		logger.debug("emailDonorUpdate() donation id : {}", donId);
-		
+
 		String subject = "Donation ID# " + donId + " to Habitat for Humanity - Updated";
-		String text = "Hello " + user.getFirstName() + " " + user.getLastName() + 
-					".\n\nYour donation ID# " + donId + " has been updated. " + 
-					"If you have any questions or concerns involving these changes please contact us as soon as possible." +
-					"\n\nThank you for thinking of us, and we hope you enjoy the rest of your day." +
-					"\n\nHabitat for Humanity Kingston ReStore";
-			
+		String text = "Hello " + user.getFirstName() + " " + user.getLastName() + ".\n\nYour donation ID# " + donId
+				+ " has been updated. "
+				+ "If you have any questions or concerns involving these changes please contact us as soon as possible."
+				+ "\n\nThank you for thinking of us, and we hope you enjoy the rest of your day."
+				+ "\n\nHabitat for Humanity Kingston ReStore";
+
 		email(subject, text);
-		
+
 	}
-	
+
 	private void emailDonorApproved(Integer donId, User user) {
-		
+
 		logger.debug("emailDonorDeclined() donation id : {}", donId);
-		
+
 		String subject = "Donation ID# " + donId + " to Habitat for Humanity - Approved";
-		String text = "Hello " + user.getFirstName() + " " + user.getLastName() + 
-					".\n\nYour donation ID# " + donId + " has been approved." + 
-					"\n\nIf you have any further questions, details, or changes regarding your donation, please contact us as soon as possible." +
-					"\n\nThank you for thinking of us, and we hope you enjoy the rest of your day." +
-					"\n\nHabitat for Humanity Kingston ReStore";
-			
+		String text = "Hello " + user.getFirstName() + " " + user.getLastName() + ".\n\nYour donation ID# " + donId
+				+ " has been approved."
+				+ "\n\nIf you have any further questions, details, or changes regarding your donation, please contact us as soon as possible."
+				+ "\n\nThank you for thinking of us, and we hope you enjoy the rest of your day."
+				+ "\n\nHabitat for Humanity Kingston ReStore";
+
 		email(subject, text);
-		
+
 	}
-	
+
 	private void emailDonorDeclined(Integer donId, User user) {
-		
+
 		logger.debug("emailDonorDeclined() donation id : {}", donId);
-		
+
 		String subject = "Donation ID# " + donId + " to Habitat for Humanity - Declined";
-		String text = "Hello " + user.getFirstName() + " " + user.getLastName() + 
-					".\n\nWe regret to inform you your donation ID# " + donId + " has been declined. " + 
-					"If you have any questions or concerns regarding this, please do not hesitate to contact us." +
-					"\n\nThank you for thinking of us, and we hope you enjoy the rest of your day." +
-					"\n\nHabitat for Humanity Kingston ReStore";
-			
+		String text = "Hello " + user.getFirstName() + " " + user.getLastName()
+				+ ".\n\nWe regret to inform you your donation ID# " + donId + " has been declined. "
+				+ "If you have any questions or concerns regarding this, please do not hesitate to contact us."
+				+ "\n\nThank you for thinking of us, and we hope you enjoy the rest of your day."
+				+ "\n\nHabitat for Humanity Kingston ReStore";
+
 		email(subject, text);
-		
+
 	}
-	
+
 	private void emailDonorDatePicked(Integer donId, User user) {
-		
+
 		logger.debug("emailDonorDatePicked() donation id : {}", donId);
-		
+
 		Donation donation = donationService.findById(donId).get(0);
-			
+
 		String subject = "Donation ID# " + donId + " to Habitat for Humanity - Date Picked";
-		String text = "Hello " + user.getFirstName() + " " + user.getLastName() + 
-					".\n\nA scheduled date of " + donation.getScheduledDate().get(0) + ": " + donation.getMeridian().get(0) + " has been chosen for your donation ID# " + donId + "." + 
-					"\n\nWe will contact you on the chosen date to confirm a time. If you have any questions or concerns please contact us as soon as possible." +
-					"\n\nThank you for thinking of us, and we hope you enjoy the rest of your day." +
-					"\n\nHabitat for Humanity Kingston ReStore";
-		
+		String text = "Hello " + user.getFirstName() + " " + user.getLastName() + ".\n\nA scheduled date of "
+				+ donation.getScheduledDate().get(0) + ": " + donation.getMeridian().get(0)
+				+ " has been chosen for your donation ID# " + donId + "."
+				+ "\n\nWe will contact you on the chosen date to confirm a time. If you have any questions or concerns please contact us as soon as possible."
+				+ "\n\nThank you for thinking of us, and we hope you enjoy the rest of your day."
+				+ "\n\nHabitat for Humanity Kingston ReStore";
+
 		email(subject, text);
-		
+
 	}
-	
+
 	private void emailStaff(Integer donId, User user, String action) {
-		
+
 		logger.debug("emailStaff() donation id : {}", donId);
-		
+
 		String subject = "Donation ID# " + donId + " " + action;
-		String text = "Donation ID #" + donId + " submitted by " + user.getFirstName() + " " + user.getLastName() + " has been " + action + ".";
-			
+		String text = "Donation ID #" + donId + " submitted by " + user.getFirstName() + " " + user.getLastName()
+				+ " has been " + action + ".";
+
 		email(subject, text);
 	}
-	
+
 	private void email(String subject, String text) {
-		
+
 		logger.debug("email()");
 		String from = "habitattestemail@gmail.com";
 		String to = "alexfaul96@gmail.com";
@@ -1673,7 +1745,7 @@ public class UserController {
 		properties.setProperty("mail.smtp.port", "587");
 		properties.setProperty("mail.smtp.auth", "true");
 		properties.setProperty("mail.smtp.starttls.enable", "true");
-		
+
 		Session session = Session.getInstance(properties, new javax.mail.Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
 				return new PasswordAuthentication(username, password);
@@ -1681,17 +1753,43 @@ public class UserController {
 		});
 
 		try {
-			
+
 			MimeMessage message = new MimeMessage(session);
 			message.setFrom(new InternetAddress(from));
 			message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
 			message.setSubject(subject);
 			message.setText(text);
-			
+
 			Transport.send(message);
 		} catch (MessagingException mex) {
 			mex.printStackTrace();
 		}
+	}
+
+	public void createList(User user, Row row) {
+		Cell cell = row.createCell(0);
+		cell.setCellValue(user.getId());
+		cell = row.createCell(1);
+		cell.setCellValue(user.getLoginName());
+		cell = row.createCell(2);
+		cell.setCellValue(user.getFirstName());
+		cell = row.createCell(3);
+		cell.setCellValue(user.getLastName());
+		cell = row.createCell(4);
+		cell.setCellValue(user.getEmail());
+		cell = row.createCell(5);
+		cell.setCellValue(user.getPhone());
+		cell = row.createCell(6);
+		cell.setCellValue(user.getAddress() + " " + user.getCity() + ", " + user.getProvince() + " " + user.getPostalCode());
+		cell = row.createCell(7);
+		cell.setCellValue(user.getRole());
+		cell = row.createCell(8);
+		if (user.isNotify()) {
+			cell.setCellValue("Yes");
+		} else {
+			cell.setCellValue("No");
+		}
+		
 	}
 
 }
