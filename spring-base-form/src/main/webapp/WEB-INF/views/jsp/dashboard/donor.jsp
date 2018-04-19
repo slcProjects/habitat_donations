@@ -28,22 +28,22 @@
 			<h1 style="text-transform: uppercase; text-align: center">Donor
 				Dashboard</h1>
 			<div class="container-donor-dashboard" style="text-align: center">
-				<button class="btn btn-info"
+				<button style="font-size: 20px"
 					onclick="location.href='/spring-base-form-initial_load/donations/2/add'">
 					<i class="material-icons">shopping_cart</i> Donate
 				</button>
 
-				<button class="btn btn-info"
+				<button style="font-size: 20px"
 					onclick="location.href='/spring-base-form-initial_load/users/2'">
 					<i class="material-icons">supervisor_account</i> View User
 				</button>
 
-				<button class="btn btn-info"
+				<button style="font-size: 20px"
 					onclick="location.href='/spring-base-form-initial_load/donationsforuser'">
 					<i class="material-icons">description</i> View Your Donations
 				</button>
 
-				<button class="btn btn-info"
+				<button style="font-size: 20px"
 					onclick="location.href='/spring-base-form-initial_load/logout'">
 					<i class="material-icons">power_settings_new</i> Log Out
 				</button>
