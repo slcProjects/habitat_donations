@@ -265,7 +265,7 @@ public class DonationDaoImpl implements DonationDao {
 		String sql = "UPDATE \"Donation\" SET \"DonorID\"=:donor, \"Description\"=:description, \"Value\"=:value, "
 				+ "\"CompletedDate\"=:completedDate, \"Address\"=:address, \"City\"=:city, "
 				+ "\"Province\"=:province, \"PostalCode\"=:postalCode, \"DropFee\"=:dropFee, "
-				+ "\"ReceiverID\"=:receiver, \"Tacking\"=:tacking, \"Receipts\"=:receipts, \"Reserved\"=:reserved \"NumImages\"=:numImages, "
+				+ "\"ReceiverID\"=:receiver, \"Tacking\"=:tacking, \"Receipts\"=:receipts, \"Reserved\"=:reserved, \"NumImages\"=:numImages, "
 				+ "\"Type\"=CAST(:type AS \"DonationType\"), \"Status\"=CAST(:status AS \"DonationStatus\") WHERE \"DonationID\"=:id";
 
 		try {

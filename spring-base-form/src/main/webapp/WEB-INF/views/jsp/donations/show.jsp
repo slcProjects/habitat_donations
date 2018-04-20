@@ -213,6 +213,8 @@
 					</ul>
 
 				</div>
+				
+				<button>Export to Tax Receipt (inactive)</button>
 
 				<div style="float: left">
 					<spring:url value="/donationsforuser" var="forUserUrl" />

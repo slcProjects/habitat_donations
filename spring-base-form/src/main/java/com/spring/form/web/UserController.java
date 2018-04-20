@@ -91,6 +91,7 @@ public class UserController {
 	String listType;
 	private List<User> userExport;
 	private List<Analytic> analyticExport;
+	Search saveSearch;
 
 	@Autowired
 	LoginFormValidator loginFormValidator;
@@ -479,6 +480,7 @@ public class UserController {
 			String endMonth = search.getEndMonth();
 			String startYear = search.getStartYear();
 			String endYear = search.getEndYear();
+			saveSearch = search;
 			userExport = userService.search(first, last, city, code, role, startMonth, endMonth, startYear,
 					endYear);
 			if (userExport == null) {
@@ -509,8 +511,43 @@ public class UserController {
 			for (int ctr = 0; ctr < checkedUsers.length; ctr++) {
 				User user = userService.findById(Integer.parseInt(checkedUsers[ctr]));
 				String text = "Hello " + user.getFirstName() + " " + user.getLastName() + "."
-						+ "\n\nYou are being emailed today because we are testing out our email services within our user search engine."
-						+ "\n\nThank you for thinking of us, and we hope you enjoy the rest of your day."
+						+ "\n\nYou are being emailed today because we are testing out our email services within our user search engine.\nYou met the following criteria:\n\n";
+				if (saveSearch.getFirstName() != "") {
+					text += "First Name: " + saveSearch.getFirstName() + "\n\n";
+				}
+				if (saveSearch.getLastName() != "") {
+					text += "Last Name: " + saveSearch.getLastName() + "\n\n";
+				}
+				if (saveSearch.getCity() != "") {
+					text += "City: " + saveSearch.getCity() + "\n\n";
+				}
+				if (saveSearch.getPostalCode() != "") {
+					text += "Postal Code: " + saveSearch.getPostalCode() + "\n\n";
+				}
+				if (saveSearch.getRole() != null) {
+					text += "Role: " + saveSearch.getRole() + "\n\n";
+				}
+				if (!saveSearch.getStartMonth().equalsIgnoreCase("none")) {
+					text += "Start Month: " + saveSearch.getStartMonth() + " ";
+					if (saveSearch.getStartYear() != "") {
+						text += saveSearch.getStartYear() + "\n\n";
+					} else {
+						text += today.get(Calendar.YEAR) + "\n\n";
+					}
+				} else if (!saveSearch.getStartYear().equals("")) {
+					text += "Start Month: January " + saveSearch.getStartYear() + "\n\n";
+				}
+				if (!saveSearch.getEndMonth().equalsIgnoreCase("none")) {
+					text += "End Month: " + saveSearch.getEndMonth() + " ";
+					if (saveSearch.getEndYear() != null) {
+						text += saveSearch.getEndYear() + "\n\n";
+					} else {
+						text += today.get(Calendar.YEAR) + "\n\n";
+					}
+				} else if (!saveSearch.getEndYear().equals("")) {
+					text += "Start Month: December " + saveSearch.getEndYear() + "\n\n";
+				}
+				text += "\n\nThank you for thinking of us, and we hope you enjoy the rest of your day."
 						+ "\n\nHabitat for Humanity Kingston ReStore";
 				email(subject, text);
 			}
@@ -522,7 +559,7 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "/users/export", method = RequestMethod.POST)
-	public String exportUsers(Model model, final RedirectAttributes redirectAttributes) {
+	public String exportUsersToSpreadsheet(Model model, final RedirectAttributes redirectAttributes) {
 		
 		logger.debug("exportUsers()");
 		
@@ -580,6 +617,11 @@ public class UserController {
 		
 		return "redirect:/users/searchform";
 		
+	}
+	
+	// export user info to tax receipt
+	public String exportUserToTaxReceipt() {
+		return null;
 	}
 
 	// donation list page
@@ -672,13 +714,19 @@ public class UserController {
 
 		logger.debug("saveOrUpdateDonation() : {}", donation);
 
-		String checkedAm[] = request.getParameterValues("am");
-		String checkedPm[] = request.getParameterValues("pm");
+		String checkedAm[] = null, checkedPm[] = null;
+		boolean checked = false;
+		
+		if (request.getParameterValues("am") != null) {
+			checkedAm = request.getParameterValues("am");
+			checkedPm = request.getParameterValues("pm");
+			checked = true;
+        }
 		donation.setDateError("");
 
-		if (result.hasErrors() || donation.isNew() && checkedAm == null && checkedPm == null) {
+		if (result.hasErrors() || donation.getId() == null && result.hasErrors()) {
 
-			if (checkedAm == null && checkedPm == null) {
+			if (!checked && donation.getId() == null) {
 				donation.setDateError("gfield_error");
 				model.addAttribute("dateError", true);
 			}
@@ -701,7 +749,23 @@ public class UserController {
 			model.addAttribute("first", firstOfMonth);
 			model.addAttribute("weeksInMonth", weeksInMonth);
 
-			if (!donation.isNew()) {
+			if (donation.getId() != null) {
+				List<Donation> dons = donationService.findById(donation.getId());
+				int decrease = 1;
+				for (int ctr = 0; ctr < dons.size(); ctr++) {
+					if (ctr != 0) {
+						dons.get(ctr - decrease).getScheduledDate().add(dons.get(ctr).getScheduledDate().get(0));
+						dons.get(ctr - decrease).getMeridian().add(dons.get(ctr).getMeridian().get(0));
+						decrease++;
+					}
+				}
+				for (int ctr = dons.size() - 1; ctr >= 1; ctr--) {
+					dons.remove(ctr);
+				}
+				donation.setScheduledDate(dons.get(0).getScheduledDate());
+				donation.setMeridian(dons.get(0).getMeridian());
+				model.addAttribute("donationForm", donation);
+				
 				images = attachmentService.findByDonation(donation.getId());
 				Boolean noImage = false;
 				List<Integer> imageIds = new ArrayList<>();
@@ -716,7 +780,9 @@ public class UserController {
 				} else {
 					model.addAttribute("imageIds", imageIds);
 				}
+				model.addAttribute("allDonations", donationService.findAll());
 				model.addAttribute("noImage", noImage);
+				model.addAttribute("dateCount", donation.getScheduledDate().size());
 			} else {
 				model.addAttribute("noImage", true);
 			}
@@ -727,7 +793,7 @@ public class UserController {
 			model.addAttribute("role", currentRole);
 			return "donations/donateform";
 		} else {
-
+			
 			if (checkedAm != null) {
 				for (int ctr = 0; ctr < checkedAm.length; ctr++) {
 					GregorianCalendar calendar = new GregorianCalendar(year, month, Integer.parseInt(checkedAm[ctr]));
@@ -1192,6 +1258,11 @@ public class UserController {
 
 	}
 	
+	// export donation info to tax receipt
+	public String exportDonationToTaxReceipt() {
+		return null;
+	}
+	
 	// donation analytics menu
 	@RequestMapping(value = "/analytics", method = RequestMethod.GET)
 	public String analyticsMenu(Model model, final RedirectAttributes redirectAttributes) {
@@ -1246,7 +1317,7 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "/analytics/{type}/export", method = RequestMethod.POST)
-	public String exportAnalytics(@PathVariable("type") String type, Model model, final RedirectAttributes redirectAttributes) {
+	public String exportAnalyticsToSpreadsheet(@PathVariable("type") String type, Model model, final RedirectAttributes redirectAttributes) {
 		
 		logger.debug("exportAnalytics()");
 		
@@ -1797,7 +1868,7 @@ public class UserController {
 
 		String subject = "Donation ID# " + donId + " to Habitat for Humanity - Declined";
 		String text = "Hello " + user.getFirstName() + " " + user.getLastName()
-				+ ".\n\nWe regret to inform you your donation ID# " + donId + " has been declined. "
+				+ ".\n\nWe regret to inform you your donation ID# " + donId + " has been declined. We however greatly appreciate your generosity."
 				+ "If you have any questions or concerns regarding this, please do not hesitate to contact us."
 				+ "\n\nThank you for thinking of us, and we hope you enjoy the rest of your day."
 				+ "\n\nHabitat for Humanity Kingston ReStore";
@@ -1827,10 +1898,36 @@ public class UserController {
 	private void emailStaff(Integer donId, User user, String action) {
 
 		logger.debug("emailStaff() donation id : {}", donId);
+		
+		String subject, text;
+		
+		if (!action.equals("deleted")) {
+		
+			Donation donation = donationService.findById(donId).get(0);
 
-		String subject = "Donation ID# " + donId + " " + action;
-		String text = "Donation ID #" + donId + " submitted by " + user.getFirstName() + " " + user.getLastName()
-				+ " has been " + action + ".";
+			subject = "Donation ID# " + donId + " " + action;
+			text = "Donation ID #" + donId + " description \"" + donation.getDescription() + ",\" submitted by " 
+					+ user.getFirstName() + " " + user.getLastName() + " has been " + action + " at " 
+					+ donation.getTacking() + ".";
+			String address;
+			if (donation.getType().equals("PICKUP")) {
+				address = donation.getAddress() + " " + donation.getCity() + ", " + donation.getProvince() + " " + donation.getPostalCode();
+				text += " Pickup address is " + address + ". ";
+			} else {
+				text += " Donation is to be dropped off at ReStore. ";
+			}
+			text += "Donor's phone number is " + user.getPhone() + ".";
+		
+		} else {
+			
+			String date = today.get(Calendar.DAY_OF_MONTH) + "/" + today.get(Calendar.MONTH) + "/" + today.get(Calendar.YEAR);
+			String time = today.get(Calendar.HOUR) + ":" + today.get(Calendar.MINUTE) + ":" + today.get(Calendar.SECOND);
+			
+			subject = "Donation ID# " + donId + " " + action;
+			text = "Donation ID #" + donId + " submitted by " + user.getFirstName() + " " + user.getLastName() + " has been " + action + " on " 
+					+ date + " at " + time + ". Donor's phone number is " + user.getPhone() + ".";
+			
+		}
 
 		email(subject, text);
 	}
@@ -1839,7 +1936,7 @@ public class UserController {
 
 		logger.debug("email()");
 		String from = "habitattestemail@gmail.com";
-		String to = "alexfaul96@gmail.com";
+		String to = "habitattestemail@gmail.com";
 		String host = "smtp.gmail.com";
 		final String username = "habitattestemail@gmail.com";
 		final String password = "Habitat2018";

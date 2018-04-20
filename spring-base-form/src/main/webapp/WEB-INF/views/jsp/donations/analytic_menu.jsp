@@ -30,26 +30,26 @@
 
 			<h1 style="text-align: center">Donation Analytics</h1>
 				
-			<div class="container-staff-dashboard">
+			<div class="container-staff-dashboard" style="text-align: center">
 			
 				<spring:url value="/analytics/type" var="typeUrl" />
-				<button class="btn btn-info" onclick="location.href='${typeUrl}'">
-					View Donation Types
+				<button style="font-size: 20px" onclick="location.href='${typeUrl}'">
+					<i class="material-icons">merge_type</i> View Donation Types
 				</button>
 
 				<spring:url value="/analytics/code" var="codeUrl" />
-				<button class="btn btn-info" onclick="location.href='${codeUrl}'">
-					View Postal Codes
+				<button style="font-size: 20px" onclick="location.href='${codeUrl}'">
+					<i class="material-icons">location_on</i> View Postal Codes
 				</button>
 
 				<spring:url value="/analytics/meridian" var="meridianUrl" />
-				<button class="btn btn-info" onclick="location.href='${meridianUrl}'">
-					View Donation Meridians
+				<button style="font-size: 20px" onclick="location.href='${meridianUrl}'">
+					<i class="material-icons">brightness_high</i> View Donation Times
 				</button>
 
 				<spring:url value="/dashboard" var="dashboardUrl" />
-				<button class="btn btn-info" onclick="location.href='${dashboardUrl}'">
-					Staff Dashboard
+				<button style="font-size: 20px" onclick="location.href='${dashboardUrl}'">
+					<i class="material-icons">build</i> Staff Dashboard
 				</button>
 
 			</div>

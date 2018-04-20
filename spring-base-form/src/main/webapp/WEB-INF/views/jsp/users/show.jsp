@@ -90,6 +90,8 @@
 					<spring:url value="/users/${user.id}/update" var="updateUrl" />
 					<button onclick="location.href='${updateUrl}'">Edit User
 						Detail</button>
+						
+					<button>Export to Tax Receipt (inactive)</button>
 
 					<spring:url value="/dashboard" var="dashboardUrl" />
 
