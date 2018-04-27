@@ -213,8 +213,6 @@
 					</ul>
 
 				</div>
-				
-				<button>Export to Tax Receipt (inactive)</button>
 
 				<div style="float: left">
 					<spring:url value="/donationsforuser" var="forUserUrl" />
@@ -225,6 +223,11 @@
 
 					<c:choose>
 						<c:when test="${role == 'Staff'}">
+							<c:if test="${not empty donation.completedDate}">
+								<spring:url value="/donations/${donation.id}/taxreceipt"
+									var="receiptUrl" />
+								<button onclick="location.href='${receiptUrl}'">Export to Tax Receipt Form</button>
+							</c:if>
 							<spring:url value="/donations/${donation.id}/update"
 								var="updateUrl" />
 							<button onclick="location.href='${updateUrl}'">Update

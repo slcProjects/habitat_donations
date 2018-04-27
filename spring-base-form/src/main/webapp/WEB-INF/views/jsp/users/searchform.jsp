@@ -85,7 +85,10 @@
 								class="gfield_label gfield_label_before_complex"
 								for="input_6_1_3">Role</label> <span
 								class="ginput_left address_zip"><spring:bind path="role">
-										<form:input path="role" id="role" />
+										<form:select path="role">
+											<form:option value="NONE" label="" />
+											<form:options items="${roleList}" />
+										</form:select>
 										<form:errors class="gfield_description validation_message"
 											path="role" />
 										<div class="gf_clear gf_clear_complex"></div>

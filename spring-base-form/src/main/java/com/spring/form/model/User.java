@@ -14,6 +14,8 @@ public class User
 
 	// form:input - password
 	String confirmPassword;
+	
+	String currentPass;
 
 	// form:input - textbox
 	String firstName;
@@ -91,6 +93,14 @@ public class User
 
 	public void setConfirmPassword(String confirmPassword) {
 		this.confirmPassword = confirmPassword;
+	}
+	
+	public String getCurrentPass() {
+		return currentPass;
+	}
+	
+	public void setCurrentPass(String currentPass) {
+		this.currentPass = currentPass;
 	}
 
 	public String getFirstName() {

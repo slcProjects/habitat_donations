@@ -48,7 +48,7 @@
 						<li
 							class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
 							class="gfield_label">Full Name</label>
-							<div>${user.firstName}${user.lastName}</div></li>
+							<div>${user.firstName} ${user.lastName}</div></li>
 
 						<li
 							class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
@@ -63,7 +63,7 @@
 						<li
 							class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible"><label
 							class="gfield_label">Address</label>
-							<div>${user.address}${user.city},${user.province},
+							<div>${user.address} ${user.city}, ${user.province},
 								${user.postalCode}</div></li>
 
 						<li
@@ -91,8 +91,6 @@
 					<button onclick="location.href='${updateUrl}'">Edit User
 						Detail</button>
 						
-					<button>Export to Tax Receipt (inactive)</button>
-
 					<spring:url value="/dashboard" var="dashboardUrl" />
 
 					<c:choose>

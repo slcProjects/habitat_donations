@@ -1,6 +1,7 @@
 package com.spring.form.web;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,8 +28,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
@@ -298,6 +304,9 @@ public class UserController {
 		if (result.hasErrors()) {
 			populateProvinces(model);
 			model.addAttribute("role", currentRole);
+			if (currentRole.equals("Staff")) {
+				populateRoles(model);
+			}
 			return "users/userform";
 		} else {
 
@@ -305,6 +314,9 @@ public class UserController {
 			if (user.isNew()) {
 				redirectAttributes.addFlashAttribute("msg", "User added successfully!");
 			} else {
+				if (user.getPassword().equals("")) {
+					user.setPassword(user.getCurrentPass());
+				}
 				redirectAttributes.addFlashAttribute("msg", "User updated successfully!");
 			}
 
@@ -337,7 +349,10 @@ public class UserController {
 
 		model.addAttribute("userForm", user);
 		model.addAttribute("role", currentRole);
-
+		
+		if (currentRole.equals("Staff")) {
+			populateRoles(model);
+		}
 		populateProvinces(model);
 
 		return "users/userform";
@@ -375,8 +390,12 @@ public class UserController {
 			return "redirect:/main";
 		} else {
 			User user = userService.findById(id);
+			user.setCurrentPass(user.getPassword());
 			model.addAttribute("userForm", user);
 			model.addAttribute("role", currentRole);
+			if (currentRole.equals("Staff")) {
+				populateRoles(model);
+			}
 
 			populateProvinces(model);
 
@@ -451,6 +470,7 @@ public class UserController {
 		} else {
 			model.addAttribute("searchForm", new Search());
 			populateMonths(model);
+			populateRoles(model);
 			return "users/searchform";
 		}
 
@@ -465,6 +485,7 @@ public class UserController {
 
 		if (result.hasErrors()) {
 			populateMonths(model);
+			populateRoles(model);
 			return "users/searchform";
 		} else {
 
@@ -549,7 +570,8 @@ public class UserController {
 				}
 				text += "\n\nThank you for thinking of us, and we hope you enjoy the rest of your day."
 						+ "\n\nHabitat for Humanity Kingston ReStore";
-				email(subject, text);
+				String receiver = "habitattestemail@gmail.com";
+				email(subject, text, receiver);
 			}
 			redirectAttributes.addFlashAttribute("msg", "Emails sent");
 		}
@@ -617,11 +639,6 @@ public class UserController {
 		
 		return "redirect:/users/searchform";
 		
-	}
-	
-	// export user info to tax receipt
-	public String exportUserToTaxReceipt() {
-		return null;
 	}
 
 	// donation list page
@@ -1258,9 +1275,155 @@ public class UserController {
 
 	}
 	
-	// export donation info to tax receipt
-	public String exportDonationToTaxReceipt() {
-		return null;
+	// export donation + donor info to tax receipt
+	@RequestMapping(value = "/donations/{donId}/taxreceipt", method = RequestMethod.GET)
+	public String exportToTaxReceipt(@PathVariable("donId") int donId, Model model, HttpServletResponse response, 
+			HttpServletRequest request, final RedirectAttributes redirectAttributes) {
+		
+		logger.debug("exportToTaxReceipt() donation id : {}", donId);
+		
+		if (currentRole.equals("") || currentId == 0) {
+			redirectAttributes.addFlashAttribute("css", "danger");
+			redirectAttributes.addFlashAttribute("msg", "You must log in to access the website.");
+			return "redirect:/main";
+		} else if (!currentRole.equals("Staff")) {
+			redirectAttributes.addFlashAttribute("css", "danger");
+			redirectAttributes.addFlashAttribute("msg", "You do not have permission to access this page.");
+			return "redirect:/dashboard";
+		} else {
+			
+			Donation donation = donationService.findById(donId).get(0);
+			if (donation.getCompletedDate() == null) {
+				redirectAttributes.addFlashAttribute("css", "danger");
+				redirectAttributes.addFlashAttribute("msg", "Donation is incomplete. Cannot export.");
+			} else {
+			
+				User user = userService.findById(donation.getDonor());
+
+				try {
+					
+					InputStream in = new FileInputStream("C:/tomcat/webapps/spring-base-form-initial_load/resources/core/taxreceipt.xlsx");
+					 
+					Workbook workbook = WorkbookFactory.create(in);
+					Sheet sheet = workbook.getSheetAt(0);
+					
+					Row row = sheet.getRow(10);
+					Cell cell = row.getCell(1);
+					if (cell == null)
+					{
+					    cell = row.createCell(1);
+					}
+					SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+					cell.setCellValue(dateFormat.format(donation.getCompletedDate()));
+					
+					row = sheet.getRow(16);
+					cell = row.getCell(1);
+					if (cell == null)
+					{
+					    cell = row.createCell(1);
+					}
+					cell.setCellValue(user.getFirstName() + " " + user.getLastName());
+					
+					row = sheet.getRow(17);
+					cell = row.getCell(1);
+					if (cell == null)
+					{
+					    cell = row.createCell(1);
+					}
+					cell.setCellValue(user.getFirstName() + " " + user.getLastName());
+					
+					row = sheet.getRow(18);
+					cell = row.getCell(1);
+					if (cell == null)
+					{
+					    cell = row.createCell(1);
+					}
+					cell.setCellValue(user.getAddress());
+					
+					row = sheet.getRow(18);
+					cell = row.getCell(3);
+					if (cell == null)
+					{
+					    cell = row.createCell(3);
+					}
+					cell.setCellValue(user.getCity());
+					
+					row = sheet.getRow(19);
+					cell = row.getCell(3);
+					if (cell == null)
+					{
+					    cell = row.createCell(3);
+					}
+					cell.setCellValue(user.getProvince());
+					
+					row = sheet.getRow(20);
+					cell = row.getCell(1);
+					if (cell == null)
+					{
+					    cell = row.createCell(1);
+					}
+					cell.setCellValue(user.getPostalCode());
+					
+					row = sheet.getRow(21);
+					cell = row.getCell(1);
+					if (cell == null)
+					{
+					    cell = row.createCell(1);
+					}
+					cell.setCellValue(user.getPhone());
+					
+					row = sheet.getRow(21);
+					cell = row.getCell(3);
+					if (cell == null)
+					{
+					    cell = row.createCell(3);
+					}
+					cell.setCellValue(user.getEmail());
+					
+					row = sheet.getRow(28);
+					cell = row.getCell(2);
+					if (cell == null)
+					{
+					    cell = row.createCell(2);
+					}
+					cell.setCellValue(donation.getValue());
+					 
+					String home = System.getProperty("user.home");
+					String fileName = home + "/Downloads/taxreceipt_donationid" + donId + "_year"
+							+ today.get(Calendar.YEAR) + "_month" + today.get(Calendar.MONTH) + "_day"
+							+ today.get(Calendar.DAY_OF_MONTH) + "_hour" + today.get(Calendar.HOUR) + "_min"
+							+ today.get(Calendar.MINUTE) + "_sec" + today.get(Calendar.SECOND) + ".xlsx";
+					FileOutputStream out = new FileOutputStream(new File(fileName));
+					workbook.write(out);
+					out.close();
+					workbook.close();
+					
+					redirectAttributes.addFlashAttribute("css", "success");
+					redirectAttributes.addFlashAttribute("msg", "Donation exported to tax receipt form");
+
+				} catch (FileNotFoundException e) {
+					logger.debug("index() file not found exception : {}", e.getMessage());
+					redirectAttributes.addFlashAttribute("css", "danger");
+					redirectAttributes.addFlashAttribute("msg", "The tax receipt form could not be found.");
+				} catch (IOException e) {
+					logger.debug("index() io exception : {}", e.getMessage());
+					redirectAttributes.addFlashAttribute("css", "danger");
+					redirectAttributes.addFlashAttribute("msg", "An error occurred exporting the info. Please try again.");
+				} catch (EncryptedDocumentException e) {
+					logger.debug("index() encrypted document exception : {}", e.getMessage());
+					redirectAttributes.addFlashAttribute("css", "danger");
+					redirectAttributes.addFlashAttribute("msg", "An error occurred exporting the info. Please try again.");
+				} catch (InvalidFormatException e) {
+					logger.debug("index() invalid format exception : {}", e.getMessage());
+					redirectAttributes.addFlashAttribute("css", "danger");
+					redirectAttributes.addFlashAttribute("msg", "An error occurred exporting the info. Please try again.");
+				}
+
+			}
+		
+			return "redirect:/donations/" + donId;
+		
+		}
 	}
 	
 	// donation analytics menu
@@ -1763,6 +1926,16 @@ public class UserController {
 		model.addAttribute("provinceList", province);
 
 	}
+	
+	private void populateRoles(Model model) {
+		
+		Map<String, String> roles = new LinkedHashMap<String, String>();
+		roles.put("Donor", "Donor");
+		roles.put("Volunteer", "Volunteer");
+		roles.put("Staff", "Staff");
+		model.addAttribute("roleList", roles);
+		
+	}
 
 	private void populateDonationTypes(Model model) {
 
@@ -1825,11 +1998,12 @@ public class UserController {
 				+ ".\n\nYour donation has been submitted successfully and is now awaiting approval. "
 				+ "We will check our inbox as soon as possible in order to confirm your donation. "
 				+ "\n\nYour donation ID# is " + donId
-				+ "; please refer to this number if you have any future questions or concerns."
+				+ ". Please refer to this number if you have any future questions or concerns."
 				+ "\n\nThank you for thinking of us, and we hope you enjoy the rest of your day."
 				+ "\n\nHabitat for Humanity Kingston ReStore";
+		String to = "habitattestemail@gmail.com";
 
-		email(subject, text);
+		email(subject, text, to);
 	}
 
 	private void emailDonorUpdate(Integer donId, User user) {
@@ -1842,8 +2016,9 @@ public class UserController {
 				+ "If you have any questions or concerns involving these changes please contact us as soon as possible."
 				+ "\n\nThank you for thinking of us, and we hope you enjoy the rest of your day."
 				+ "\n\nHabitat for Humanity Kingston ReStore";
+		String to = "habitattestemail@gmail.com";
 
-		email(subject, text);
+		email(subject, text, to);
 
 	}
 
@@ -1857,8 +2032,9 @@ public class UserController {
 				+ "\n\nIf you have any further questions, details, or changes regarding your donation, please contact us as soon as possible."
 				+ "\n\nThank you for thinking of us, and we hope you enjoy the rest of your day."
 				+ "\n\nHabitat for Humanity Kingston ReStore";
+		String to = "habitattestemail@gmail.com";
 
-		email(subject, text);
+		email(subject, text, to);
 
 	}
 
@@ -1868,12 +2044,20 @@ public class UserController {
 
 		String subject = "Donation ID# " + donId + " to Habitat for Humanity - Declined";
 		String text = "Hello " + user.getFirstName() + " " + user.getLastName()
-				+ ".\n\nWe regret to inform you your donation ID# " + donId + " has been declined. We however greatly appreciate your generosity."
-				+ "If you have any questions or concerns regarding this, please do not hesitate to contact us."
-				+ "\n\nThank you for thinking of us, and we hope you enjoy the rest of your day."
+				+ ".\n\nThank you for your interest in supporting Habitat for Humanity through a donation to our ReStore. "
+				+ "We sincerely value the support of our community in our mission to build a better future with local families "
+				+ "by helping them to achieve affordable home ownership. While we are currently unable to schedule your donation at "
+				+ "this time, we sincerely appreciate that you thought of us.\n\nEvery donation that we schedule must meet a list of "
+				+ "requirements, including, for pick-ups, the resale value being high enough to offset the expense of sending our truck "
+				+ "and two staff members to complete the pick-up. Other reasons why we may choose to decline a donation are distance, "
+				+ "having too much stock of a similar product, not having enough storage space, and items not meeting our donation "
+				+ "guidelines and policies. To review our donation guidelines and policies, please visit our website at "
+				+ "habitatkingston.com. If you have questions or would like to speak to one of our team members, please call "
+				+ "613-548-8763.\n\nThank you for supporting Habitat for Humanity, and have a great day!"
 				+ "\n\nHabitat for Humanity Kingston ReStore";
+		String to = "habitattestemail@gmail.com";
 
-		email(subject, text);
+		email(subject, text, to);
 
 	}
 
@@ -1890,8 +2074,9 @@ public class UserController {
 				+ "\n\nWe will contact you on the chosen date to confirm a time. If you have any questions or concerns please contact us as soon as possible."
 				+ "\n\nThank you for thinking of us, and we hope you enjoy the rest of your day."
 				+ "\n\nHabitat for Humanity Kingston ReStore";
+		String to = "habitattestemail@gmail.com";
 
-		email(subject, text);
+		email(subject, text, to);
 
 	}
 
@@ -1899,7 +2084,7 @@ public class UserController {
 
 		logger.debug("emailStaff() donation id : {}", donId);
 		
-		String subject, text;
+		String subject, text, to = "habitattestemail@gmail.com";
 		
 		if (!action.equals("deleted")) {
 		
@@ -1929,17 +2114,16 @@ public class UserController {
 			
 		}
 
-		email(subject, text);
+		email(subject, text, to);
 	}
 
-	private void email(String subject, String text) {
+	private void email(String subject, String text, String to) {
 
 		logger.debug("email()");
-		String from = "habitattestemail@gmail.com";
-		String to = "habitattestemail@gmail.com";
+		String from = "h4hkingston@gmail.com";
 		String host = "smtp.gmail.com";
-		final String username = "habitattestemail@gmail.com";
-		final String password = "Habitat2018";
+		final String username = "h4hkingston@gmail.com";
+		final String password = "habitatrestore";
 		Properties properties = System.getProperties();
 		properties.setProperty("mail.smtp.host", host);
 		properties.setProperty("mail.smtp.port", "587");

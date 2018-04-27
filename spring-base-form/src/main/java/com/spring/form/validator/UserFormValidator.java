@@ -40,12 +40,14 @@ public class UserFormValidator implements Validator {
 		User user = (User) target;
 
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "loginName", "NotEmpty.userForm");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotEmpty.userForm");
+		if (user.isNew()) {
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotEmpty.userForm");
+		}
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "NotEmpty.userForm");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "phone", "NotEmpty.userForm");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "role", "NotEmpty.userForm");
 		
-		if (!user.getLoginName().equals("") && userService.findByLoginName(user.getLoginName()) != null) {
+		if (user.isNew() && !user.getLoginName().equals("") && userService.findByLoginName(user.getLoginName()) != null) {
 			user.setLoginError("gfield_error");
 			errors.rejectValue("loginName", "Taken.userForm.loginName");
 		} else if (user.getLoginName().equals("")) {
@@ -95,18 +97,15 @@ public class UserFormValidator implements Validator {
 		if (user.getPassword() != "" && !user.getPassword().equals(user.getConfirmPassword())) {
 			user.setPassError("gfield_error");
 			errors.rejectValue("password", "Diff.userForm.confirmPassword");
-		} else if (user.getPassword() == "" || user.getConfirmPassword() == "") {
+		} else if (user.isNew() && user.getPassword().equals("") || user.getConfirmPassword().equals("")) {
 			user.setPassError("gfield_error");
 		} else {
 			user.setPassError("");
 		}
 
-		if (!user.getRole().equals("") && !user.getRole().equals("Donor") && !user.getRole().equals("Volunteer")
-				&& !user.getRole().equals("Staff")) {
+		if (user.getRole().equalsIgnoreCase("none")) {
 			user.setRoleError("gfield_error");
 			errors.rejectValue("role", "Invalid.userForm.role");
-		} else if (user.getRole() == "") {
-			user.setRoleError("gfield_error");
 		} else {
 			user.setRoleError("");
 		}

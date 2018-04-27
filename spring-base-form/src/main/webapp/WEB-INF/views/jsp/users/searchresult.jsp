@@ -76,7 +76,7 @@
 
 			<spring:url value="/users/searchform" var="userSearch" />
 			<button class="btn btn-info" onclick="location.href='${userSearch}'">User Search</button>
-			<spring:url value="/users" var="urlAddUser" />
+			<spring:url value="/users" var="urlAllUser" />
 			<button class="btn btn-info" onclick="location.href='${urlAllUser}'">View All Users</button>
 			<spring:url value="/dashboard" var="dashboardUrl" />
 			<button class="btn btn-info"

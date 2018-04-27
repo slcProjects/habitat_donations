@@ -51,8 +51,11 @@
 							<li id="field_6_0.1"
 								class="gfield gfield_contains_required field_sublabel_below field_description_below gfield_visibility_visible ${userForm.passError}"><label
 								class="gfield_label gfield_label_before_complex"
-								for="input_6_1_3">New Password<span
-									class="gfield_required">*</span></label>
+								for="input_6_1_3">New Password
+								<c:if test="${userForm['new']}">
+									<span class="gfield_required">*</span>
+								</c:if></label>
+								<form:hidden path="currentPass" />
 								<div
 									class="ginput_complex ginput_container no_prefix has_first_name no_middle_name has_last_name no_suffix gf_name_has_2 ginput_container_name gfield_trigger_change"
 									id="input_6_1">
@@ -159,7 +162,10 @@
 										for="input_6_1_3">Role<span class="gfield_required">*</span></label>
 										<span class="ginput_left address_zip"><spring:bind
 												path="role">
-												<form:input path="role" type="text" id="role" />
+												<form:select path="role">
+													<form:option value="NONE" label="" />
+													<form:options items="${roleList}" />
+												</form:select>
 												<form:errors class="gfield_description validation_message" path="role" />
 												<div class="gf_clear gf_clear_complex"></div>
 											</spring:bind> </span></li>
