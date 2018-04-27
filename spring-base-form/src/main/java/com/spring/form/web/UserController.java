@@ -1302,7 +1302,7 @@ public class UserController {
 
 				try {
 					
-					InputStream in = new FileInputStream("C:/tomcat/webapps/spring-base-form-initial_load/resources/core/taxreceipt.xlsx");
+					InputStream in = UserController.class.getResourceAsStream("/excel/taxreceipt.xlsx");
 					 
 					Workbook workbook = WorkbookFactory.create(in);
 					Sheet sheet = workbook.getSheetAt(0);
